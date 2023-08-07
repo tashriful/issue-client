@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="UNDELIVERED_REPORT" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="com.aye.ayeireportlibrery.ConvertToWordLocal" uuid="b03f29f8-71a5-4a42-abe4-ba6c97489ea6">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<parameter name="custId" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="itemId" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pOrgId" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT ord.order_header_id,
+         order_line_id,
+         oe_trns_type_id,
+         org.org_id,
+         org.org_name,
+         org.org_address,
+         order_number,
+         order_date,
+         customer_name,
+         customer_header_id,
+         customer_line_id,
+         inv_org_id,
+         ord.item_id,
+         item_code,
+         order_uom_code,
+         order_uom_id,
+         order_uom_qty,
+         dlv.undeliverd_uom_qty,
+         conv_rate,
+         default_uom_id,
+         default_uom_code,
+         order_default_uom_qty,
+         unit_selling_price,
+         price_list_line_id
+    FROM (SELECT line.order_header_id,
+                 line.order_line_id,
+                 hdr.oe_trns_type_id,
+                 hdr.org_id,
+                 hdr.order_number,
+                 hdr.order_date,
+                 cl.name customer_name,
+                 cl.customer_header_id,
+                 cl.id customer_line_id,
+                 line.inv_org_id,
+                 line.item_id,
+                 line.item_code,
+                 line.order_uom_code,
+                 line.order_uom_id,
+                 line.order_uom_qty,
+                 line.conv_rate,
+                 line.default_uom_id,
+                 line.default_uom_code,
+                 line.order_default_uom_qty,
+                 line.unit_selling_price,
+                 line.price_list_line_id
+            FROM ord_order_line line, ord_order_header hdr, customer_line cl
+           WHERE     line.order_header_id = hdr.order_header_id
+                 AND hdr.customer_line_id = cl.id
+                 AND hdr.order_status = 'P') ord,
+         (  SELECT order_header_id,
+                   item_id,
+                   SUM (NVL (order_uom_qty, 0)) undeliverd_uom_qty
+              FROM ord_dlv_together
+          GROUP BY order_header_id, item_id) dlv,
+         (SELECT org.id org_id,
+                 org.address org_address,
+                 org.code org_code,
+                 org.name org_name
+            FROM organization_hierarchy bg, organization_hierarchy org
+           WHERE org.parentid = bg.id) org
+   WHERE     ord.org_id = org.org_id
+         AND ord.order_header_id = dlv.order_header_id
+         AND ord.item_id = dlv.item_id
+         AND ord.org_id = $P{pOrgId}
+         AND NVL2($P{custId}, ord.customer_line_id, -999) = NVL($P{custId}, -999)
+         AND NVL2($P{itemId}, ord.item_id, -999) = NVL($P{itemId}, -999)
+         AND ord.order_date <= $P{pDate}
+         AND dlv.undeliverd_uom_qty <> 0
+         ORDER BY ord.order_header_id]]>
+	</queryString>
+	<field name="ORDER_HEADER_ID" class="java.math.BigDecimal"/>
+	<field name="ORDER_LINE_ID" class="java.math.BigDecimal"/>
+	<field name="OE_TRNS_TYPE_ID" class="java.math.BigDecimal"/>
+	<field name="ORG_ID" class="java.math.BigDecimal"/>
+	<field name="ORG_NAME" class="java.lang.String"/>
+	<field name="ORG_ADDRESS" class="java.lang.String"/>
+	<field name="ORDER_NUMBER" class="java.lang.String"/>
+	<field name="ORDER_DATE" class="java.sql.Timestamp"/>
+	<field name="CUSTOMER_NAME" class="java.lang.String"/>
+	<field name="CUSTOMER_HEADER_ID" class="java.math.BigDecimal"/>
+	<field name="CUSTOMER_LINE_ID" class="java.math.BigDecimal"/>
+	<field name="INV_ORG_ID" class="java.math.BigDecimal"/>
+	<field name="ITEM_ID" class="java.math.BigDecimal"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="ORDER_UOM_CODE" class="java.lang.String"/>
+	<field name="ORDER_UOM_ID" class="java.math.BigDecimal"/>
+	<field name="ORDER_UOM_QTY" class="java.lang.Double"/>
+	<field name="UNDELIVERD_UOM_QTY" class="java.math.BigDecimal"/>
+	<field name="CONV_RATE" class="java.lang.Double"/>
+	<field name="DEFAULT_UOM_ID" class="java.math.BigDecimal"/>
+	<field name="DEFAULT_UOM_CODE" class="java.lang.String"/>
+	<field name="ORDER_DEFAULT_UOM_QTY" class="java.lang.Double"/>
+	<field name="UNIT_SELLING_PRICE" class="java.lang.Double"/>
+	<field name="PRICE_LIST_LINE_ID" class="java.math.BigDecimal"/>
+	<variable name="curDate" class="java.lang.String">
+		<variableExpression><![CDATA[$P{REPORT_SCRIPTLET}.getCurrentDate()]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="114" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="802" height="32" uuid="97be5d88-9210-425c-bee2-a312022dda6f"/>
+				<textElement textAlignment="Center">
+					<font size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="32" width="802" height="20" uuid="608fd408-c7fe-4ad4-81c4-27e818aee61e"/>
+				<textElement textAlignment="Center">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="52" width="802" height="20" uuid="6db3b9ae-ebcb-4a9b-bf03-6a35a3b676ac"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Undelivered Report]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1" y="72" width="801" height="22" uuid="5510fa2b-1f04-4af8-a8eb-fbdf62faae51"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA['As on '+new SimpleDateFormat("dd/MMM/yyyy").format($P{pDate})]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="20">
+			<textField>
+				<reportElement x="1" y="0" width="801" height="20" forecolor="#999999" uuid="56220fae-bd85-4c78-b493-88c477917191"/>
+				<textFieldExpression><![CDATA["Green Board Fiber Mills LTD. Print Date: "+$V{curDate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band height="200" splitType="Stretch">
+			<crosstab>
+				<reportElement x="0" y="0" width="802" height="200" uuid="d47650c2-d97d-4193-84e0-2a21497a538e"/>
+				<crosstabHeaderCell>
+					<cellContents>
+						<staticText>
+							<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="70" height="30" uuid="3257baa0-927b-402c-92d0-06f3f5ad4d22"/>
+							<textElement textAlignment="Center">
+								<font size="10"/>
+							</textElement>
+							<text><![CDATA[Customer]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="70" y="0" width="170" height="30" uuid="488ba504-f14a-4e27-9905-0908b401c2fa"/>
+							<textElement textAlignment="Center">
+								<font size="10"/>
+							</textElement>
+							<text><![CDATA[Order Number & Date]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="240" y="0" width="100" height="30" uuid="36d34805-1486-49de-87b9-cfb8f7672fd5"/>
+							<textElement textAlignment="Center">
+								<font size="10"/>
+							</textElement>
+							<text><![CDATA[Item]]></text>
+						</staticText>
+					</cellContents>
+				</crosstabHeaderCell>
+				<rowGroup name="CUSTOMER_NAME" width="70">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{CUSTOMER_NAME}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<textField>
+								<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="70" height="25" uuid="930694d1-e704-4925-a7ad-10bafb181ab3"/>
+								<textElement textAlignment="Center">
+									<font fontName="Tahoma" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{CUSTOMER_NAME}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="ORDER_NUMBER" width="70">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{ORDER_NUMBER}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<textField isStretchWithOverflow="true">
+								<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="70" height="25" uuid="bbec2769-b1e7-4480-a791-804125407e34"/>
+								<textElement textAlignment="Justified">
+									<font fontName="Tahoma" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{ORDER_NUMBER}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="group2" width="100">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[new SimpleDateFormat("dd-MMM-yyyy").format($F{ORDER_DATE})]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<textField>
+								<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="100" height="25" uuid="aced1b4f-64cb-4284-bc1b-f25137aa0106"/>
+								<textFieldExpression><![CDATA[$V{group2}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="group1" width="100">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{ITEM_CODE}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<textField>
+								<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="100" height="25" uuid="0fb05a7d-101c-4b16-af13-3842338773ef"/>
+								<textElement textAlignment="Center">
+									<font fontName="Tahoma" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{group1}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="QTY" height="30">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA["Qty"]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<textField>
+								<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="30" uuid="65945c09-02c5-44d1-8690-712333864cb3"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$V{QTY}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents/>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="UNDELIVERD_UOM_QTYMeasure" class="java.lang.Integer" calculation="Sum">
+					<measureExpression><![CDATA[$F{UNDELIVERD_UOM_QTY}]]></measureExpression>
+				</measure>
+				<crosstabCell width="50" height="25">
+					<cellContents>
+						<textField>
+							<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25" uuid="b380a22c-d243-4262-a571-ca285a72aba6"/>
+							<textElement textAlignment="Right">
+								<font fontName="Tahoma" size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{UNDELIVERD_UOM_QTYMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="CUSTOMER_NAME">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" forecolor="#FFFFFF" uuid="40f7df8e-d42f-4d90-ad98-209972538ba0"/>
+							<textFieldExpression><![CDATA[$V{UNDELIVERD_UOM_QTYMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="50" columnTotalGroup="QTY">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" uuid="50c48b46-edf7-4220-a403-b7c0b704eacb"/>
+							<textFieldExpression><![CDATA[$V{UNDELIVERD_UOM_QTYMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="CUSTOMER_NAME" columnTotalGroup="QTY">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" forecolor="#FFFFFF" uuid="00f41b24-caff-4390-9d3f-3790a86acd2f"/>
+							<textFieldExpression><![CDATA[$V{UNDELIVERD_UOM_QTYMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="ORDER_NUMBER">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" uuid="776ec948-cadd-484e-8b92-131a29a3ef40"/>
+							<textFieldExpression><![CDATA[$V{UNDELIVERD_UOM_QTYMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="ORDER_NUMBER" columnTotalGroup="QTY">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" uuid="970cf39b-7fb0-4b4e-a9ad-1116088e998b"/>
+							<textFieldExpression><![CDATA[$V{UNDELIVERD_UOM_QTYMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="group1">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="group1" columnTotalGroup="QTY">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="group2">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="group2" columnTotalGroup="QTY">
+					<cellContents/>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</summary>
+</jasperReport>

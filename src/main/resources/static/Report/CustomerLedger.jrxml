@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CustomerLedger" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" scriptletClass="com.aye.ayeireportlibrery.ConvertToWordLocal" uuid="420e2d6d-b69b-4b98-b59c-5aad6429510e">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="p_org_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="f_date" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="t_date" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cust_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/d01/tomcat/webapps/AYE/WEB-INF/classes/static/Report/"
+/*"G:\\Project\\AyeProject\\ReportFinal\\"*/]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 1 sl, oh.code,
+         oh.address,
+         oh.name,
+         cl.name customer_name,
+         cl.site_address,
+         NULL account_name,
+         NULL account_number,
+         NULL gl_header_id,
+         NULL account_date,
+         to_date($P{f_date}) voucher_date,
+         'Opening' document_number,
+         NULL reference_no,
+         NULL header_description,
+         CASE
+            WHEN SUM (NVL (dr_amount, 0) - NVL (cr_amount, 0)) > 0
+            THEN
+               SUM (NVL (dr_amount, 0) - NVL (cr_amount, 0))
+            ELSE
+               0
+         END
+            AS dr_amount,
+         CASE
+            WHEN SUM (NVL (dr_amount, 0) - NVL (cr_amount, 0)) < 0
+            THEN
+               SUM (NVL (dr_amount, 0) - NVL (cr_amount, 0))
+            ELSE
+               0
+         END
+            AS cr_amount,
+         NULL ref_name,
+         NULL ref_id,
+         NULL line_description
+    FROM gl_header gh,
+         gl_lines gl,
+         customer_line cl,
+         organization_hierarchy oh
+   WHERE     gh.id = gl.gl_header_id
+         AND gl.source_id = cl.id
+         AND gh.org_id = cl.org_id
+         AND gh.org_id = oh.id
+         AND gl.acc_source = 'AR'
+         AND TRUNC (gh.account_date) < $P{f_date}
+         AND gh.org_id = $P{p_org_id}
+         AND cl.id = $P{cust_id}
+GROUP BY oh.code,
+         oh.address,
+         oh.name,
+         cl.name,
+         cl.site_address
+UNION ALL
+SELECT 2 sl, oh.code,
+       oh.address,
+       oh.name,
+       cl.name customer_name,
+       cl.site_address,
+       bl.account_name,
+       bl.account_number,
+       gh.id gl_header_id,
+       gh.account_date,
+       gh.voucher_date,
+       gh.document_number,
+       gh.reference_no,
+       gh.description header_description,
+       NVL(gl.dr_amount,0) dr_amount,
+       NVL(gl.cr_amount,0) cr_amount,
+       gl.ref_name,
+       gl.ref_id,
+       gl.description line_description
+  FROM gl_header gh,
+       gl_lines gl,
+       customer_line cl,
+       organization_hierarchy oh,
+       bank_line bl
+ WHERE     gh.id = gl.gl_header_id
+       AND gl.source_id = cl.id
+       AND gh.org_id = cl.org_id
+       AND gh.org_id = oh.id
+       AND gh.org_id = bl.org_id(+)
+       AND gh.source_id = bl.id(+)
+       AND gl.acc_source = 'AR'
+       AND TRUNC (gh.account_date) BETWEEN $P{f_date} AND $P{t_date}
+       AND gh.org_id = $P{p_org_id}
+       AND cl.id = $P{cust_id}
+ORDER BY sl, voucher_date]]>
+	</queryString>
+	<field name="SL" class="java.math.BigDecimal"/>
+	<field name="CODE" class="java.lang.String"/>
+	<field name="ADDRESS" class="java.lang.String"/>
+	<field name="NAME" class="java.lang.String"/>
+	<field name="CUSTOMER_NAME" class="java.lang.String"/>
+	<field name="SITE_ADDRESS" class="java.lang.String"/>
+	<field name="ACCOUNT_NAME" class="java.lang.String"/>
+	<field name="ACCOUNT_NUMBER" class="java.lang.String"/>
+	<field name="GL_HEADER_ID" class="java.lang.Long"/>
+	<field name="ACCOUNT_DATE" class="java.sql.Timestamp"/>
+	<field name="VOUCHER_DATE" class="java.sql.Timestamp"/>
+	<field name="DOCUMENT_NUMBER" class="java.lang.String"/>
+	<field name="REFERENCE_NO" class="java.lang.String"/>
+	<field name="HEADER_DESCRIPTION" class="java.lang.String"/>
+	<field name="DR_AMOUNT" class="java.math.BigDecimal"/>
+	<field name="CR_AMOUNT" class="java.math.BigDecimal"/>
+	<field name="REF_NAME" class="java.lang.String"/>
+	<field name="REF_ID" class="java.lang.Long"/>
+	<field name="LINE_DESCRIPTION" class="java.lang.String"/>
+	<variable name="balance" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{DR_AMOUNT}.subtract( $F{CR_AMOUNT})]]></variableExpression>
+	</variable>
+	<variable name="drAmt" class="java.math.BigDecimal" resetType="Group" resetGroup="GL_HEADER" calculation="Sum">
+		<variableExpression><![CDATA[$F{DOCUMENT_NUMBER}=="Opening"? null:$F{DR_AMOUNT}]]></variableExpression>
+	</variable>
+	<variable name="crAmt" class="java.math.BigDecimal" resetType="Group" resetGroup="GL_HEADER" calculation="Sum">
+		<variableExpression><![CDATA[$F{DOCUMENT_NUMBER}=="Opening"? null:$F{CR_AMOUNT}]]></variableExpression>
+	</variable>
+	<variable name="sumDr" class="java.math.BigDecimal" resetType="Group" resetGroup="Customer" calculation="Sum">
+		<variableExpression><![CDATA[(($F{DOCUMENT_NUMBER} == "Opening")? 0: $F{DR_AMOUNT})]]></variableExpression>
+	</variable>
+	<variable name="sumCr" class="java.math.BigDecimal" resetType="Group" resetGroup="Customer" calculation="Sum">
+		<variableExpression><![CDATA[(($F{DOCUMENT_NUMBER} == "Opening")? 0: $F{CR_AMOUNT})]]></variableExpression>
+	</variable>
+	<variable name="curDate" class="java.lang.String">
+		<variableExpression><![CDATA[$P{REPORT_SCRIPTLET}.getCurrentDate()]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<variable name="valFromUndelv" class="java.math.BigDecimal" resetType="None" calculation="System">
+		<variableExpression><![CDATA[$V{valFromUndelv}.add( $V{balance})]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<variable name="NetRecv" class="java.math.BigDecimal" resetType="None">
+		<variableExpression><![CDATA[$V{valFromUndelv}]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<group name="Customer">
+		<groupExpression><![CDATA[$F{CUSTOMER_NAME}]]></groupExpression>
+		<groupFooter>
+			<band height="59" splitType="Prevent">
+				<subreport>
+					<reportElement x="0" y="22" width="802" height="37" uuid="ee6a4e71-9c0d-40bd-8817-db4597b0c79e"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="t_date">
+						<subreportParameterExpression><![CDATA[$P{t_date}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="cust_id">
+						<subreportParameterExpression><![CDATA[$P{cust_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<returnValue subreportVariable="totalAmt" toVariable="valFromUndelv"/>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "CustomerLedger_subreport2.jasper"]]></subreportExpression>
+				</subreport>
+				<frame>
+					<reportElement x="0" y="0" width="802" height="21" uuid="103dc2c6-a4e4-4cf6-aee8-d14bac41c4f1"/>
+					<staticText>
+						<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="478" height="20" uuid="43cd236e-0ca3-4d67-87f0-f486e38944be"/>
+						<textElement>
+							<font isBold="true"/>
+						</textElement>
+						<text><![CDATA[Total]]></text>
+					</staticText>
+					<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
+						<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="478" y="0" width="110" height="20" uuid="655e240a-2c54-4c84-b0af-3869c372fd13"/>
+						<textElement textAlignment="Right">
+							<font isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{sumDr}]]></textFieldExpression>
+					</textField>
+					<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
+						<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="588" y="0" width="107" height="20" uuid="8aea01c9-d61d-4e69-97e6-97d209ef4f09"/>
+						<textElement textAlignment="Right">
+							<font isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{sumCr}]]></textFieldExpression>
+					</textField>
+					<textField pattern="###0.00;-###0.00">
+						<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="695" y="0" width="107" height="20" uuid="c2815d24-f402-4276-b489-7e4819ebdc99"/>
+						<textElement textAlignment="Right">
+							<font isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{balance}]]></textFieldExpression>
+					</textField>
+				</frame>
+			</band>
+			<band height="29" splitType="Prevent">
+				<textField pattern="###0.00;(###0.00)">
+					<reportElement style="table_TD" x="695" y="0" width="107" height="20" uuid="e6c48277-31ce-4e6c-94cf-43c6789a1567"/>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{balance}.add($V{valFromUndelv})]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="table_TD" x="0" y="0" width="695" height="20" uuid="170f0a3f-6c12-48de-9866-261bcc6052c2"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Receivable]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="GL_HEADER">
+		<groupExpression><![CDATA[$F{GL_HEADER_ID}]]></groupExpression>
+		<groupFooter>
+			<band height="20" splitType="Prevent">
+				<subreport>
+					<reportElement stretchType="RelativeToTallestObject" x="229" y="0" width="249" height="20" uuid="5ec9163d-07fb-4fbd-a7f4-4c36919d84fe"/>
+					<subreportParameter name="p_org_id">
+						<subreportParameterExpression><![CDATA[$P{p_org_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="gl_header_id">
+						<subreportParameterExpression><![CDATA[$F{GL_HEADER_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"CustomerLedger_subreport1.jasper"]]></subreportExpression>
+				</subreport>
+				<textField>
+					<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="100" height="20" uuid="36631a08-7214-4fb3-b0ef-4961dae82064"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MMM-yyyy").format($F{VOUCHER_DATE})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="100" y="0" width="129" height="20" uuid="4c2bdbf0-6645-45d0-9b46-d17e55264f15"/>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{DOCUMENT_NUMBER}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
+					<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="478" y="0" width="110" height="20" uuid="0817a627-fbe4-48ec-b820-35248877d82f"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{drAmt}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
+					<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="588" y="0" width="107" height="20" uuid="40512332-c0ca-4204-8c31-bc1d365a6786"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{crAmt}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="695" y="0" width="107" height="20" uuid="1fe057d6-38ea-4aae-b50b-c70e8951271e"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{balance}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="190" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="32" width="802" height="20" uuid="5b6f5762-e3d0-44ea-b2fb-f14bf7460527"/>
+				<textElement textAlignment="Center">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="802" height="32" uuid="692bc2e9-e8d7-4bf5-b2c1-8f716f9ce4f3"/>
+				<textElement textAlignment="Center">
+					<font size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="92" width="378" height="20" uuid="26a08835-4ffd-42b0-9bc3-90024be82a5c"/>
+				<textFieldExpression><![CDATA[$F{CUSTOMER_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="112" width="378" height="20" uuid="db01419d-0776-4d60-a8da-4f5ed6fabb8e"/>
+				<textFieldExpression><![CDATA[$F{SITE_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="92" width="100" height="20" uuid="89777321-cad0-46ae-bfef-d60869dae882"/>
+				<text><![CDATA[Customer Name :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="112" width="100" height="20" uuid="1ffd9513-a607-4c11-b465-5f3506cfe202"/>
+				<text><![CDATA[Address :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="132" width="378" height="20" uuid="2c0ff153-3604-40f6-be7b-5db5b1b8d225"/>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MMM-yyyy").format($P{f_date})+' To '+
+new SimpleDateFormat("dd-MMM-yyyy").format($P{t_date})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="132" width="100" height="20" uuid="4ef18385-3df7-4ef9-8d4c-a4a9dc071d64"/>
+				<text><![CDATA[Date :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="170" width="100" height="20" uuid="bd112fcc-3803-44cb-aac4-ed6e0ccb39ae"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Voucher Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="100" y="170" width="129" height="20" uuid="eb658671-51cd-42a6-8088-6b9ba9690e24"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Document Number]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="229" y="170" width="249" height="20" uuid="c7215976-2be9-482a-9aa8-2f007d126f34"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="478" y="170" width="110" height="20" uuid="c3119e2a-18d5-4c35-93ca-60d5923dd6db"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Debit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="588" y="170" width="107" height="20" uuid="ea9cfae7-77fb-4a65-a729-2cb494e1be7f"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Credit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" positionType="Float" stretchType="RelativeToBandHeight" x="695" y="170" width="107" height="20" uuid="65ed9c44-2a7c-4015-8a90-59bb42e295bd"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Runing Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="52" width="802" height="20" uuid="8baa416a-d104-4756-be86-8028e6d9b680"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Customer Ledger]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="20" splitType="Immediate">
+			<textField>
+				<reportElement x="0" y="0" width="802" height="20" forecolor="#999999" uuid="4470acb2-e67e-42c5-afca-77472f11dc2d"/>
+				<textFieldExpression><![CDATA["Green Board Fiber Mills LTD. Print Date: "+$V{curDate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band height="134" splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+
+    <script th:inline="javascript">
+        function selectedobj(value, ind) {
+            if(ind == 'rfqNumberSerch')
+            {
+                SearchSRfqObj(value);
+            }else if(ind == 'rfqSItemSerc')
+            {
+                SearchRfqSItemObj(value);
+            }else if(ind == 'rfqsSupSrch')
+            {
+                SearchRfqSSupObj(value);
+            }
+        };
+        function getRfqSSupInf(pSup, pdisplay, pindc) {
+            var varOrg = document.getElementById('inputorgHierarchy').value;
+
+            var displayfieldfrom = pdisplay;
+            var indc = pindc;
+//            alert('x1');
+            AutocomFunct('/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + pSup,
+                    displayfieldfrom,
+                    'name',
+                    null,
+                    indc);
+        };
+
+    </script>
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">RFQ Search </div>
+                <div class="panel-body">
+                    <form th:action="@{'/rfq/search/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId} }"
+                          th:object="${rfqSearch}" th:method="post">
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputrfqNumber">Number</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control" type="text" id="inputrfqNumber"
+                                       th:field="*{rfqNumber}" name="rfqNumber" />
+                                <script th:inline="javascript">
+
+                                    function SearchSRfqObj(objparms) {
+                                        var objparmV = objparms;
+                                        $('#inputpoRfqHeaderId').val(objparmV.id).trigger("change");
+                                    };
+
+
+                                    document.getElementById('inputrfqNumber').oninput = function () {
+
+                                        var rfqNum = document.getElementById('inputrfqNumber').value;
+                                        if (rfqNum .length==0)
+                                        {
+                                            document.getElementById('inputpoRfqHeaderId').value='';
+                                        }
+                                        if (rfqNum .length > 1) {
+
+                                            var  lInvOrg=document.getElementById('inputinvOrg').value;
+                                            var  lOrg=document.getElementById('inputorgHierarchy').value;
+
+                                            var poUrl = '/AYE/ACRC/SearchOrgRfqHeader/' +lOrg+ '/' +  lInvOrg +'/'+rfqNum ;
+//                                            alert(poUrl );
+                                            autocomwithobject(poUrl, 'rfqNumber', '#inputrfqNumber', null, 'startDate', 'rfqNumberSerch');
+                                            document.getElementById('inputrfqNumber').focus();
+                                        }
+                                    }
+
+                                </script>
+                                <input type="hidden" th:field="*{orgHierarchy}" name="orgHierarchy" id="inputorgHierarchy" />
+                                <input type="hidden" th:field="*{id}" id="inputpoRfqHeaderId" />
+                                <input type="hidden" th:field="*{inventoryInformations}" name="invOrg" id="inputinvOrg" />
+                                <span class="help-block" th:if="${#fields.hasErrors('rfqNumber')}"
+                                      th:errors="*{rfqNumber}">Name Error</span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputstartDate">Date</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputstartDate"
+                                       th:field="*{{startDate}}"
+                                       name="fromDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('startDate')}"
+                                      th:errors="*{startDate}">Date Error</span>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputendDate"
+                                       th:field="*{{endDate}}"
+                                       name="endDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('endDate')}"
+                                      th:errors="*{endDate}">Date Error</span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputitemCode">Item Code</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control" type="hidden" id="inputMasterItemidId"
+                                       th:field="*{itemId}"/>
+                                <input class="form-control" type="text" id="inputitemCode"
+                                       th:field="*{itemCode}"/>
+                            </div>
+                            <script th:inline="javascript">
+
+                                function SearchRfqSItemObj(objparms) {
+//                                            alert('x');
+                                    var objparmV = objparms;
+                                    $('#inputMasterItemidId').val(objparmV.id.id).trigger("change");
+
+                                };
+
+                                document.getElementById('inputitemCode').oninput = function() {
+                                    var lItmCode = document.getElementById('inputitemCode').value;
+                                    if (lItmCode.length==0)
+                                    {
+
+                                        document.getElementById('inputMasterItemidId').value='';
+
+                                    }
+                                    if (lItmCode.length > 2) {
+                                        var  lInvOrg=document.getElementById('inputinvOrg').value;
+
+                                        var itemUrl = '/AYE/ACRC/SearchOrgItemCode/' + lInvOrg + '/' + lItmCode;
+//                                            alert(itemUrl);
+                                        autocomwithobject(itemUrl, 'itemCode', '#inputitemCode', null, 'description', 'rfqSItemSerc');
+                                        document.getElementById('inputitemCode').focus();
+                                    }
+                                }
+                            </script>
+
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputsupplierLine">Supplier</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input class="form-control" type="hidden" id="inputsupplierLine"
+                                       th:field="*{supplierLine}"  />
+
+                                <input class="form-control" type="text" id="inputsupplierLineName"
+                                       th:field="*{supplierLine.name}"  />
+
+                                <span class="help-block" th:if="${#fields.hasErrors('supplierLine')}"
+                                      th:errors="*{supplierLine}">Name Error</span>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input class="form-control" type="text" id="inputsupplierLineAddress"
+                                       th:field="*{supplierLine.siteAddress}"  readonly/>
+                            </div>
+                            <script th:inline="javascript">
+                                function SearchRfqSSupObj(objparms) {
+//                                            alert('x');
+                                    var objparmV = objparms;
+                                    $('#inputsupplierLine').val(objparmV.id).trigger("change");
+                                    $('#inputsupplierEmail').val(objparmV.email).trigger("change");
+                                    $('#inputsupplierLineAddress').val(objparmV.siteAddress).trigger("change");
+                                };
+
+                                document.getElementById('inputsupplierLineName').oninput = function () {
+                                    myFunction();
+                                };
+                                function myFunction() {
+
+                                    var innerVar = document.getElementById('inputsupplierLineName').value;
+                                    if (innerVar.length > 2) {
+
+                                        var displayfieldfrom = [['#inputsupplierLineName']];
+
+                                        getRfqSSupInf(innerVar, displayfieldfrom, 'rfqsSupSrch');
+//                                        document.getElementById('fromLocator').focus();
+                                        document.getElementById('inputsupplierLineName').focus();
+                                    }else
+                                    {
+                                        $('#inputsupplierLine').val('');
+                                    }
+                                }
+                            </script>
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputRfqStatus">Status</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <select id="inputRfqStatus" th:field="*{status}" name="status" class="form-control">
+                                    <option value="">Select One</option>
+                                    <option th:each=" stts : ${T(com.aye.web.model.Rfq.CommonStatus).values()}"
+                                            th:text="${stts.displayName}"
+                                            th:value="${stts}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="text-right Padding10px" align="right">
+                            <!--<a  th:href="@{/InvItem/MasterItem/E/}+${pageId}+'/'+${temltId}"-->
+                            <!--class="btn btn-default">Cancel</a>-->
+                            <button type="submit" name="search"  class="btn btn-primary" onclick="return chkRfqSearchqEmpty()">
+                                Find
+                            </button>
+                            <a th:href="@{/rfq/rfqHeader/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-default">New</a>
+
+                            <!--<span th:if = "${poSearchRes !=null and #lists.size(poSearchRes)>0}">-->
+                                <!--<a onclick="exportTableToExcel('tblDataLine')" class="btn btn-primary">Export</a>-->
+                            <!--</span>-->
+                        </div>
+
+                        <div>
+
+                        </div>
+                    </form>
+
+                    <div class="form-group col-sm-12">
+
+                        <table class="table table-bordered table-hover table-striped" id="tblDataLine">
+                            <thead>
+
+                            <th>Number</th>
+                            <th>Date</th>
+                            <th>Note</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                            </thead>
+                            <tbody>
+
+                            <div th:each="header : ${rfqSearchRes}">
+                                <tr >
+                                    <td style="font-size: 12px; color: #323232;" th:text="${header.rfqNumber}"></td>
+                                    <td style="font-size: 12px; color: #323232;" th:text="${header.startDate}"></td>
+                                    <td style="font-size: 12px; color: #323232;" th:text="${header.desctiptions}"></td>
+                                    <td style="font-size: 12px; color: #323232;" th:text="${header.status.displayName}"></td>
+                                    <td>
+
+                                        <div class="btn-group" role="group" aria-label="..." name="edit">
+                                            <a th:href="@{/rfq/rfqHeader/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${header.id}"
+                                               class="btn btn-success"><span
+                                                    class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                                        </div>
+
+                                    </td>
+
+
+                                </tr>
+
+
+
+                            </div>
+                            <div th:if="${#lists.isEmpty(reqSearchRes)}">
+                                <tr>
+                                    <td>No Data exists!</td>
+                                </tr>
+                            </div>
+
+                            </tbody>
+
+                        </table>
+                        <div data-th-replace="fragments/pagination :: page-pagination">
+
+
+                    </div>
+                    <div class="panel-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

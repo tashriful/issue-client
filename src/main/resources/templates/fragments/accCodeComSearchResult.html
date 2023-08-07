@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+<script>
+    var pModalIndc ;
+</script>
+</head>
+<body>
+
+<div id="accCodeComSearchResult" th:fragment="accCodeComSearchResult" class="accCodeComSearchResult">
+    <div class="form-group col-sm-12">
+
+        <div th:unless="${#lists.isEmpty(combications)}">
+
+
+            <table class="table table-bordered table-hover table-striped">
+            <thead>
+            <!--<tr>-->
+            <!--<th th:text="#{results.ordTrnsTypes.id}">Id</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.trnsTypeName}">Name</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.description}">Desc.</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.startDates}">Start</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.active}">End</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.priceListHeader.name}">Price List</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.invOrg.code}">Inv.Org</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.orgHierarchy.code}">Org</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.glCategories.categoriesCode}">Gl Categories</th>-->
+            <!--</tr>-->
+            <tr>
+                <!--<th>Id</th>-->
+                <th width="5%">Select</th>
+                <th>Number</th>
+                <th>Desc</th>
+                <th>Source</th>
+                <th>Value Type</th>
+
+            </tr>
+
+            </thead>
+            <tbody>
+            <tr th:each="c : ${combications}">
+                <!--<td th:text="${trnsType.id}">Id</td>-->
+                <td>
+                    <input type="radio" name="c.id" onclick="myfunc(this)" th:id="${c.id}" />
+
+                </td>
+                <td th:text="${c.concatedSegment}" th:id="concatedSegment+${c.id}" ></td>
+                <td th:text="${c.ccDesc}"  ></td>
+                <td th:text="${c.source}"  ></td>
+                <!--<td th:text="${c.dataSet !=null ? c.dataSet.dataSetName:''}"  ></td>-->
+                <td th:text="${c.sourceTypeNoneTypeVal}"  ></td>
+                <td th:text="${c.id}"  ></td>
+
+<script th:inline="javascript">
+    pModalIndc= [[${c.modalIndc}]];
+</script>
+
+
+            </tr>
+
+
+            </tbody>
+
+        </table>
+            <script>
+
+
+                function myfunc(ele) {
+                    var p1;
+                    var p2;
+                    var p3;
+                    var p4;
+
+
+                    $.each($("input[name='c.id']:checked").parents("td").siblings(), function() {
+
+
+                        if ($(this).index()==1)
+                        {
+                            p1=$(this).text();
+                           // alert(p1);
+                        }else if ($(this).index()==5)
+                        {
+                            p2=$(this).text();
+//                            alert(p2);
+                        }else if ($(this).index()==3)
+                        {
+                            p3=$(this).text();
+                            //alert(p2);
+                        }else if ($(this).index()==4)
+                        {
+                            p4=$(this).text();
+                        }
+                    });
+                    accCodeComeModalIndc(p1,p2,p3,p4,pModalIndc);
+
+                    $('#accCodeComSearchResult').empty();
+                    pModalIndc="";
+                }
+
+
+            </script>
+
+
+
+            <div>
+
+
+        </div>
+
+    </div>
+        </div>
+    </div>
+</body>
+</html>

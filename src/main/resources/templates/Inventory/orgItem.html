@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <link th:insert="Inventory/InvScriptLink"/>
+    <script>
+        function selectedobj(value, ind) {
+            //alert('Y'+ind);
+
+            if (ind == 'seg1InvR') {
+
+                InvSearchseg1(value);
+            }
+            else if (ind == 'seg2InvR') {
+                InvSearchseg2(value);
+            }
+            else if (ind == 'seg3InvR') {
+                InvSearchseg3(value);
+            }
+            else if (ind == 'seg4InvR') {
+                InvSearchseg4(value);
+            }
+            else if (ind == 'seg5InvR') {
+                // alert('ppp');
+                InvSearchseg5(value);
+            }
+            else if (ind == 'seg6InvR') {
+                // alert('ppp');
+                InvSearchseg6(value);
+            }
+            else if (ind == 'seg7InvR') {
+                // alert('ppp');
+                InvSearchseg7(value);
+            }
+            else if (ind == 'seg8InvR') {
+                // alert('ppp');
+                InvSearchseg8(value);
+            }
+
+        }
+        ;
+        function getmodatbtnidOrgItem(xx) {
+            var yy = xx;
+//            alert(yy);
+            document.getElementById('uu').value = yy;
+        }
+        ;
+
+
+        function getcodcomfmodal(pcode, pid) {
+            var iv = document.getElementById('uu').value;
+//            alert(iv+"V");
+//            var modalbtlv= document.getElementById('inputmodalbtn').value;
+            document.getElementById(iv + "V").value = pcode;
+            document.getElementById(iv).value = pid;
+//            alert(iv);
+            $('#modal-warning').modal('hide');
+
+        }
+    </script>
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Manage Inventory Item Informations for -<a
+                        th:text="*{orgItem.id.inventoryInformations.code}"></a></div>
+                <div class="panel-body">
+                    <form
+                            th:action="@{'/InvItem/OrgItem/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${itemId}+'/'+${orgId}+'/'+${segCode}}"
+                            th:object="${orgItem}" th:method="post">
+                        <!--+${role.role}  +${role.role}-->
+  <span style="font-weight: bold" th:each="m :${msg}">
+            <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+            </p></span>
+
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="inputinventoryitemId" placeholder="id"
+                                   th:field="*{id.id}" name="id"/>
+                            <input type="hidden" id="uu"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('id.id')}" th:errors="*{id.id}">itemCode Error</span>
+                        </div>
+
+
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="inputorgId" placeholder="orgId"
+                                   th:field="*{id.inventoryInformations}" name="id.inventoryInformations"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('id.inventoryInformations.id')}"
+                                  th:errors="*{id.inventoryInformations.id}">OrgId Error</span>
+                            <input type="hidden" class="form-control" id="inputorgHierarchyId"
+                                   placeholder="orgHierarchyId"
+                                   th:field="*{id.orgId.orgHierarchy.id}"
+                                   name="id.orgId.orgHierarchy.segmentLine.code"/>
+                            <!--th:field="*{id.orgId.orgHierarchy.segmentLine.code}" name="id.orgId.orgHierarchy.segmentLine.code"/>-->
+                        </div>
+
+
+                        <div th:class="${#fields.hasErrors('itemCode')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-2 control-label " for="inputdescription">Item Code</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-6 ">
+                                <input type="text" class="form-control" id="inputitemCode" placeholder="itemCode"
+                                       th:field="*{itemCode}" name="itemCode" readonly/>
+                                <span class="help-block" th:if="${#fields.hasErrors('itemCode')}"
+                                      th:errors="*{itemCode}">itemCode Error</span>
+                            </div>
+                            <label class="col-sm-1 control-label " for="inputdefaultBomLineSubType">Bom Type</label>
+                            <div class="col-sm-2 ">
+                                <select id="inputdefaultBomLineSubType" th:field="*{defaultBomLineSubType}" name="defaultBomLineSubType" class="form-control">
+                                    <option value="">Select One</option>
+                                    <option th:each=" bomtype : ${T(com.aye.web.model.common.BomLineSubType).values()}"
+                                            th:text="${bomtype}"
+                                            th:value="${bomtype}">
+
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div th:class="${#fields.hasErrors('description')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-2 control-label " for="inputdescription">Description</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-6 ">
+                                <input type="text" class="form-control" id="inputdescription" placeholder="description"
+                                       th:field="*{description}" name="description" required="required"
+                                       th:readonly="${itemUsage}"/>
+                                <!--<input type="hidden" class="form-control" id="inputdefaultBomLineSubType"-->
+                                       <!--th:field="*{defaultBomLineSubType}"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('description')}"
+                                  th:errors="*{description}">description Error</span>
+                            </div>
+
+                            <label class="col-sm-1 control-label " for="inputitemType">Item Type</label>
+
+                            <div class="col-sm-2 ">
+                                <select id="inputitemType" th:field="*{itemType}" name="itemType" class="form-control"
+                                        required>
+                                    <option value="">Select One</option>
+                                    <option th:each=" itemTypes : ${T(com.aye.web.model.Inv.common.MasterItem.ItemType).values()}"
+                                            th:text="${itemTypes.getDisplayName()}"
+                                            th:value="${itemTypes}">
+
+                                    </option>
+                                </select>
+                            </div>
+
+
+                        </div>
+
+
+                        <!--<div class="form-group">-->
+                        <!--<label for="inputdescription">Decription</label>-->
+                        <!--<input type="text" class="form-control" id="inputdescription" placeholder="description"-->
+                        <!--th:field="*{description}" name="description" th:disabled="${itemUsage}"/>-->
+                        <!--<span class="help-block" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">description Error</span>-->
+                        <!--</div>-->
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-2 control-label " for="inputdescription">UOM</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-4 form-group ">
+
+                                <div th:if="${itemUsage==false}">
+                                    <select class="form-control" id="inputdefaultUom" placeholder="defaultUom"
+                                            th:field="*{defaultUom}">
+                                        <option value="">Select One</option>
+                                        <option th:each="uom : ${defaultUoms}" th:text="${uom.uomCode}"
+                                                th:value="${uom.id}"></option>
+
+                                    </select>
+                                </div>
+                                <div th:if="${itemUsage==true}">
+                                    <input type="hidden" class="form-control" id="inputdefaultUom"
+                                           th:field="*{defaultUom}"/>
+                                    <input type="text" class="form-control" id="inputdefaultUomCode" placeholder="UOM"
+                                           th:field="*{defaultUom.uomCode}" readonly/>
+                                </div>
+                                <span class="help-block" th:if="${#fields.hasErrors('defaultUom')}"
+                                      th:errors="*{defaultUom}">defaultUom Error</span>
+                            </div>
+                            <label class="col-sm-1 control-label " for="inputitemType">Status</label>
+
+                            <div class="col-sm-4 form-group ">
+                                <input type="hidden" class="form-control" id="inputstatus" placeholder="Status"
+                                       th:field="*{status}" readonly/>
+                                <input type="text" class="form-control" id="inputDisplaystatus" placeholder="Status"
+                                       th:field="*{status.displayName}" readonly/>
+                                <span class="help-block" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Status Error</span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <div class="col-sm-1"><label for="inputcogsAccount">COGS Acc.</label></div>
+                            <div class="col-sm-10 form-group ">
+                                <input type="hidden" class="form-control" id="inputcogsAccount"
+                                       th:field="*{cogsAccount}" name="cogsAccount"/>
+                                <input class="form-control" th:type="text" required="required"
+                                       placeholder="COGS Account"
+                                       th:field="*{cogsAccountV.concatedSegment}" id="inputcogsAccountV"
+                                       th:disabled="${itemUsage}"/>
+
+                                <span class="help-block" th:if="${#fields.hasErrors('cogsAccountV')}"
+                                      th:errors="*{cogsAccountV}"> materialAccV Error</span>
+                            </div>
+
+
+                            <script th:inline="javascript">
+
+
+                                var org = document.getElementById('inputorgHierarchyId').value;
+
+
+                                var tmpDtlId = [[${temltId}]];
+                                //                                var urlval = '/AYE/ACRC/SearchCodeComb/' + org+'/'+tmpDtlId;
+                                var urlval = '/AYE/ACRC/SearchCodeCombByOrg/' + $('#inputcogsAccountV').val() + '/' + org;
+                                //                                 alert(urlval);
+                                var displayfield = '#inputcogsAccountV';
+                                //   alert(displayfield)
+                                var dbfield = '#inputcogsAccount';
+                                //alert(dbfield)
+                                var getvalue = 'concatedSegment';
+                                autocom(urlval, getvalue, displayfield, dbfield);
+
+
+                            </script>
+                            <div class="col-sm-1 " style="text-align: right;">
+                                <button type="button" data-toggle="modal" data-target="#modal-warning"
+                                        th:attr="data-target='#modal-warning'" id="cogsmbtn">
+                                    <span class="glyphicon">&#xe164;</span>
+                                </button>
+
+                                <script th:inline="javascript">
+                                    var mbsales = '#cogsmbtn';
+                                    $(mbsales).click(function () {
+
+                                        var btnidmodalcogs = 'inputcogsAccount';
+                                        //alert(btnidmodalsales);
+//                                                var my_id_value = $(this).data('id');
+                                        $(".modal-body #inputmodalbtn").val(btnidmodalcogs);
+                                        getmodatbtnidOrgItem(btnidmodalcogs);
+                                    });
+                                </script>
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-sm-12 form-group">
+                            <div class="col-sm-1"><label for="inputexpenseAccount">Expencess Acc.</label></div>
+                            <div class="col-sm-10 form-group ">
+
+                                <input type="hidden" class="form-control" id="inputexpenseAccount"
+                                       th:field="*{expenseAccount}" name="expenseAccount"/>
+                                <input class="form-control" th:type="text" required="required"
+                                       placeholder="Exp. Account"
+                                       th:field="*{expenseAccountV.concatedSegment}" id="inputexpenseAccountV"
+                                       th:disabled="${itemUsage}"/>
+
+                                <span class="help-block" th:if="${#fields.hasErrors('expenseAccountV')}"
+                                      th:errors="*{expenseAccountV}">expenseAccount Error</span>
+                                <script th:inline="javascript">
+
+
+                                    var org = document.getElementById('inputorgHierarchyId').value;
+
+                                    var tmpDtlId = [[${temltId}]];
+                                    //                                var urlval = '/AYE/ACRC/SearchCodeComb/' + org+'/'+tmpDtlId;
+                                    var urlval = '/AYE/ACRC/SearchCodeCombByOrg/' + $('#inputexpenseAccountV').val() + '/' + org;
+                                    var displayfield = '#inputexpenseAccountV';
+                                    //   alert(displayfield)
+                                    var dbfield = '#inputexpenseAccount';
+                                    //alert(dbfield)
+                                    var getvalue = 'concatedSegment';
+                                    autocom(urlval, getvalue, displayfield, dbfield);
+
+
+                                </script>
+
+
+                            </div>
+                            <div class="col-sm-1 " style="text-align: right;">
+                                <button type="button" data-toggle="modal" data-target="#modal-warning"
+                                        th:attr="data-target='#modal-warning'" id="expmbtn">
+                                    <span class="glyphicon">&#xe164;</span>
+                                </button>
+
+                                <script th:inline="javascript">
+                                    var mbsales = '#expmbtn';
+                                    $(mbsales).click(function () {
+
+                                        var btnidmodalexp = 'inputexpenseAccount';
+                                        //alert(btnidmodalsales);
+//                                                var my_id_value = $(this).data('id');
+                                        $(".modal-body #inputmodalbtn").val(btnidmodalexp);
+                                        getmodatbtnidOrgItem(btnidmodalexp);
+                                    });
+                                </script>
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-sm-12 form-group">
+                            <div class="col-sm-1"><label for="inputsalesAccount">Sales Acc.</label></div>
+                            <div class="col-sm-10 form-group ">
+
+                                <input type="hidden" class="form-control" id="inputsalesAccount"
+                                       th:field="*{salesAccount}" name="salesAccount"/>
+                                <input class="form-control" th:type="text" required="required"
+                                       placeholder="Sales Account"
+                                       th:field="*{salesAccountV.concatedSegment}" id="inputsalesAccountV"
+                                       th:disabled="${itemUsage}"/>
+
+                                <span class="help-block" th:if="${#fields.hasErrors('salesAccountV')}"
+                                      th:errors="*{salesAccountV}">expenseAccount Error</span>
+                                <script th:inline="javascript">
+
+
+                                    var org = document.getElementById('inputorgHierarchyId').value;
+
+                                    var tmpDtlId = [[${temltId}]];
+                                    //                                var urlval = '/AYE/ACRC/SearchCodeComb/' + org+'/'+tmpDtlId;
+                                    var urlval = '/AYE/ACRC/SearchCodeCombByOrg/' + $('#inputsalesAccountV').val() + '/' + org;
+                                    var displayfield = '#inputsalesAccountV';
+                                    //   alert(displayfield)
+                                    var dbfield = '#inputsalesAccount';
+                                    //alert(dbfield)
+                                    var getvalue = 'concatedSegment';
+                                    autocom(urlval, getvalue, displayfield, dbfield);
+
+
+                                </script>
+
+
+                            </div>
+                            <div class="col-sm-1 " style="text-align: right;">
+                                <button type="button" data-toggle="modal" data-target="#modal-warning"
+                                        th:attr="data-target='#modal-warning'" id="salesmbtn">
+                                    <span class="glyphicon">&#xe164;</span>
+                                </button>
+
+                                <script th:inline="javascript">
+                                    var mbsales = '#salesmbtn';
+                                    $(mbsales).click(function () {
+
+                                        var btnidmodalsales = "inputsalesAccount";
+                                        //alert(btnidmodalsales);
+//                                                var my_id_value = $(this).data('id');
+                                        $(".modal-body #inputmodalbtn").val(btnidmodalsales);
+                                        getmodatbtnidOrgItem(btnidmodalsales);
+                                    });
+                                </script>
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumn" placeholder="column"
+                                   th:field="*{column.createdBy}" name="column"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('column.createdBy')}"
+                                      th:errors="*{column.createdBy}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{column.creationDate}" name="columnDate"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('column.creationDate')}"
+                                      th:errors="*{column.creationDate}">User Name Error</span>
+                        </div>
+
+                        <div>
+                            <button type="button" data-toggle="modal" data-target="#modal-RecordHistory" th:id="btnIdHM"
+                                    th:attr="data-target='#modal-RecordHistory'" title="Record History">
+                                <span class="glyphicon glyphicon-record"></span>
+                            </button>
+                            <script th:inline="javascript">
+                                document.getElementById('btnIdHM').onclick =
+                                        function () {
+                                            var obj = [[${orgItem.column}]];
+
+                                            histabledataset(obj);
+                                        };
+                            </script>
+                        </div>
+                        <div data-th-replace="fragments/recordHistoryModal :: recordhis-modal"></div>
+
+
+                        <div class="text-right">
+                            <a th:href="@{/InvItem/MasterItem/E/}+${pageId}+'/'+${temltId}"
+                               class="btn btn-default">Main</a>
+                            <a  th:href="@{/InvItem/editItem/U/}+${pageId}+'/'+${temltId}+'/'+${itemId}"
+                            class="btn btn-success">Master Item</a>
+                            <a th:href="@{/InvItem/ItemAssignee/E/} + ${pageId}+'/'+${temltId}+'/'+${orgItem.id.id}+'/'+${segCode}"
+                               class="btn btn-success" title="Item Assigne">Assigne</a>
+                            <!--<a  th:href="@{/InvItem/OrgItem/E/}+${pageId}+'/'+${temltId}+'/'+${itemId}+'/'+${orgId}"-->
+                            <!--class="btn btn-default">Cancel</a>-->
+                            <!--<div class="btn-group" role="group" aria-label="...">-->
+                            <!--&lt;!&ndash;<button type="submit" class="btn btn-primary">A</button>&ndash;&gt;-->
+                            <!--<a th:href="@{/InvCategories/addItemCategories/E/} + ${pageId}+'/'+${temltId}+'/'+${segCode}+'/' +${itemId}+'/'+${invOrgId}"-->
+                            <!--class="btn btn-success">-->
+                            <!--<span class="glyphicon glyphicon-edit" aria-hidden="true">C</span></a>-->
+                            <!--</div>-->
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <span th:if="${orgItem.id.id !=null}">
+                            <button type="submit" name="Inactive" class="btn btn-danger">Inactive Item</button>
+                            </span>
+                            <a th:href="@{/InvItem/search/E/}+${pageId}+'/'+${temltId}"
+                               class="btn btn-primary">Search</a>
+                        </div>
+
+
+                    </form>
+                    <div data-th-replace="fragments/modalData :: account-modal"></div>
+
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <!--<th>Desc.</th>-->
+                            <!--<th>UOM</th>-->
+                            <!--<th>Status</th>-->
+                            <!--<th>COGS ACC.</th>-->
+                            <!--<th>EXP. ACC.</th>-->
+                            <!--<th>Sales Acc.</th>-->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <div th:if="!${#lists.isEmpty(cat)}">
+                            <tr th:each="c : ${cat}">
+                                <td th:text="*{c.invItemClassificationsV.concatedSegment}"></td>
+                                <!--<td th:text="*{itm.description}"></td>-->
+                                <!--<td th:text="*{itm.defaultUom.uomCode}"></td>-->
+                                <!--<td th:text="*{itm.status}"></td>-->
+                                <!--<td th:text="( *{itm.cogsAccountV} ? *{itm.cogsAccountV.concatedSegment} : '' )"></td>-->
+                                <!--<td th:text="( *{itm.expenseAccountV} ? *{itm.expenseAccountV.concatedSegment} : '' )"></td>-->
+                                <!--<td th:text="( *{itm.salesAccountV} ? *{itm.salesAccountV.concatedSegment} : '' )"></td>-->
+                                <td>
+                                    <!--<div class="btn-group" role="group" aria-label="...">-->
+                                    <!--<a th:href="@{/InvItem/editItem/} + ${pageId}+'/'+${temltId}+'/'+${itm.id.id}"-->
+                                    <!--class="btn btn-success"><span-->
+                                    <!--class="glyphicon glyphicon-edit"-->
+                                    <!--aria-hidden="true">Edit</span></a>-->
+                                    <!--</div>-->
+
+                                    <div class="btn-group" role="group" aria-label="...">
+                                        <!--<button type="submit" class="btn btn-primary">A</button>-->
+<span th:if="${itemUsage==false}">
+      <a th:href="@{/InvCategories/addItemCategories/E/} + ${pageId}+'/'+${temltId}+'/'+${segCode}+'/'
+                                                    +${itemId}+'/'+${invOrgId}+'/D'"
+         class="btn btn-success">
+          <span class="glyphicon glyphicon-edit" aria-hidden="true">A</span></a>
+</span>
+
+                                    </div>
+
+                                    <!--<div class="btn-group" role="group" aria-label="...">-->
+                                    <!--<a th:href="@{/InvItem/ItemAssignee/E/} + ${pageId}+'/'+${temltId}+'/'+${itm.id.id}+'/'+${itm.id.orgId.keySegmentHeader.id}"-->
+                                    <!--class="btn btn-success"><span-->
+                                    <!--class="glyphicon glyphicon-plus"-->
+                                    <!--aria-hidden="true">Add</span></a>-->
+                                    <!--</div>-->
+                                </td>
+
+                            </tr>
+                        </div>
+                        <div th:if="${#lists.isEmpty(cat)}">
+                            <tr>
+                                <td>No Data exists!</td>
+                            </tr>
+                        </div>
+
+                        </tbody>
+
+                    </table>
+
+
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

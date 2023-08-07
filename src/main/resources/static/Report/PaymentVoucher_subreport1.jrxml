@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PaymentVoucher_subreport1" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true" uuid="a0585544-3c29-4017-9e19-b86810aebd06">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="vId" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="p_ref_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT bpl.id bill_line_id,
+       bpl.amount,
+       bpl.primary_qty,
+       round(bpl.unit_price,3) unit_price,
+       bpl.item_id,
+       pl.item_code,
+       RECEIVE_NUMBER,
+       diduc.amount dicucAmount,
+       diduc.code,
+       bpl.header_id,
+null description
+  FROM bill_pay_lines bpl,
+       ( select l.id PO_RCV_LINE_ID,l.ITEM_CODE,RECEIVE_NUMBER,h.org_id from  PO_RECEIVE_LINE l, PO_RECEIVE_HEADER h where h.ID=l.PO_RECEIVE_HEADER_ID ) pl,
+bill_pay_header bph,
+(select d.id,header_id,line_id,amount,code from bill_pay_diduction d,BILL_PAY_DIDUCTION_TYPES dt
+where d.GL_PAY_DIDUC_TYPE_ID=dt.id) diduc
+ WHERE bpl.header_id=bph.id
+and BPL.PO_RCV_LINE_ID = pl.PO_RCV_LINE_ID
+and bpl.header_id=diduc.header_id(+)
+and bpl.id=diduc.line_id(+)
+and BPH.ORG_ID=pl.org_id AND bpl.id = $P{p_ref_id}
+and bph.gl_header_id=$P{vId}
+union all
+select 0 bill_line_id,
+       0 amount,
+       0 primary_qty,
+       0 unit_price,
+       0 item_id,
+       null item_code,
+       null RECEIVE_NUMBER,
+       0 dicucAmount,
+       null code,
+       id, H.DESCRIPTION description
+from gl_header h
+where not H.DESCRIPTION is null
+and H.ID =$P{vId}]]>
+	</queryString>
+	<field name="BILL_LINE_ID" class="java.math.BigDecimal"/>
+	<field name="AMOUNT" class="java.math.BigDecimal"/>
+	<field name="PRIMARY_QTY" class="java.math.BigDecimal"/>
+	<field name="UNIT_PRICE" class="java.math.BigDecimal"/>
+	<field name="ITEM_ID" class="java.math.BigDecimal"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="RECEIVE_NUMBER" class="java.lang.String"/>
+	<field name="DICUCAMOUNT" class="java.math.BigDecimal"/>
+	<field name="CODE" class="java.lang.String"/>
+	<field name="HEADER_ID" class="java.math.BigDecimal"/>
+	<field name="DESCRIPTION" class="java.lang.String"/>
+	<variable name="row" class="java.lang.Integer" resetType="Column" incrementType="Report" calculation="Count"/>
+	<variable name="TotalRow" class="java.lang.Integer"/>
+	<variable name="description" class="java.lang.String" resetType="None">
+		<variableExpression><![CDATA[$F{DESCRIPTION} == null ?
+(($F{DICUCAMOUNT} == null)? "GRN -"+$F{RECEIVE_NUMBER}
+ +", Item: "+$F{ITEM_CODE}+" ,Qty- "+$F{PRIMARY_QTY}+" @"+
+$F{UNIT_PRICE}+" Amount: "+$F{AMOUNT} : "GRN- "+$F{RECEIVE_NUMBER}
+ +",Item: "+$F{ITEM_CODE}+", Qty -"+$F{PRIMARY_QTY}+" @"+
+$F{UNIT_PRICE}+" Amount:"+$F{AMOUNT}
++" Diduction :"+$F{DICUCAMOUNT}
+)+' '+ ($F{DESCRIPTION}==null? "":$F{DESCRIPTION}) :($F{DESCRIPTION}==null? "":$F{DESCRIPTION})]]></variableExpression>
+	</variable>
+	<detail>
+		<band height="22">
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="2" width="237" height="20" uuid="cc6080a2-b950-4372-aa71-27afe9da536a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{description}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

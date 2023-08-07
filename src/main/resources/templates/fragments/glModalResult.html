@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+
+</head>
+<body>
+
+<div id="glModalResult" th:fragment="glModalResult" class="glModalResult">
+
+    <div th:if="${glHeader!=null}">
+
+        <div id="RcvNumberBlock" >
+            <div class="form-group col-sm-12">
+                <label class="col-sm-3 control-label " for="inputrcvNumber">Number Category & Status</label>
+                <div class="col-sm-1 ">
+                    <b>:</b>
+                </div>
+                <div class="col-sm-3 ">
+                    <div class="form-control" type="text" id="inputdocumentNumber" readonly
+                         th:text="${glHeader.documentNumber}"></div>
+
+                </div>
+                <div class="col-sm-3 ">
+                    <div class="form-control" type="text" id="inputglCategories" readonly
+                         th:text="${glHeader.glCategories.categoriesCode}"></div>
+                </div>
+
+                <div class="col-sm-2 ">
+                    <div class="form-control" type="text" id="inputstatus" readonly
+                         th:text="${glHeader.status.displayName}"></div>
+                </div>
+
+            </div>
+
+            <div class="form-group col-sm-12">
+                <label class="col-sm-3 control-label " for="inputcurrencyCode">Currency & Date.</label>
+                <div class="col-sm-1 ">
+                    <b>:</b>
+                </div>
+
+                <div class="col-sm-2  ">
+                    <div class="form-control"  id="inputcurrencyCode" style="alignment: right " readonly
+                         th:text="${glHeader.currencyCode}"></div>
+                </div>
+
+                <div class="col-sm-3  ">
+                    <div class="form-control"  id="inputrcvNumber" style="alignment: right " readonly
+                         th:text="${{glHeader.date}}"></div>
+                </div>
+
+                <div class="col-sm-3  ">
+
+                    <div class="form-control" type="text" id="inputaccDate" readonly
+                         th:text="${glHeader.accDate}"></div>
+
+                </div>
+
+            </div>
+            <script>
+
+//                $(document).ready(function()
+//                {
+//                 alert($(this));
+//                });
+
+            </script>
+        </div>
+
+
+        <div class=" col-sm-12  dist_view"
+             th:if="${(glHeader.documentNumber)!=null}">
+
+
+            <div class="col-sm-12 brder accgl-col">
+                <div class="col-sm-1 accgl-col brderright" style="width: 20px">Id</div>
+                <div class="col-sm-4 accgl-col brderright" align="center">Combinations</div>
+                <div class="col-sm-2 accgl-col brderright" align="center">DR</div>
+                <div class="col-sm-2 accgl-col brderright " align="center">CR</div>
+                <div class="col-sm-2 accgl-col " align="center">Desc</div>
+
+            </div>
+            <div class="col-sm-12 accgl-col brder " th:each="GlLines,rowStat  : ${glHeader.glLinesList}">
+                <div class="col-sm-1  accgl-col high_control top_marg brderright"
+                     th:text="${rowStat.count}" style="width: 20px">1
+                </div>
+                <div class="col-sm-4 form-group accgl-col top_marg brderright">
+                    <input class="td form-control " th:type="text"
+                           th:field="*{glHeader.glLinesList[__${rowStat.index}__].accCodeCombinitionsV.concatedSegment}"
+                           th:title="*{glHeader.glLinesList[__${rowStat.index}__].accCodeCombinitionsV.concatedSegmentDesc}"
+                           readonly/>
+                    <input type="hidden"
+                           th:field="*{glHeader.glLinesList[__${rowStat.index}__].accCodeCombinitions.accountSource}"
+                           th:value="accCodeCombinitions" required="required"
+                           th:id="idl+${rowStat.index}"/>
+                </div>
+                <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                    <input class="form-control combatdr " th:type="text" align="right_col"
+                           th:field="*{glHeader.glLinesList[__${rowStat.index}__].baseDrAmount}"
+                           readonly/>
+
+                </div>
+
+                <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                    <input class="form-control " th:type="text" align="right_col"
+                           th:field="*{glHeader.glLinesList[__${rowStat.index}__].baseCrAmount}"
+                           readonly/>
+                </div>
+
+
+                <div class="col-sm-3 form-group accgl-col top_marg brderright" style="width: 150px">
+                    <input class="form-control " th:type="text" align="right_col"  style="width: 150px"
+                           th:field="*{glHeader.glLinesList[__${rowStat.index}__].accCodeCombinitionsV.ccDesc}"
+                           readonly/>
+                </div>
+
+                <div th:id="${rowStat.index}+'div2'" class="col-sm-12 accgl-col"
+                     style="padding-top: 0px;"> <!---2ndLine-->
+
+                    <div class="col-sm-1  accgl-col high_control top_marg brderright "
+                         th:text="${rowStat.index}" style="width: 18px; color: transparent; "></div>
+
+                    <div class="col-sm-11   accgl-col top_marg brderright 2nddiv" >
+
+
+                        <input class="td form-control " th:type="text" th:field="*{glHeader.glLinesList[__${rowStat.index}__].sourceName}"
+                               height="2" style="width: 493px" readonly/>
+
+                    </div>
+
+                </div>
+                <div th:id="${rowStat.index}+'div3'" class="col-sm-12 accgl-col"
+                     style="padding-top: 0px;"> <!---2ndLine-->
+
+                    <div class="col-sm-1  accgl-col high_control top_marg brderright"
+                         th:text="${rowStat.index}" style="width: 18px; color: transparent; "></div>
+
+                    <div class="col-sm-11   accgl-col top_marg  2nddiv" >
+
+
+                        <input class="td form-control " th:type="text" style="width: 493px"
+                               th:field="*{glHeader.glLinesList[__${rowStat.index}__].subAccSourceName}"
+                               height="2"
+                               readonly/>
+
+
+                    </div>
+
+                </div>
+
+                <script th:inline="javascript">
+                    $(document).ready(function() {
+                        var lfieldindex=[[${rowStat.index}]];
+
+//                        alert(lfieldindex);
+                        fieldvisivlityModal(lfieldindex);
+                    });
+
+                </script>
+
+
+            </div>
+         </div>
+
+    </div>
+
+    </div>
+</body>
+</html>

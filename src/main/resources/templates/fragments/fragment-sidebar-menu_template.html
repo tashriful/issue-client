@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div id="sidebar-menu" class="main_menu_side hidden-print main_menu"
+     data-th-fragment="sidebar-menu">
+    <div class="menu_section">
+        <!--<h3>General</h3>-->
+
+        <ul class="nav side-menu" th:object="${manus}">
+
+            <li th:each="accDtlss : ${manus}">
+                <a>
+                    <!--<i class="fa fa-camera-retro fa-lg"></i>-->
+                    <!--<i th:classappend="${accDtlss?.orgHierarchy?.name}"></i>-->
+                    <!--<span th:text="${accDtl.userMenu.menuName}"></span>-->
+                    <span th:text="${accDtlss?.detailName}"></span>
+                    <span class="fa fa-chevron-down fa-lg"></span></a>
+                <ul class="nav child_menu">
+
+                    <li th:each="accDtl : ${accDtlss.userAccessTemltDtlList}">
+
+                        <a>
+                            <!--<i class="fa fa-camera-retro fa-lg"></i>-->
+                            <i th:classappend="${accDtl.userMenu.icon.displayName}"></i>
+                            <!--<span th:text="${accDtl.userMenu.menuName}"></span>-->
+                            <span th:text="${accDtl.detailName}"></span>
+                            <span class="fa fa-chevron-down fa-lg"></span></a>
+
+                        <ul class="nav child_menu">
+                            <li th:each="Smn : ${accDtl.userMenu.subMenus}">
+                                <a th:href="@{'/'+${Smn.page.pageUrl.displayName}+'/'+${Smn.userMenu.id}+'/'+${accDtl.id} }">
+                                    <span th:text="${Smn.menuName}"></span></a>
+                                <!--<span th:text="$${Smn.page.pageUrl.displayName}"></span></a>-->
+                            </li>
+                            <li th:each="Sm : ${accDtl.requestGroupHeader}">
+
+                                <a th:href="@{'/Report/Rpt/' + ${Sm.id}+'/'+${accDtl.id}}">
+                                    <span th:text="Reports"></span>
+
+                                </a>
+
+                            </li>
+
+
+                        </ul>
+                    </li>
+                </ul>
+
+            </li>
+        </ul>
+        <!--<script>-->
+        <!--function al(v) {-->
+        <!--var y = v;-->
+        <!--//           alert(y);-->
+
+        <!--var l_url = window.location.origin;-->
+
+
+        <!--$.ajax({-->
+        <!--//               type: 'GET',-->
+        <!--url: l_url + "/AYE/setRpt/" + y-->
+        <!--//               contentType: '',-->
+        <!--//               crossDomain: false,-->
+        <!--//               async:true-->
+
+        <!--});-->
+
+        <!--}-->
+        <!--;-->
+        <!--</script>-->
+
+    </div>
+
+</div>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <link th:insert="Inventory/InvScriptLink"/>
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Manage Unit of Measurement</div>
+                <div class="panel-body">
+                    <form action="'/InvUom/Uom/'+${mode}+'/'+${pageId}+'/'+${temltId}"
+                          th:action="@{'/InvUom/Uom/'+${mode}+'/'+${pageId}+'/'+${temltId}}"
+                          th:object="${uom}" th:method="post">
+                        <!--+${role.role}  +${role.role}-->
+
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="inputUomId" placeholder="id"
+                                   th:field="*{id}" name="id"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}" th:errors="*{id}">inputUomId Error</span>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="inputuomCode">Code</label>
+                            <input type="text" class="form-control" id="inputuomCode" placeholder="Code"
+                                   th:field="*{uomCode}" name="uomCode"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('uomCode')}" th:errors="*{uomCode}">uomCode Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputuomName">Name</label>
+                            <input type="text" class="form-control" id="inputuomName" placeholder="Name"
+                                   th:field="*{uomName}" name="uomName"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('uomName')}" th:errors="*{uomName}">uomName Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputdefaultConvRate">Default Conv.</label>
+                            <input type="text" class="form-control" id="inputdefaultConvRate" placeholder="Default Convertion Rate"
+                                   th:field="*{defaultConvRate}" name="defaultConvRate"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('defaultConvRate')}" th:errors="*{defaultConvRate}">defaultConvRate Error</span>
+                        </div>
+
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumn" placeholder="column"
+                                   th:field="*{column.createdBy}" name="column"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('column.createdBy')}"
+                                      th:errors="*{column.createdBy}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{column.creationDate}" name="columnDate"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('column.creationDate')}"
+                                      th:errors="*{column.creationDate}">User Name Error</span>
+                        </div>
+
+
+                        <div class="text-right">
+                            <a  th:href="@{/InvUom/Uom/E/}+${pageId}+'/'+${temltId}"
+                                class="btn btn-default">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+
+
+                    </form>
+                    <div class="form-group col-sm-12">
+                        <div class="row">
+                            <!--<div class="panel panel-default">-->
+                            <!--<div class="panel-heading">-->
+                            <!--&lt;!&ndash;User <a th:href="@{'/OM/segmentAdd/'}+ ${pageId}" class="btn btn-primary"><span&ndash;&gt;-->
+                            <!--&lt;!&ndash;class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>&ndash;&gt;-->
+                            <!--</div>-->
+
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Uom Description</th>
+                                    <th>Convertion</th>
+                                    <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <div th:if="!${#lists.isEmpty(uoms)}">
+                                    <tr th:each="uom : ${uoms}">
+                                        <td th:text="*{uom.uomCode}"></td>
+                                        <td th:text="*{uom.uomName}"></td>
+                                        <td th:text="*{uom.defaultConvRate}"></td>
+                                        <td>
+                                            <div class="btn-group" role="group" aria-label="...">
+                                                <a th:href="@{/InvUom/editUom/U/} + ${pageId}+'/'+${temltId}+'/'+${uom.id}"
+                                                   class="btn btn-success"><span
+                                                        class="glyphicon glyphicon-edit" aria-hidden="true">Edit</span></a>
+                                            </div>
+
+                                            <!--<div class="btn-group" role="group" aria-label="...">-->
+                                                <!--<a th:href="@{/InvUom/ItemAssignee/E/} + ${pageId}+'/'+${temltId}+'/'+${itm.id.id}"-->
+                                                   <!--class="btn btn-success"><span-->
+                                                        <!--class="glyphicon glyphicon-plus" aria-hidden="true">Add</span></a>-->
+                                            <!--</div>-->
+                                        </td>
+
+                                    </tr>
+                                </div>
+                                <div th:if="${#lists.isEmpty(uoms)}">
+                                    <tr>
+                                        <td>No Data exists!</td>
+                                    </tr>
+                                </div>
+
+                                </tbody>
+
+                            </table>
+                        </div>
+                        <!--</div>-->
+                    </div>
+
+
+
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

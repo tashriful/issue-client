@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PO" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="deb2bc90-703e-4bc7-bee9-b867f12505b2">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="poHId" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[/* Formatted on 12/22/2019 11:19:06 AM (QP5 v5.136.908.31019) */
+SELECT PO_HEADER_ID,
+  PO_NUMBER,
+       TRNS_DATE,
+       NOTE,
+       SUPPLIER_NAME,
+       SUPPLIER_ADDRESS,
+       CURRENCY_CODE,
+       decode (a.STATUS,'N','New','A','Apporoved')status,
+       ITEM_ID,
+       ITEM_CODE,
+       TRANSACTION_QTY,
+       UNIT_PRICE,
+       AMOUNT,
+       a.INV_ORG_ID,
+       a.ORG_ID,
+       SUB_INV_CODE,
+     (select USER_NAME from  AYEUSER where USER_ID=a.LAST_UPDATED_BY) Approver_name,
+      (select USER_NAME from  AYEUSER where USER_ID=a.CREATED_BY) creator_name
+  FROM PO_HEADER a, PO_LINES b
+ WHERE a.ID = b.PO_HEADER_ID
+ and a.STATUS='A'
+and PO_HEADER_ID=$P{poHId}]]>
+	</queryString>
+	<field name="PO_HEADER_ID" class="java.math.BigDecimal"/>
+	<field name="PO_NUMBER" class="java.lang.String"/>
+	<field name="TRNS_DATE" class="java.sql.Timestamp"/>
+	<field name="NOTE" class="java.lang.String"/>
+	<field name="SUPPLIER_NAME" class="java.lang.String"/>
+	<field name="SUPPLIER_ADDRESS" class="java.lang.String"/>
+	<field name="CURRENCY_CODE" class="java.lang.String"/>
+	<field name="STATUS" class="java.lang.String"/>
+	<field name="ITEM_ID" class="java.math.BigDecimal"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="TRANSACTION_QTY" class="java.math.BigDecimal"/>
+	<field name="UNIT_PRICE" class="java.math.BigDecimal"/>
+	<field name="AMOUNT" class="java.math.BigDecimal"/>
+	<field name="INV_ORG_ID" class="java.math.BigDecimal"/>
+	<field name="ORG_ID" class="java.math.BigDecimal"/>
+	<field name="SUB_INV_CODE" class="java.lang.String"/>
+	<field name="APPROVER_NAME" class="java.lang.String"/>
+	<field name="CREATOR_NAME" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

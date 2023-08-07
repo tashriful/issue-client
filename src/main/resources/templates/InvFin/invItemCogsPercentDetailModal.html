@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+      layout:decorator="fragments/layout">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <!--<script src="@{//code.jquery.com/jquery-1.12.2.min.js}"></script>-->
+    <!--<script th:src="@{/js/json-path-picker.js}"></script>-->
+    <!--<script src="jquery.beautify-json.js"></script>-->
+    <!--<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>-->
+
+    <!--<link th:href="@{/css/json-path-picker.css}" rel="stylesheet"/>-->
+    <link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>
+
+
+
+    <script th:src="@{/js/easyAutocomplete/autocompleteInv.js}"></script>
+    <script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>
+    <script th:src="@{/js/validation.js}"></script>
+    <script>
+
+    </script>
+
+
+
+</head>
+<body >
+
+
+
+
+<div class="modal modal-invItemCogsPercentDetailModal fade in" th:id="modal-invItemCogsPercentDetailModal"
+     data-th-fragment="invItemCogsPercentDetailModal-modal">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span></button>
+                <h5 class="modal-title" style="border-bottom: 1px solid; color:#434344;">COGS Percentage Detail </h5>
+                <form th:object="${invCogsPercentDetails}">
+                    <div class="modal-body" th:id="modalId">
+                        <!--<p th:style="'color:#434344;'">Detail</p>-->
+                        <table id="invCogsPercentDetailTab" class="table table-bordered table-hover table-striped invCogsPercentDetailTab">
+                            <thead>
+
+                            <th>Type</th>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>UOM</th>
+                            <th>Amount</th>
+                            </thead>
+                         </table>
+
+                    <!--<div id="replaceInvTrns_div">-->
+                    <!--</div>-->
+
+                     <!--<div>-->
+                         <!--<p th:style="'color:#434344;'">Inventory Accounts</p>-->
+                         <!--<table id="invTrnsResultTab" class="table table-bordered table-hover table-striped invTrnsResultTab">-->
+                         <!--<thead>-->
+                         <!--<th>Id</th>-->
+                         <!--<th>Date</th>-->
+                         <!--<th>Type</th>-->
+                         <!--<th>Amount</th>-->
+                         <!--<th>Qty</th>-->
+                         <!--<th>UOM</th>-->
+                         <!--<th>Acc.</th>-->
+                         <!--<th>Status</th>-->
+                         <!--</thead>-->
+                         <!--</table>-->
+                     <!--</div>-->
+                    </div>
+                </form>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+
+</html>

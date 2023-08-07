@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="intrRcvLineEntry" th:fragment="intrRcvLineEntry" class="intrRcvLineEntry">
+    <div class=" col-sm-12 table-responsive dist_view" th:if="!${#lists.isEmpty(poRcvLineDtoList)}">
+
+
+        <div class="col-sm-12 brder accgl-col">
+            <div class="col-sm-1 accgl-col brderright" style="width: 20px">Sl</div>
+            <div class="col-sm-2 accgl-col brderright" align="center" style="width: 115px">Number</div>
+            <div class="col-sm-3 accgl-col brderright" align="center">From</div>
+            <div class="col-sm-3 accgl-col brderright" align="center">Item</div>
+            <div class="col-sm-1 accgl-col brderright" align="center">Uom</div>
+            <div class="col-sm-1 accgl-col brderright " align="center">Qty</div>
+            <div class="col-sm-2 accgl-col brderright" align="center" style="width: 115px">Note</div>
+            <div class="col-sm-1 accgl-col " align="center" style="width: 30px">Select</div>
+
+        </div>
+        <div class="col-sm-12 accgl-col brder "
+             th:each="line,rowStat  : ${poRcvLineDtoList.poRcvLineDtos}">
+            <div class="col-sm-1  form-group accgl-col high_control top_marg brderright"
+                 th:text="${rowStat.count}" style="width: 20px">1
+            </div>
+
+            <div style="width: 115px" class="col-sm-2 form-group accgl-col top_marg brderright" >
+                <input type="text" class="td form-control "
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].trnsNumber}"
+                       readonly="readonly"/>
+            </div>
+            <div class="col-sm-3 form-group accgl-col top_marg brderright">
+                <input type="text" class="td form-control texthide"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].fromInventoryInformations.name}"
+                       th:title="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].fromInventoryInformations.name}"                       readonly="readonly"/>
+                <input type="hidden" th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].fromInventoryInformations}"/>
+                <input type="hidden" th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].invTrnsHeader}"/>
+                <input type="hidden" th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].invTrnsDetail}"/>
+            </div>
+
+            <div class="col-sm-3 form-group accgl-col top_marg brderright">
+                <input type="text" class="td form-control "
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].itemCode}"
+                       readonly="readonly"/>
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].lineid}"/>
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].poHeader}"/>
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].masterItem.id.id}"/>
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].masterItem.id.inventoryInformations.id}"/>
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].rcvPrimUom}"/>
+
+                <!--<input type="hidden" name="id" th:field="${orderLineList.orderLines[__${rowStat.index}__].orderUomCode}"/>-->
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].rcvPrimUomCode}"/>
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].rcvPrimaryQty}"/>
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].rcvTrnsUom}"/>
+
+                <!--<input type="hidden" name="id"-->
+                <!--th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].rcvTrnsUomCode}"/>-->
+
+                <!--<input type="hidden" name="id"-->
+                <!--th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].rcvTrnsQty}"/>-->
+
+                <input type="hidden" name="id" th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].unitPrice}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].amount}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].baseAmount}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].subinventory}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].subInvCode}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].subinvLocator}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].subinvLocCode}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].conversionRate}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].currency}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].currencyCode}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].exchRate}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].exchDate}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].commonColumn.createdBy}"/>
+
+                <input type="hidden" name="id"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].commonColumn.creationDate}"/>
+            </div>
+
+
+            <div class="col-sm-1 form-group accgl-col top_marg brderright">
+                <input type="text" class="td form-control "
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].rcvTrnsUomCode}"
+                       readonly="readonly"/>
+                <!--<input type="hidden"-->
+                <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderUom}"/>-->
+                <!--<input type="hidden" name="id"-->
+                <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].defaultUomCode}"/>-->
+            </div>
+
+            <div class="col-sm-1 form-group accgl-col top_marg brderright">
+
+                <input type="text" class="td form-control " style="text-align: end"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].rcvTrnsQty}"
+                       readonly="readonly"/>
+                <!--<input type="text"  class="td form-control " name="orderDefaultUomQtyid"-->
+                <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderDefaultUomQty}" readonly="readonly"/>-->
+
+                <!--<input type="hidden"-->
+                <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderUomQty}"-->
+                <!--/>-->
+            </div>
+
+            <div class="col-sm-2 form-group accgl-col top_marg brderright" style="width: 115px">
+
+                <input type="text" class="td form-control " style="text-align: end"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].poHeader.note}"
+                       readonly="readonly"/>
+                <!--<input type="text" class="td form-control " style="text-align: end"-->
+                <!--th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].lineNote}"-->
+                <!--readonly="readonly"/>-->
+                <!--&lt;!&ndash;<input type="text"  class="td form-control " name="orderDefaultUomQtyid"&ndash;&gt;-->
+                <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderDefaultUomQty}" readonly="readonly"/>-->
+
+                <!--<input type="hidden"-->
+                <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderUomQty}"-->
+                <!--/>-->
+            </div>
+
+            <div class="col-sm-1 form-group  accgl-col top_marg " style="width: 30px">
+                <input class="form-control pFlag"
+                       th:field="${poRcvLineDtoList.poRcvLineDtos[__${rowStat.index}__].flag}"
+                       onclick="return setCreateRcvBtn()"
+                       type="checkbox"/>
+
+            </div>
+            <script>
+                $(document).ready(function(){
+                    setCreateRcvBtn();
+                })
+            </script>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

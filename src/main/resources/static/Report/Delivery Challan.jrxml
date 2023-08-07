@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Delivery Order" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ff889a4d-25d8-4770-b133-af72cffc6109">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="108"/>
+	<parameter name="delid" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[/* Formatted on 1/5/2020 2:18:47 PM (QP5 v5.136.908.31019) */
+SELECT odh.header_id,
+       odh.delv_number,
+       odh.delivery_date,
+       odh.delivery_confirm_date,
+       odh.status,
+       odh.vehicle_mode,
+       odh.vehicle_number,
+       odh.created_by,
+       odh.inv_org_id,
+       inv.name inv_org_name,
+       inv.code inv_org_code,
+       inv.address inv_org_address,
+       odh.org_id,
+       org.org_name,
+       org.org_address,
+       odl.delivery_line_id,
+       odl.item_code,
+       odl.item_id,
+       odl.delivery_uom_qty,
+       odl.unit_selling_price,
+       odl.amount,
+       odl.delivery_uom_code,
+       odl.locator_code,
+       odl.locator_id,
+       odl.subinventory_code,
+       odl.subinventory_id,
+       odl.customer_line_id,
+       cust.customer_name,
+       cust.address customer_address
+  FROM ord_delivery_header odh,
+       ord_delivery_line odl,
+       inv_informations inv,
+       (SELECT bg.id bg_id,
+               bg.address bg_address,
+               bg.code bg_code,
+               bg.name bg_name,
+               bg.TYPE bg_type,
+               org.id org_id,
+               org.address org_address,
+               org.code org_code,
+               org.name org_name,
+               org.TYPE org_type,
+               org.calendar_header_id,
+               org.default_currency_id,
+               org.gl_structure_id,
+               org.parentid,
+               org.balancing_segment
+          FROM organization_hierarchy bg, organization_hierarchy org
+         WHERE org.parentid = bg.id) org,
+       (SELECT ch.id customer_header_id,
+               cl.id customer_line_id,
+               ch.customer_name,
+               ch.address,
+               cl.organization_hierarchy_id org_id
+          FROM customer_line cl, customer_header ch
+         WHERE cl.customer_header_id = ch.id AND cl.status = 'Y') cust
+ WHERE     odh.header_id = odl.delivery_header_id
+       AND odh.inv_org_id = inv.id
+       AND odh.org_id = org.org_id
+       AND odl.customer_line_id = cust.customer_line_id
+       AND odh.org_id = cust.org_id
+       AND odh.header_id = $P{delid}]]>
+	</queryString>
+	<field name="HEADER_ID" class="java.math.BigDecimal"/>
+	<field name="DELV_NUMBER" class="java.lang.String"/>
+	<field name="DELIVERY_DATE" class="java.sql.Timestamp"/>
+	<field name="DELIVERY_CONFIRM_DATE" class="java.sql.Timestamp"/>
+	<field name="STATUS" class="java.lang.String"/>
+	<field name="VEHICLE_MODE" class="java.lang.String"/>
+	<field name="VEHICLE_NUMBER" class="java.lang.String"/>
+	<field name="CREATED_BY" class="java.math.BigDecimal"/>
+	<field name="INV_ORG_ID" class="java.math.BigDecimal"/>
+	<field name="INV_ORG_NAME" class="java.lang.String"/>
+	<field name="INV_ORG_CODE" class="java.lang.String"/>
+	<field name="INV_ORG_ADDRESS" class="java.lang.String"/>
+	<field name="ORG_ID" class="java.math.BigDecimal"/>
+	<field name="ORG_NAME" class="java.lang.String"/>
+	<field name="ORG_ADDRESS" class="java.lang.String"/>
+	<field name="DELIVERY_LINE_ID" class="java.math.BigDecimal"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="ITEM_ID" class="java.math.BigDecimal"/>
+	<field name="DELIVERY_UOM_QTY" class="java.lang.Double"/>
+	<field name="UNIT_SELLING_PRICE" class="java.lang.Double"/>
+	<field name="AMOUNT" class="java.lang.Double"/>
+	<field name="DELIVERY_UOM_CODE" class="java.lang.String"/>
+	<field name="LOCATOR_CODE" class="java.lang.String"/>
+	<field name="LOCATOR_ID" class="java.math.BigDecimal"/>
+	<field name="SUBINVENTORY_CODE" class="java.lang.String"/>
+	<field name="SUBINVENTORY_ID" class="java.math.BigDecimal"/>
+	<field name="CUSTOMER_LINE_ID" class="java.math.BigDecimal"/>
+	<field name="CUSTOMER_NAME" class="java.lang.String"/>
+	<field name="CUSTOMER_ADDRESS" class="java.lang.String"/>
+	<variable name="TOTAL_QTY" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{DELIVERY_UOM_QTY}]]></variableExpression>
+	</variable>
+	<variable name="TestCount" class="java.lang.Integer" resetType="Group" resetGroup="Customer" calculation="Count">
+		<variableExpression><![CDATA[new java.lang.Integer(1)]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(1)]]></initialValueExpression>
+	</variable>
+	<group name="Customer" isStartNewPage="true" isReprintHeaderOnEachPage="true">
+		<groupExpression><![CDATA[$F{CUSTOMER_LINE_ID}]]></groupExpression>
+		<groupHeader>
+			<band height="116">
+				<staticText>
+					<reportElement x="6" y="48" width="84" height="20" uuid="a44c27ca-ccbe-411f-be9c-91be40b04538"/>
+					<text><![CDATA[Customer Name :]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="98" y="48" width="284" height="20" uuid="b927cf80-e112-44f9-88b0-422d770670f0"/>
+					<textFieldExpression><![CDATA[$F{CUSTOMER_NAME}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="6" y="68" width="84" height="20" uuid="e3b45be0-1575-4f6a-9041-10bbddcb23b3"/>
+					<text><![CDATA[Address :]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="98" y="68" width="284" height="20" uuid="c3b2c158-05ca-4134-8e17-65ac33588a5a"/>
+					<textFieldExpression><![CDATA[$F{CUSTOMER_ADDRESS}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="6" y="8" width="84" height="20" uuid="ee3b46b4-2e89-43bb-8020-3b86afd45c73"/>
+					<text><![CDATA[Challan Number :]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="98" y="8" width="129" height="20" uuid="d24b4e8b-dff6-4339-a08f-d434b2ed6052"/>
+					<textFieldExpression><![CDATA[$F{DELV_NUMBER}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="6" y="28" width="84" height="20" uuid="69fb807e-6f83-4d6a-9d9c-e701eda83a12"/>
+					<text><![CDATA[Challan Date :]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="98" y="28" width="129" height="20" uuid="13f124bb-5266-4850-9260-e5e59aa1abcb"/>
+					<textFieldExpression><![CDATA[$F{DELIVERY_DATE}]]></textFieldExpression>
+				</textField>
+				<rectangle>
+					<reportElement x="0" y="96" width="554" height="20" uuid="d8dba624-17c8-4f5e-9314-b24dd89200f0"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="0" y="96" width="32" height="20" uuid="554d8607-53a3-4847-aa01-fe69fe53bcd5"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[SL#]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="32" y="96" width="256" height="20" uuid="92e355ed-49f7-4406-9059-8976c709a3af"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Item Name]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="292" y="96" width="130" height="20" uuid="8e91f3df-1bc2-43c0-b328-7900938f96ab"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[UOM]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="421" y="96" width="133" height="20" uuid="2e1edcae-1ce7-4f49-9576-da7dc7541198"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Qty]]></text>
+				</staticText>
+				<line>
+					<reportElement x="32" y="96" width="1" height="20" uuid="acdeb7bd-b54e-4bae-8c68-b5cbe3fcae10"/>
+				</line>
+				<line>
+					<reportElement x="288" y="96" width="1" height="20" uuid="877c5164-a074-41a3-8bd9-fd12a76c9f9a"/>
+				</line>
+				<staticText>
+					<reportElement x="310" y="8" width="84" height="20" uuid="18c818f6-5bd6-4b5b-889d-8cf40c5cd00b"/>
+					<text><![CDATA[Vehicle Number :]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="403" y="8" width="152" height="20" uuid="52042143-ea98-452b-8c5b-32e24c1a17aa"/>
+					<textFieldExpression><![CDATA[$F{VEHICLE_NUMBER}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="421" y="96" width="1" height="20" uuid="e2df2832-98d3-4a52-a509-568aab950127"/>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="96">
+				<textField pattern="###0.00">
+					<reportElement x="422" y="0" width="128" height="20" uuid="a4797487-8c78-4771-9107-3810aba99f32"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{TOTAL_QTY}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="0" width="100" height="20" uuid="2a492f03-c113-4402-ac84-b5d8c782691f"/>
+					<text><![CDATA[Total :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="454" y="76" width="100" height="20" uuid="5aef9f89-f877-47e9-a189-dd7c783b079d"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Authorized Signature]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="76" width="100" height="20" uuid="9d3aba4c-4ebc-42d0-b378-03e27f03711c"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Prepared By]]></text>
+				</staticText>
+				<line>
+					<reportElement x="5" y="75" width="100" height="1" uuid="632ac085-bfc9-4ea6-b839-ba79d98de34c"/>
+				</line>
+				<line>
+					<reportElement x="454" y="76" width="100" height="1" uuid="d652d38c-1aec-4cb0-8c70-008c5c7734c0"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="79" splitType="Stretch">
+			<textField>
+				<reportElement x="1" y="0" width="554" height="31" uuid="8c81ad39-c085-427b-8200-90d569a7ebb0"/>
+				<textElement textAlignment="Center">
+					<font size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="32" width="554" height="20" uuid="e7d1ad00-e1c5-46cb-b5bb-a10ae92febe9"/>
+				<textElement textAlignment="Center">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="4" y="76" width="546" height="1" uuid="e10e8422-5c6d-41e0-aacd-c73c892513ec"/>
+			</line>
+			<rectangle radius="10">
+				<reportElement x="195" y="52" width="164" height="20" backcolor="#CCCCCC" uuid="4f31c1e1-45f5-47e5-9a43-752c03e6cd0d"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="1" y="53" width="554" height="20" uuid="436051ff-1ef9-4db3-a477-d78894261f48"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Delivery Challan]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="2" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="554" height="21" uuid="88cd9446-bb17-45d1-a4e6-2cb3f7b858e9"/>
+			</rectangle>
+			<textField>
+				<reportElement x="35" y="1" width="160" height="20" uuid="c48d7aea-6d55-46ee-be8b-3d7ad2d64f14"/>
+				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="292" y="0" width="126" height="20" uuid="3c52fe32-6991-49e5-9d01-af3da506d495"/>
+				<textFieldExpression><![CDATA[$F{DELIVERY_UOM_CODE}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="32" y="-1" width="1" height="22" uuid="554bed34-1820-42ad-99e6-33c0a29b7579"/>
+			</line>
+			<line>
+				<reportElement x="288" y="-2" width="1" height="22" uuid="00f96b16-8f88-4516-845d-987864b56ae4"/>
+			</line>
+			<textField pattern="###0.00">
+				<reportElement x="421" y="0" width="129" height="20" uuid="01371221-8955-4353-89ac-169035e7e8b3"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{DELIVERY_UOM_QTY}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="421" y="1" width="1" height="20" uuid="1ca199c6-fad6-4ec5-be86-4e9672626726"/>
+			</line>
+			<textField>
+				<reportElement x="1" y="0" width="31" height="20" uuid="7fe275eb-03a3-4317-b929-4fd9fb3b18b6"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$V{TestCount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="22" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="27" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement x="12" y="6" width="100" height="20" forecolor="#999999" uuid="8bc3fcbd-bd29-4e15-9157-23624848debd"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="109" splitType="Stretch"/>
+	</summary>
+</jasperReport>

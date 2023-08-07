@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="financialPositionPL" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="com.aye.ayeireportlibrery.ConvertToWordLocal" uuid="13ec778b-506d-43d0-bd84-7ab0e4d3bcd7">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="22"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="p_org_id" class="java.lang.Integer"/>
+	<parameter name="p_cal_id" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select * from
+(select
+DISPLAY_COLUMN_NAME,
+ROW_POSOTION,
+         org.org_name,
+         org.org_address,cd.period_name,
+SUM (NVL (gl.base_dr_amount*CALCULATION, 0) - NVL (base_cr_amount*CALCULATION, 0)) amount,IS_BOLD
+    FROM gl_line_view gl,
+    FS_LINE fl,
+         code_combination_v c,
+         (SELECT org.id org_id, org.address org_address, org.name org_name,CALENDAR_HEADER_ID
+            FROM organization_hierarchy org) org,
+            (select * from calender_detail where id =$P{p_cal_id}) cd
+             WHERE     gl.account_code_combinition_id(+) = c.id
+   and org.CALENDAR_HEADER_ID=cd.CALENDAR_HEADER_ID
+   and to_number(fl.SOURCE_COLUMN_VALUE)=c.id
+and gl.CALANDER_DETAIL_ID=cd.id
+         AND gl.org_id = org.org_id
+         AND gl.org_id = $P{p_org_id}
+         AND account_sub_type = 'PL'
+having sum(nvl(gl.BASE_DR_AMOUNT,0)-nvl(BASE_CR_AMOUNT,0)) <>0
+GROUP BY
+DISPLAY_COLUMN_NAME,
+ROW_POSOTION,
+         org.org_name,
+         org.org_address
+         ,cd.period_name,IS_BOLD
+         union all
+         SELECT DISPLAY_COLUMN_NAME,ROW_POSOTION,
+         org.address org_address, org.name org_name,null period_name,
+                                            null amount,IS_BOLD
+            FROM organization_hierarchy org,FS_LINE fl
+            where org.id=fl.org_id
+            and fl.FS_HEADER_ID=2
+            and FIELD_TYPE=1
+) ORDER BY
+ROW_POSOTION]]>
+	</queryString>
+	<field name="DISPLAY_COLUMN_NAME" class="java.lang.String"/>
+	<field name="ROW_POSOTION" class="java.math.BigDecimal"/>
+	<field name="ORG_NAME" class="java.lang.String"/>
+	<field name="ORG_ADDRESS" class="java.lang.String"/>
+	<field name="PERIOD_NAME" class="java.lang.String"/>
+	<field name="AMOUNT" class="java.math.BigDecimal"/>
+	<field name="IS_BOLD" class="java.lang.Integer"/>
+	<variable name="curDate" class="java.lang.String">
+		<variableExpression><![CDATA[$P{REPORT_SCRIPTLET}.getCurrentDate()]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="101" splitType="Stretch">
+			<textField>
+				<reportElement x="4" y="1" width="473" height="36" uuid="280b9ded-675d-456b-9b4f-b3c014f808b9"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="4" y="37" width="473" height="20" uuid="71f51600-0bf0-4ee9-a7ac-32cbf15845d3"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Comprehensive Income Statement]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="3" y="58" width="473" height="20" uuid="84e49201-6187-4907-ad9f-60c087e57bc1"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For The Period - "+$F{PERIOD_NAME}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="100" width="475" height="1" uuid="016508ae-05c9-4eeb-b390-96fbc70e8077"/>
+			</line>
+		</band>
+	</title>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="4" y="0" width="296" height="23" uuid="196ad064-3bdd-4fef-ae04-df45793b0c6d"/>
+				<textElement markup="html">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{IS_BOLD}.intValue()==1?
+"<b>"+$F{DISPLAY_COLUMN_NAME}+"</b>":$F{DISPLAY_COLUMN_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;(###0.00)" isBlankWhenNull="true">
+				<reportElement x="300" y="0" width="176" height="23" uuid="a9a4bbb9-8ff9-46b2-b3f3-6c62955fa899"/>
+				<textElement textAlignment="Right" markup="html">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{IS_BOLD}.intValue()==1?
+"<b>"+($F{AMOUNT}==null?"": $F{AMOUNT})+"</b>":
+$F{AMOUNT}==null?"":$F{AMOUNT}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="476" y="0" width="1" height="23" uuid="c1e636bc-6517-450a-8757-3f1bfc94fc7f"/>
+			</line>
+			<line>
+				<reportElement x="1" y="0" width="1" height="23" uuid="aac758cf-ba2e-449a-b5f7-f58833eaba63"/>
+			</line>
+		</band>
+	</detail>
+	<lastPageFooter>
+		<band height="21">
+			<textField>
+				<reportElement x="0" y="0" width="699" height="20" forecolor="#999999" uuid="cae35e65-677d-41b5-94b5-f87451b63708"/>
+				<textFieldExpression><![CDATA["Green Board Fibar Mils Ltd. Print Date: "+$V{curDate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band height="3">
+			<line>
+				<reportElement x="0" y="0" width="477" height="1" uuid="5e6e01fe-6119-4eea-8dbb-ed432ac81937"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

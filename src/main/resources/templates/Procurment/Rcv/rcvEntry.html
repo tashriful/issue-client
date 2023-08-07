@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <script th:inline="javascript">
+
+        function setPoIntrDiv(vals)
+        {
+            $('#inputtrnsNumber').val('');
+            $('#inputinvTrnsHeader').val('');
+            $('#inputpoHeaderId').val('');
+            $('#inputpoNumber').val('');
+
+
+
+            if(vals=='PORCV')
+            {
+                $('#ponumberDivId').attr('hidden',false);
+                $('#intrnumberDivId').attr('hidden',true);
+            }else
+            if(vals=='INTTRNSRCV')
+            {
+                $('#ponumberDivId').attr('hidden',true);
+                $('#intrnumberDivId').attr('hidden',false);
+
+            }else
+            {
+                $('#ponumberDivId').attr('hidden',true);
+                $('#intrnumberDivId').attr('hidden',true);
+            }
+        }
+
+        function selectedobj(value, ind) {
+            if(ind == 'poNumberSerchRcv')
+            {
+//                alert('1');
+                SearchRcvPoObj(value);
+            }else             if (ind == 'GRNSupSerc') {
+//                alert('selectedobj');
+                SearchSupObjSrcGrn(value);
+            } else if (ind == 'trnsNumberSerchRcv') {
+//                alert('selectedobj');
+                SearchRcvIntTrnsObj(value);
+            }
+
+        };
+
+
+
+        function getPoSupInf(pSup, pdisplay, pindc) {
+//            alert('11');
+
+//                                                alert('getLocator');
+            var varOrg = document.getElementById('inputorgHierarchy').value;
+
+            var displayfieldfrom = pdisplay;
+            var indc = pindc;
+            AutocomFunc('/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + pSup,
+                    displayfieldfrom,
+                    'name',
+                    null,
+                    indc);
+        }
+        ;
+
+        function setCreateRcvBtn()
+        {
+
+            var pLidC = 0;
+            var cLineId;
+            $('.pFlag').each(function () {
+                if ($(this).is(':checked'))
+                {
+                    pLidC=pLidC+1;
+                }
+            });
+
+            if (pLidC==0)
+            {
+//                alert(pLidC+"di");
+                $('#createRcvId').prop('disabled',true);
+            }else
+            {
+//                alert(pLidC+"Ndi");
+                $('#createRcvId').prop('disabled',false);
+            }
+
+        }
+
+    </script>
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading" style=" color: #172D44"> PO Search For Create GRN <b th:text="${poSearch.invOrg.name}"></b></div>
+                <div class="panel-body">
+                    <form th:action="@{'/poReceive/rcvEntry/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId} }"
+                          th:object="${poSearch}" th:method="post">
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputpoNumber">Type</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-8 ">
+                            <select class="form-control" type="text" id="inputrcvTrnsTypeSearch"
+                                    th:field="*{rcvTrnsTypeSearch}" name="rcvTrnsTypeSearch" required>
+                                <option value="">Select One</option>
+                                <option th:each="typ : ${T(com.aye.web.model.PoSearch.RcvTrnsTypeSearch).values()} "
+                                        th:text="${typ.displayName}" th:value="${typ}"></option>
+                            </select>
+                            <input type="hidden" th:field="*{orgHierarchy}"  id="inputorgHierarchy" />
+                            <input type="hidden" th:field="*{invOrg}" id="inputinvOrg" />
+
+
+                            </div>
+                            <script th:inline="javascript">
+                                $(document).ready(function()
+                                {
+                                    setPoIntrDiv($('#inputrcvTrnsTypeSearch').val());
+                                })
+                                $('#inputrcvTrnsTypeSearch').on('change',function(){
+                                    setPoIntrDiv($('#inputrcvTrnsTypeSearch').val());
+                                });
+                            </script>
+
+                        </div>
+
+
+                        <div class="form-group col-sm-12" id="ponumberDivId">
+                            <label class="col-sm-3 control-label " for="inputpoNumber">Po Number</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control" type="text" id="inputpoNumber"
+                                       th:field="*{poNumber}" name="poNumber" />
+                                <input type="hidden" th:field="*{poHeaderId}" id="inputpoHeaderId" />
+
+                                <script th:inline="javascript">
+
+                                    function SearchRcvPoObj(objparms) {
+//                                            alert('x');
+                                        var objparmV = objparms;
+
+                                        $('#inputpoHeaderId').val(objparmV.id).trigger("change");
+                                    };
+
+
+                                    document.getElementById('inputpoNumber').oninput = function () {
+                                       // myFunction();
+
+
+
+                                        var poNum = document.getElementById('inputpoNumber').value;
+                                        if (poNum.length==0)
+                                        {
+                                            document.getElementById('inputpoHeaderId').value='';
+                                        }
+                                        if (poNum.length > 1) {
+
+                                            var  lInvOrg=document.getElementById('inputinvOrg').value;
+                                            var  lOrg=document.getElementById('inputorgHierarchy').value;
+
+                                            var poUrl = '/AYE/ACRC/SearchOrgPoNumForGrn/' +lOrg+ '/' +  lInvOrg +'/'+poNum;
+//                                            alert(poUrl);
+                                            autocomwithobject(poUrl, 'poNumber', '#inputpoNumber', null, 'poDate', 'poNumberSerchRcv');
+                                            document.getElementById('inputpoNumber').focus();
+                                        }
+                                        }
+
+                                </script>
+                                <span class="help-block" th:if="${#fields.hasErrors('poNumber')}"
+                                      th:errors="*{poNumber}">Name Error</span>
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group col-sm-12" id="intrnumberDivId">
+                            <label class="col-sm-3 control-label " for="inputpoNumber">Ref Number</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                        <div class="col-sm-8 ">
+                            <input class="form-control" type="text" id="inputtrnsNumber"
+                                   th:field="*{trnsNumber}" name="trnsNumber" />
+                            <input type="hidden" th:field="*{invTrnsHeader}" id="inputinvTrnsHeader" />
+
+                            <script th:inline="javascript">
+
+                                function SearchRcvIntTrnsObj(objparms) {
+                                    var objparmV = objparms;
+
+                                    $('#inputinvTrnsHeader').val(objparmV.invTrnsHeader.id).trigger("change");
+                                };
+
+
+                                document.getElementById('inputtrnsNumber').oninput = function () {
+                                   var poNum = document.getElementById('inputtrnsNumber').value;
+                                    if (poNum.length==0)
+                                    {
+                                        document.getElementById('inputinvTrnsHeader').value='';
+                                    }
+                                    if (poNum.length > 1) {
+                                        var  lInvOrg=document.getElementById('inputinvOrg').value;
+                                        var  lOrg=document.getElementById('inputorgHierarchy').value;
+                                        var poUrl = '/AYE/ACRC/SearchOuAndInvOrgInterRcvNumber/' +lOrg+ '/' +  lInvOrg ;
+//                                            alert(poUrl);
+                                        autocomwithobject(poUrl, 'trnsNumber', '#inputtrnsNumber', null, null, 'trnsNumberSerchRcv');
+                                        document.getElementById('inputtrnsNumber').focus();
+                                    }
+                                }
+
+                            </script>
+                                <span class="help-block" th:if="${#fields.hasErrors('trnsNumber')}"
+                                      th:errors="*{trnsNumber}">Name Error</span>
+                        </div>
+
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputpoFromDate">Po Date</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputpoFromDate"
+                                       th:field="*{{poFromDate}}"
+                                       name="fromDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('poFromDate')}"
+                                      th:errors="*{poFromDate}">Date Error</span>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputpoToDate"
+                                       th:field="*{{poToDate}}"
+                                       name="poToDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('poToDate')}"
+                                      th:errors="*{poToDate}">Date Error</span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputsupplierLine">Supplier Name</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control" type="hidden" id="inputsupplierLine"
+                                       th:field="*{supplierLine}" name="supplierLine" />
+                                <input class="form-control" type="text" id="inputsupplierLineName"
+                                       th:field="*{supName}" placeholder="Supplier"/>
+                                <script th:inline="javascript">
+                                    function SearchSupObjSrcGrn(objparms) {
+                                        //alert('x');
+                                        var objparmV = objparms;
+                                        $('#inputsupplierLine').val(objparmV.id).trigger("change");
+                                    };
+
+                                    document.getElementById('inputsupplierLineName').oninput = function () {
+
+                                        myFunction();
+                                    };
+                                    function myFunction() {
+                                        if (document.getElementById('inputsupplierLineName').value.length==0)
+                                        {
+//                                            alert('x');
+                                            document.getElementById('inputsupplierLine').value='';
+                                        }
+
+                                        var innerVar = document.getElementById('inputsupplierLineName').value;
+                                        if (innerVar.length > 2) {
+
+//                                            alert('1');
+//                                            var displayfieldfrom = '#inputsupplierLineName';
+                                            var varLocOrg = document.getElementById('inputorgHierarchy').value;
+//alert(varLocOrg);
+                                            var indcSup = 'GRNSupSerc';
+
+                                            var poUrl = '/AYE/ACRC/SearchOrgSupplier/' + varLocOrg + '/' + innerVar;
+
+                                            autocomwithobject(poUrl, 'name', '#inputsupplierLineName', null, null,indcSup);
+                                            document.getElementById('inputsupplierLineName').focus();
+                                        }
+                                    }
+                                </script>
+                                <span class="help-block" th:if="${#fields.hasErrors('supplierLine')}"
+                                      th:errors="*{supplierLine}">Name Error</span>
+                            </div>
+
+                        </div>
+
+                        <div class="text-right Padding10px" align="right">
+                            <a th:href="@{/poReceive/search/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-default">Search GRN</a>
+                            <!--th:if="${ADD}"-->
+                            <span th:if="${ADD}">
+                            <button type="submit" name="search"  class="btn btn-primary">
+                                Find
+                            </button>
+                                </span>
+                            <a th:href="@{/poReceive/rcvEntry/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-default">New</a>
+                            <!--and ${ADD}-->
+                            <span th:if="!${#lists.isEmpty(poRcvLineDtoList)} and ${ADD}">
+
+                            <button id="createRcvId" type="submit" name="create"  class="btn btn-primary">Create GRN</button>
+                                </span>
+
+                        </div>
+
+                        <div th:if="${poRcvLineDtoList?.rcvTrnsTypeSearch== T(com.aye.web.model.PoSearch.RcvTrnsTypeSearch).PORCV}">
+
+
+                            <div data-th-replace="Procurment/Rcv/PoRcvLineEntry :: poRcvLineEntry"></div>
+                        </div>
+
+                        <div th:if="${poRcvLineDtoList?.rcvTrnsTypeSearch== T(com.aye.web.model.PoSearch.RcvTrnsTypeSearch).INTTRNSRCV}">
+
+
+                            <div data-th-replace="Procurment/Rcv/IntrRcvLineEntry :: intrRcvLineEntry"></div>
+                        </div>
+
+
+                    </form>
+
+                <div class="panel-footer">
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

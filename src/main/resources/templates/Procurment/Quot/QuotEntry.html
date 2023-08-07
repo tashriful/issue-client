@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <!--<link-->
+            <!--href="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/easy-autocomplete.min.css"-->
+            <!--rel="stylesheet" type="text/css"/>-->
+    <!--<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>-->
+    <!--<script-->
+            <!--src="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/jquery.easy-autocomplete.min.js"-->
+            <!--type="text/javascript"></script>-->
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+<script>
+
+
+    function selectedobj(value, ind) {
+        if(ind == 'rfqNumberQuot')
+        {
+            SearchQuotRfqObj(value);
+        }else if(ind == 'quotSup')
+        {
+            SearchQuotSupObj(value);
+        }
+    };
+    function setPostBtn(pId)
+    {
+
+        var pLidC = 0;
+        var cLineId;
+        $('.qtyClass').each(function () {
+//            alert($(this).val());
+            if ($(this).val()>0)
+            {
+                pLidC=pLidC+1;
+            }
+        });
+
+        if (pLidC==0)
+        {
+            $('#'+pId).prop('disabled',true);
+        }else
+        {
+            $('#'+pId).prop('disabled',false);
+        }
+
+    }
+    function getQuotSupInf(pSup, pdisplay, pindc) {
+        var varOrg = document.getElementById('inputorgHierarchy').value;
+
+        var displayfieldfrom = pdisplay;
+        var indc = pindc;
+        AutocomFunc('/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + pSup,
+                displayfieldfrom,
+                'name',
+                null,
+                indc);
+    };
+
+</script>
+</head>
+
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-9 col-sm-offset-1">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+
+                <div class="form-group col-sm-12  jepg_cust_head">
+                    <div class="form-group col-sm-5 " style="padding-left: 0; color: #172D44">Quotation Entry</div>
+                    <!--<div th:if="${poQuotationHeader.status==T(com.aye.web.model.PoStatus).A}"-->
+                         <!--class="form-group col-sm-7 text-right Padding10px" style=" font-size: 12px;" align="right">-->
+                        <!--&lt;!&ndash;<form th:action="@{'/Report/staticReport/'+${mode}+'/'+${pageId}+'/'+${temltId}}"&ndash;&gt;-->
+                              <!--&lt;!&ndash;th:method="post" th:target="_blank">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<button target="_blank" type="submit" name="rpt" th:value="'PoReq :'+${poReqHeader.inventoryInformations.id}+','+${poReqHeader.id}" class="btn btn-primary" align="center">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<span class="glyphicon glyphicon-print"></span> Print&ndash;&gt;-->
+                            <!--&lt;!&ndash;</button>&ndash;&gt;-->
+                            <!--&lt;!&ndash;&lt;!&ndash;<a   th:href="@{/AccGL/AddGlHeader/U/}+${pageId}+'/'+${temltId}"  target="_blank" type="submit" name="rpt" th:value="'Journal_voucher :'+${glHeader.id}" class="btn btn-primary" align="center">Print Voucher</a>&ndash;&gt;&ndash;&gt;-->
+                        <!--&lt;!&ndash;</form>&ndash;&gt;-->
+                    <!--</div>-->
+                </div>
+
+                <!-- Default panel contents -->
+                <!--<div class="panel-heading">PO Entry</div>-->
+                <div class="panel-body">
+                    <form th:action="@{'/quot/quotHeader/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId}}"
+                          th:object="${poQuotationHeader}"
+                          th:method="post">
+                        <!--+${role.role}  +${role.role}-->
+                        <p></p>
+
+        <span style="font-weight: bold" th:each="m :${msg}">
+            <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+            </p></span>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid" placeholder="Id" th:field="*{id}" name="id"/>
+
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}"
+                                  th:errors="*{id}">Id Error</span>
+                        </div>
+
+
+
+                         <div th:class="${#fields.hasErrors('qtaNumber')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputqtaNumber">Number & Date</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-4 ">
+                                <input type="text" id="inputqtaNumber" placeholder="Quotation Number"
+                                       name="qtaNumber" th:field="*{qtaNumber}" class="form-control" readonly="readonly"/>
+
+                                <p th:errors="*{qtaNumber}" class="help-block"></p>
+                            </div>
+                             <div class="col-sm-4 ">
+                                 <input type="date" id="inputdate" placeholder="Date"
+                                        name="reqDate" th:field="*{date}" class="form-control"/>
+                                 <input type="hidden" id="inputorgHierarchy" placeholder="orgHierarchy"
+                                        name="orgHierarchy" th:field="*{orgHierarchy}" class="form-control"/>
+                                 <input type="hidden" id="inputinvOrg" placeholder="inventoryInformations"
+                                        name="inventoryInformations" th:field="*{inventoryInformations}" class="form-control"/>
+
+                                 <p th:errors="*{date}" class="help-block"></p>
+                             </div>
+
+                        </div>
+
+
+
+
+                        <div th:class="${#fields.hasErrors('supplierLine')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputsupplierLine">Supplier & RFQ Number</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-4 ">
+                                <input type="hidden" id="inputsupplierLine" th:field="*{supplierLine}" class="form-control"/>
+                                <input type="text" id="inputsupplierLineName" placeholder="Name"
+                                       name="supplierLine"  th:field="*{supplierLine.name}" class="form-control" th:readonly="${poQuotationHeader.status!= T(com.aye.web.model.Rfq.CommonStatus).N  }"/>
+
+                                <p th:errors="*{supplierLine}" class="help-block"></p>
+                                <script th:inline="javascript">
+                                    function SearchQuotSupObj(objparms) {
+//                                            alert('x');
+                                        var objparmV = objparms;
+                                        $('#inputsupplierLine').val(objparmV.id).trigger("change");
+                                        $('#inputpoRfqHeaderNumber').removeAttr('readonly');
+                                    };
+
+                                    document.getElementById('inputsupplierLineName').oninput = function () {
+                                        myFunction();
+                                    };
+                                    function myFunction() {
+                                        var innerVar = document.getElementById('inputsupplierLineName').value;
+                                        if (innerVar.length > 2) {
+
+                                            var displayfieldfrom = [['#inputsupplierLineName']];
+
+                                            getQuotSupInf(innerVar, displayfieldfrom, 'quotSup');
+//                                        document.getElementById('fromLocator').focus();
+                                            document.getElementById('inputsupplierLineName').focus();
+                                        }else
+                                        {
+                                            $('#inputsupplierLine').val('');
+                                            $('#inputpoRfqHeader').val('');
+                                            $('#inputpoRfqHeaderNumber').val('');
+                                            $('#inputpoRfqHeaderNumber').attr('readonly',true);
+                                        }
+                                    }
+                                </script>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input type="hidden" id="inputpoRfqHeader" th:field="*{poRfqHeader}" class="form-control"/>
+                                <input type="text" id="inputpoRfqHeaderNumber" placeholder="Number" th:required="required"
+                                       name="poRfqHeader"  th:field="*{poRfqHeader.rfqNumber}" class="form-control" readonly />
+
+                                <p th:errors="*{poRfqHeader}" class="help-block"></p>
+                            </div>
+                            <script th:inline="javascript">
+
+                                function SearchQuotRfqObj(objparms) {
+                                    var objparmV = objparms;
+                                    $('#inputpoRfqHeader').val(objparmV.id).trigger("change");
+                                };
+
+
+                                document.getElementById('inputpoRfqHeaderNumber').oninput = function () {
+                                    var poUrl;
+                                    var rfqNum = document.getElementById('inputpoRfqHeaderNumber').value;
+                                    if (rfqNum .length==0)
+                                    {
+                                        document.getElementById('inputpoRfqHeader').value='';
+                                    }
+
+                                    if (rfqNum .length > 1) {
+                                        var  lInvOrg=document.getElementById('inputinvOrg').value;
+                                        var  lOrg=document.getElementById('inputorgHierarchy').value;
+                                        poUrl = '/AYE/ACRC/SearchOrgRfqHeader/' +lOrg+ '/' +  lInvOrg +'/'+rfqNum ;
+
+
+                                        if($('#inputsupplierLine').val()!='')
+                                        {
+                                            poUrl = '/AYE/ACRC/SearchOrgSupRfqHeader/' +lOrg+ '/' +  lInvOrg +'/'+$('#inputsupplierLine').val()+'/'+rfqNum ;
+                                        }
+
+
+//                                            alert(poUrl );
+                                        autocomwithobject(poUrl, 'rfqNumber', '#inputpoRfqHeaderNumber', null, 'startDate', 'rfqNumberQuot');
+                                        document.getElementById('inputpoRfqHeaderNumber').focus();
+                                    }
+                                }
+
+                            </script>
+                        </div>
+
+
+                        <div th:class="${#fields.hasErrors('notes')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputnote">Notes</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-8 ">
+                                <input type="text" id="inputnote" placeholder="note"
+                                       name="Status" th:field="*{notes}" class="form-control" th:readonly="${poQuotationHeader.status!= T(com.aye.web.model.Rfq.CommonStatus).N}"/>
+
+                                <p th:errors="*{notes}" class="help-block"></p>
+                            </div>
+                        </div>
+
+
+                        <div th:class="${#fields.hasErrors('status')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputstatus">Status</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-8 ">
+                                <input type="hidden" id="inputstatus" placeholder="Status"
+                                       name="Status" th:field="*{status}" class="form-control" readonly="readonly"/>
+                                <input type="text" id="inputstatusD" placeholder="Status"
+                                       name="Status" th:field="*{status.displayName}" class="form-control" th:value="*{status}" readonly="readonly"/>
+
+                                <p th:errors="*{status}" class="help-block"></p>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <input type="hidden" class="form-control" id="inputcolumncreatedBy"
+                                   placeholder="columncreatedBy"
+                                   th:field="*{commonColumn.createdBy}" name="columncreatedBy"/>
+                            <input type="hidden" class="form-control" id="inputcolumnDate"
+                                   th:field="*{commonColumn.creationDate}" name="columnDate" />
+                            <span class="help-block" th:if="${#fields.hasErrors('commonColumn.creationDate')}"
+                                  th:errors="*{commonColumn.creationDate}">User Name Error</span>
+                            <!--th:value="*{#dates.format(commonColumn.creationDate, 'dd-MM-yyyy HH:mm:ss')}"-->
+                        </div>
+
+
+
+                        <div>
+                            <button type="button" data-toggle="modal" data-target="#modal-RecordHistory" th:id="btnIdHM"
+                                    th:attr="data-target='#modal-RecordHistory'"  title="Record History" >
+                                <span class="glyphicon glyphicon-record"></span>
+                            </button>
+                            <script th:inline="javascript">
+                                document.getElementById('btnIdHM').onclick =
+                                        function () {
+                                            var obj = [[${poQuotationHeader.commonColumn}]];
+
+                                            histabledataset(obj);
+                                        };
+
+                            </script>
+
+                        </div>
+                        <div data-th-replace="fragments/recordHistoryModal :: recordhis-modal"></div>
+
+
+                        <div class="text-right Padding10px ">
+                            <a th:href="@{/quot/quotHeader/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-default">New</a>
+                            <!--and poHeader.poStatus== T(com.aye.web.model.PoStatus).N and ${rcvCount== 0}-->
+                            <span th:if="${poQuotationHeader.id != null and poQuotationHeader.status== T(com.aye.web.model.Rfq.CommonStatus).N  } " >
+                            <a th:href="@{/quot/quotLines/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${poQuotationHeader.id}"
+                               class="btn btn-default">Line</a>
+                            </span>
+
+                            <a th:href="@{/quot/search/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-default">Search</a>
+                            <!--th:if ="${rcvCount== 0}" and ${ADD} -->
+                            <span th:if ="${poQuotationHeader.status== T(com.aye.web.model.Rfq.CommonStatus).N} " >
+                                <button type="submit" name="save" class="btn btn-primary" >Save</button>
+                            </span>
+                            <!--#lists.size(poHeader.poLines) &gt; 0 and  onclick="return checkemptyfield()" and ${POST} and ${!enableAppHierarchy} -->
+                            <span th:if =" ${poQuotationHeader.status== T(com.aye.web.model.Rfq.CommonStatus).N} and ${poQuotationHeader.id != null} ">
+                            <button type="submit" name="postQuot" id="btpost" class="btn btn-primary">Post</button>
+                            </span>
+
+
+                            <script th:inline="javascript">
+                                $(document).ready(function(){
+                                    setPostBtn('btpost');
+                                })
+                            </script>
+
+
+                        </div>
+
+
+                    <div class="marginbtm10px" th:if="${poQuotationHeader.id!=null}">
+                        <div class="col-sm-12 brder accgl-col">
+                            <div class="col-sm-1 accgl-col brderright" style="width: 20px">SL</div>
+                            <div class="col-sm-3 accgl-col brderright" align="center">Item</div>
+                            <div class="col-sm-2 accgl-col brderright" align="center">Quantity</div>
+                            <div class="col-sm-1 accgl-col brderright" align="center">UOM</div>
+                            <div class="col-sm-2 accgl-col brderright" align="center">Rate</div>
+                            <div class="col-sm-2 accgl-col brderright" align="center">Status</div>
+                            <div class="col-sm-1 accgl-col brderrigh" align="center">Action</div>
+                        </div>
+
+                        <div class="col-sm-12 accgl-col brder "
+                             th:each="lines,rowStat : *{poQuotationLines}">
+                            <div class="col-sm-1  form-group accgl-col high_control top_marg brderright"
+                                 th:text="${rowStat.count}" style="width: 20px; ">1
+
+
+                            </div>
+
+
+                            <div class="col-sm-3 form-group accgl-col top_marg brderright">
+                                <input th:type="hidden"  th:field="*{poQuotationLines[__${rowStat.index}__].id}" />
+                                <!--<input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].poReqHeader}" />-->
+                                <input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].masterItem.id.id}" />
+                                <input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].masterItem.id.inventoryInformations}" />
+                                <input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].primUom}" />
+                                <input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].uomCode}" />
+                                <input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].primaryQty}" />
+                                <input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].trnsUom}" />
+                                <!--<input th:type="hidden" th:field="*{poReqLines[__${rowStat.index}__].trnsUomCode}" />-->
+                                <input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].conversionRate}" />
+                                <!--<input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].lineNotes}" />-->
+                                <input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].commonColumn.createdBy}" />
+                                <input th:type="hidden" th:field="*{poQuotationLines[__${rowStat.index}__].commonColumn.creationDate}" />
+                                <input class="td form-control " th:type="text"
+                                       th:field="*{poQuotationLines[__${rowStat.index}__].itemCode}"
+                                       height="2" readonly="readonly"/>
+                            </div>
+
+                            <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                                <input style="text-align: end" class="td form-control qtyClass" th:type="text"
+                                       th:field="*{poQuotationLines[__${rowStat.index}__].trnsQty}"
+                                       height="2" readonly="readonly"/>
+                            </div>
+
+                            <div class="col-sm-1 form-group accgl-col top_marg brderright">
+                                <input class="td form-control " th:type="text"
+                                       th:field="*{poQuotationLines[__${rowStat.index}__].trnsUomCode}"
+                                       height="2" readonly="readonly"/>
+                            </div>
+                            <!--<div class="col-sm-2 form-group accgl-col top_marg brderright">-->
+                                <!--<input class="td form-control " th:type="text"-->
+                                       <!--th:field="*{poLines[__${rowStat.index}__].amount}"-->
+                                       <!--height="2" readonly="readonly"/>-->
+                            <!--</div>-->
+                            <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                                <input class="td form-control " th:type="text"
+                                       th:field="*{poQuotationLines[__${rowStat.index}__].rate}"
+                                       height="2" readonly="readonly"/>
+
+                            </div>
+                            <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                                <input class="td form-control " th:type="hidden"
+                                       th:field="*{poQuotationLines[__${rowStat.index}__].lineNotes}"/>
+                            <input class="td form-control " th:type="hidden"
+                                       th:field="*{poQuotationLines[__${rowStat.index}__].status}"/>
+                            <input class="td form-control " th:type="text"
+                                       th:field="*{poQuotationLines[__${rowStat.index}__].status.displayName}"
+                                       height="2" readonly="readonly"/>
+                            </div>
+
+                            <div class="col-sm-1 form-group accgl-col top_marg " align="center" style="width: 40px; ">
+                                <!--<div th:if ="${rcvCount== 0}"  th:if="${poHeader.poStatus== T(com.aye.web.model.PoStatus).N }" class="btn-group" role="group" aria-label="..." style="margin-top: 2px">-->
+                                <div class="btn-group" role="group" aria-label="..." style="margin-top: 2px "
+                                     th:if="${poQuotationHeader.status== T(com.aye.web.model.Rfq.CommonStatus).N  }">
+                                    <a th:href="@{/quot/quotLines/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'
+                                    +${poQuotationHeader.id} +'/' +*{poQuotationLines[__${rowStat.index}__].id}" class="btn btn-success">
+                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                                </div>
+                            </div>
+
+                                <div class="col-sm-1 form-group accgl-col top_marg " align="center" style="width: 20px; ">
+                                    <div class="btn-group" role="group" aria-label="..." style="margin-top: 2px">
+                                    <button type="button" data-toggle="modal" th:id="qtaLineDetailId" data-target="#modal-qtaLineDetailId" title=""
+                                            th:attr="data-target='#modal-qtaLineDetailId'" class="btn btn-success" data-id="qtaLineDetailId" onclick="detailInf(this)"
+                                            th:value="*{poQuotationLines[__${rowStat.index}__].id}" >
+                                        <span class="glyphicon glyphicon-info-sign"></span>
+                                    </button>
+                                </div>
+                                </div>
+
+
+                        </div>
+                        <script th:inline="javascript">
+                            function detailInf(ele)
+                            {
+
+                                var pId = [[${pageId}]];
+                                var tId = [[${temltId}]];
+                                var invOrgId = document.getElementById('inputinvOrg').value;
+                                var lLineId = ele.value;
+//                                alert('xxx');
+                                var l_urlVal = '/AYE/quot/quotLineDetail/E/'+ pId + '/' + tId+'/'+invOrgId + '/' + lLineId;
+                                var l_url = window.location.origin + l_urlVal;
+//                                alert(l_url);
+                                $('#replace_quotLineDetail_div').load(l_url);
+                            }
+                        </script>
+
+                        </div>
+
+                        <div class="panel-footer">
+                        </div>
+
+
+                </form>
+                    <div class="modal modal-qtaLineDetailId fade in" th:id="modal-qtaLineDetailId">
+
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span></button>
+                                    <h5 class="modal-title"><b>Quotation Details</b></h5>
+
+                                    <div class="modal-body">
+
+                                        <div class="table-striped">
+                                            <div id="replace_quotLineDetail_div"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+        <!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+        <script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+
+
+
+</html>

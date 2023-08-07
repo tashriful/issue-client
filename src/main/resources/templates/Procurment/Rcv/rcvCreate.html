@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <script th:inline="javascript">
+
+        function selectedobj(value, ind) {
+            if (ind == 'poSup') {
+//                alert('selectedobj');
+                SearchSupObj(value);
+            }
+        }
+        ;
+
+
+        function getPoSupInf(pSup, pdisplay, pindc) {
+//            alert('11');
+
+//                                                alert('getLocator');
+            var varOrg = document.getElementById('inputorgHierarchy').value;
+
+            var displayfieldfrom = pdisplay;
+            var indc = pindc;
+            AutocomFunc('/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + pSup,
+                    displayfieldfrom,
+                    'name',
+                    null,
+                    indc);
+        }
+        ;
+
+        function AutocomFunc(purlval, pdisplayfield, pgetvalue, pgetDesc, pindc) {
+
+            var urlval = purlval;//'/AYE/ACRC/SearchCodeComb/' + bSeg;
+            var displayfield = pdisplayfield;//'#toAccountV';
+            var getvalue = pgetvalue;//'concatedSegment';
+            var getDesc = pgetDesc;//'siteAddress';
+            var indc = pindc;//'segment2desc';
+
+            autocomwithobject(urlval, getvalue, displayfield, null, getDesc, indc);
+
+        };
+
+    </script>
+</head>
+
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-11 ">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+
+                <div class="form-group col-sm-12  jepg_cust_head">
+                    <div class="form-group col-sm-5 " style="padding-left: 0; color: #172D44">PO Receiving</div>
+                    <div th:if="${poRcvHeader.rcvStatus!=T(com.aye.web.model.RcvStatus).N}"
+                         class="form-group col-sm-7 text-right Padding10px" style=" font-size: 12px;" align="right">
+                        <form th:action="@{'/Report/staticReport/'+${mode}+'/'+${pageId}+'/'+${temltId}}"
+                         th:method="post" th:target="_blank">
+                            <button target="_blank" type="submit" name="rpt" th:value="'GRN :'+${poRcvHeader.id}" class="btn btn-primary" align="center">
+                                <span class="glyphicon glyphicon-print"></span> Print
+                            </button>
+                            <!--<a   th:href="@{/AccGL/AddGlHeader/U/}+${pageId}+'/'+${temltId}"  target="_blank" type="submit" name="rpt" th:value="'Journal_voucher :'+${glHeader.id}" class="btn btn-primary" align="center">Print Voucher</a>-->
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Default panel contents -->
+                <!--<div class="panel-heading">PO Receiving</div>-->
+                <div class="panel-body">
+                    <form th:action="@{'/poReceive/rcvCreate/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${rcvHdrid}}"
+                          th:object="${poRcvHeader}"
+                          id="poRcvFrm"
+                          th:method="post">
+                        <!--+${role.role}  +${role.role}-->
+
+        <span style="font-weight: bold" th:each="m :${msg}">
+            <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                <span th:if="${m.tag==null}" th:utext="${m.msg}"> </span>
+                <span th:unless="${m.tag==null}" th:utext="${m.tag+' '+m.msg}"></span>
+            </p></span>
+                        <div class="submit-progress hidden">
+                            <label th:style="'color:#4aa509;'">Please wait while Saving Data...</label>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid" placeholder="Id" th:field="*{id}"
+                                   name="id"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}"
+                                  th:errors="*{id}">Id Error</span>
+                        </div>
+
+
+                        <div th:class="${#fields.hasErrors('rcvNumber')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputrcvNumber">Number & Type</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-4 ">
+                                <input type="text" id="inputrcvNumber" placeholder="Number"
+                                       name="rcvNumber" th:field="*{rcvNumber}" class="form-control" readonly="readonly"/>
+
+                                <p th:errors="*{rcvNumber}" class="help-block"></p>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input type="hidden" id="inputrcvTrnsType"
+                                       name="rcvTrnsType" th:field="*{rcvTrnsType}"  th:value="*{rcvTrnsType}" class="form-control" readonly="readonly"/>
+
+
+                                <input type="text" id="inputrcvTrnsType"
+                                       th:field="*{rcvTrnsType.displayName}"  class="form-control" readonly="readonly"/>
+
+                                <p th:errors="*{rcvNumber}" class="help-block"></p>
+                            </div>
+                        </div>
+
+                        <!--<div class="form-group">-->
+                        <!--<label for="inputpoNumber">Po Number</label>-->
+                        <!--<input type="text" class="form-control" id="inputpoNumber" placeholder="Name" th:field="*{poNumber}" name="poNumber" />-->
+                        <!--&lt;!&ndash;<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>&ndash;&gt;-->
+                        <!--<span class="help-block" th:if="${#fields.hasErrors('poNumber')}" th:errors="*{poNumber}">PO Number Error</span>-->
+                        <!--</div>-->
+
+
+                        <div th:class="${#fields.hasErrors('rcvDate')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputrcvDate">Date</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-8 ">
+                                <input type="date" id="inputrcvDate" placeholder="rcvDate"
+                                       name="rcvDate" th:field="*{{rcvDate}}" class="form-control" required="required"/>
+
+                                <p th:errors="*{rcvDate}" class="help-block"></p>
+                                <script th:inline="javascript">
+
+                                    $('#inputrcvDate').change( function(){
+                                                var dateFormate = 'YYYY-MM-DD';
+                                                var todayDate = moment();
+                                                var dateVal = $('#inputrcvDate').val();
+                                                var futureDate = moment(dateVal, dateFormate);
+
+                                                if (!todayDate.isAfter(futureDate)) {
+
+                                                    alert('Cannot Insert Future Date');
+
+                                                    $('#inputrcvDate').val(todayDate.format(dateFormate));
+//                                                    $('#btSave').attr("disabled", true);
+
+                                                }else
+                                                {
+                                                    $('#btSave').removeAttr("disabled");
+                                                }
+
+
+                                            }
+                                    );
+
+                                </script>
+                            </div>
+                            <input type="hidden" id="inputorgHierarchy" placeholder="orgHierarchy"
+                                   name="orgHierarchy" th:field="*{orgHierarchy}" class="form-control"/>
+                            <input type="hidden" id="inputinventoryInformations" placeholder="inventoryInformations"
+                                   name="inventoryInformations" th:field="*{inventoryInformations}" class="form-control"/>
+                        </div>
+
+
+                        <div th:class="${#fields.hasErrors('refNumber')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputrefNumber">Ref. Number</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-8 ">
+                                <input type="text" id="inputrefNumber" placeholder="Ref Number"
+                                       name="refNumber" th:field="*{refNumber}" class="form-control"/>
+
+                                <p th:errors="*{refNumber}" class="help-block"></p>
+                            </div>
+                        </div>
+
+
+
+                        <div th:class="${#fields.hasErrors('rcvStatus')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputrcvStatus">Status</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-4 ">
+                                <input type="hidden" id="inputrcvStatus" placeholder="Status"
+                                       name="Status" th:field="*{rcvStatus}" class="form-control" readonly="readonly"/>
+                                <input type="text" id="inputpoStatus" placeholder="Status"
+                                       name="Status" th:field="*{rcvStatus.displayName}" class="form-control" th:value="*{rcvStatus}" readonly="readonly"/>
+
+                                <p th:errors="*{rcvStatus}" class="help-block"></p>
+                            </div>
+                        <div class="col-sm-4 ">
+                                <input type="hidden" id="inputglHeader" placeholder="Voucher"
+                                       name="Status" th:field="*{glHeader}" class="form-control" readonly="readonly"/>
+                                <input type="text" id="inputglHeaderVoucher" placeholder="Voucher"
+                                       name="Status" th:field="*{glHeader.documentNumber}" class="form-control" readonly="readonly"/>
+                                <p th:errors="*{glHeader}" class="help-block"></p>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <input type="hidden" class="form-control" id="inputcolumncreatedBy"
+                                   placeholder="columncreatedBy"
+                                   th:field="*{commonColumn.createdBy}" name="columncreatedBy"/>
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{commonColumn.creationDate}" name="columnDate"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('commonColumn.creationDate')}"
+                                  th:errors="*{commonColumn.creationDate}">User Name Error</span>
+                        </div>
+
+
+                        <div class="text-right" th:id="btnGrp">
+                            <div class="col-sm-2 text-left">
+                                <button type="button" data-toggle="modal" data-target="#modal-RecordHistory" th:id="btnIdHM"
+                                        th:attr="data-target='#modal-RecordHistory'"  title="Record History" >
+                                    <span class="glyphicon glyphicon-record"></span>
+                                </button>
+                                <script th:inline="javascript">
+                                    document.getElementById('btnIdHM').onclick =
+                                            function () {
+                                                var obj = [[${poRcvHeader.commonColumn}]];
+                                                histabledataset(obj);
+                                            };
+
+                                </script>
+                            </div>
+
+                            <div id="inputButton">
+                            <span th:if="${poRcvHeader.rcvStatus != T(com.aye.web.model.RcvStatus).N } and ${ADD} and ${entryExists==0}" >
+                                <a  th:href="@{/poReceive/rtvEntry/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${poRcvHeader.id}"
+                                class="btn btn-default">Return</a>
+                            </span>
+                            <a th:href="@{/poReceive/rcvEntry/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-default">New</a>
+
+                            <span th:if="${poRcvHeader.id != null and poRcvHeader.rcvStatus == T(com.aye.web.model.RcvStatus).N }" >
+                            <a th:href="@{/poReceive/rcvLine/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${poRcvHeader.id}"
+                               class="btn btn-default">Line</a>
+                            </span>
+
+                            <a th:href="@{/poReceive/search/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-default">Search</a>
+                            <!-- -->
+                            <span th:if="${poRcvHeader.rcvStatus == T(com.aye.web.model.RcvStatus).N} and ${ADD}" >
+
+                                <button type="submit" name="saveRcv" class="btn btn-primary" id="btSave"
+                                        onclick="return prevDbClick('inputButton')">Save</button>
+                            </span>
+                            <span th:if="${poRcvHeader.rcvStatus == T(com.aye.web.model.RcvStatus).N} and ${ADD}" >
+
+                                <button type="submit" name="deleteRcv" class="btn btn-danger">Delete</button>
+                            </span>
+                            <span th:if="${poRcvHeader.rcvStatus != T(com.aye.web.model.RcvStatus).N} and ${ADD} and ${entryExists==0}" >
+
+                                <button type="submit" name="unDo" class="btn btn-primary" id="btUndo"
+                                        onclick="return prevDbClick('inputButton')">Undo</button>
+                            </span>
+                            <!---->
+
+                                <span th:if="${#lists.size(poRcvHeader.poRcvLines) &gt; 0 and poRcvHeader.rcvStatus != T(com.aye.web.model.RcvStatus).I } and ${POST}">
+                                    <button type="submit" name="postRcv" id="btpost" class="btn btn-primary postRcv"
+                                            onclick="return prevDbClick('inputButton')"> Post </button>
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div th:if="${poRcvHeader.rcvTrnsType== T(com.aye.web.model.RcvTrnsType).INTTRNSRCV}">
+
+
+                            <div data-th-replace="Procurment/Rcv/IntrRcvLineCreate :: poRcvLineCreate"></div>
+                        </div>
+
+                        <div th:if="${poRcvHeader.rcvTrnsType!= T(com.aye.web.model.RcvTrnsType).INTTRNSRCV}">
+
+
+                            <div data-th-replace="Procurment/Rcv/PoRcvLineCreate :: poRcvLineCreate"></div>
+                        </div>
+
+                        <div class="panel-footer">
+                        </div>
+
+
+                    </form>
+                    <!--</div>-->
+                    <div data-th-replace="fragments/recordHistoryModal :: recordhis-modal"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+
+
+
+</html>

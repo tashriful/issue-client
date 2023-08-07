@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <!--<link-->
+    <!--href="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/easy-autocomplete.min.css"-->
+    <!--rel="stylesheet" type="text/css"/>-->
+    <!--<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>-->
+    <!--<script-->
+    <!--src="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/jquery.easy-autocomplete.min.js"-->
+    <!--type="text/javascript"></script>-->
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <script th:inline="javascript">
+
+        function selectedobj(value, ind) {
+            if(ind == 'reqLineItem')
+            {
+                SearchReqItemObj(value);
+            }else if (ind == 'reqLineUOM')
+            {
+                SearchReqUomObj(value);
+            }
+        };
+
+
+        function getPoSupInf(pSup, pdisplay, pindc) {
+//            alert('11');
+
+//                                                alert('getLocator');
+            var varOrg = document.getElementById('inputorgHierarchy').value;
+
+            var displayfieldfrom = pdisplay;
+            var indc = pindc;
+            AutocomFunc('/AYE/ACRC/SearchOrgSupplier/'+varOrg+'/'+ pSup,
+                    displayfieldfrom,
+                    'name',
+                    null,
+                    indc);
+        };
+
+        function AutocomFunc(purlval, pdisplayfield, pgetvalue, pgetDesc, pindc) {
+//            alert(purlval);
+//            alert(pdisplayfield);
+//            alert(pgetvalue);
+//            alert(pgetDesc);
+//            alert(pindc);
+
+            var urlval = purlval;//'/AYE/ACRC/SearchCodeComb/' + bSeg;
+            var displayfield = pdisplayfield;//'#toAccountV';
+            var getvalue = pgetvalue;//'concatedSegment';
+            var getDesc = pgetDesc;//'siteAddress';
+            var indc = pindc;//'segment2desc';
+
+            autocomwithobject(urlval, getvalue, displayfield, null, getDesc, indc);
+
+        };
+
+
+
+
+        function getLocator(pfSub, pdisplay, pindc) {
+//                                                alert('getLocator');
+            var displayfieldfrom = pdisplay;
+            var indc = pindc;
+
+            AutocomFunc('/AYE/ACRC/SearchLocator/' + pfSub,
+                    displayfieldfrom,
+                    'locatorValue',
+                    null,
+                    indc);
+        }
+        ;
+
+
+    </script>
+</head>
+
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-9 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading" th:text="${poReqLines.poReqHeader.reqNumber+' - Requisition Lines.'}"></div>
+                <div class="panel-body">
+                    <form th:action="@{'/requsition/reqLines/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${reqId}}"
+                          th:object="${poReqLines}" th:method="post">
+                        <!--+${role.role}  +${role.role}-->
+
+                 <span style="font-weight: bold" th:each="m :${msg}">
+                        <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                            <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                            <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+                        </p>
+                 </span>
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid" placeholder="Id" th:field="*{id}"
+                                   name="id"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}"
+                                  th:errors="*{id}">Id Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputpoReqHeader" placeholder="inputpoReqHeader" th:field="*{poReqHeader}"
+                                   name="poReqHeader"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('poReqHeader')}"
+                                  th:errors="*{poReqHeader}">Id Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="hidden" id="inputmasterItemInvOrgId" placeholder="masterItemInvOrgId" name="masterItem" th:field="*{masterItem.id.inventoryInformations.id}" class="form-control" th:value="*{masterItem}"/>
+                            <input type="hidden" id="inputmasterItem" placeholder="masterItem" name="masterItem" class="form-control" th:field="*{masterItem.id.id}" th:value="*{masterItem}"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('poReqHeader')}" th:errors="*{poReqHeader}">Id Error</span>
+                        </div>
+
+
+                        <div th:class="${#fields.hasErrors('itemCode')} ? 'form-group has-error' :'form-group required col-sm-12'">
+                            <label class="col-sm-3 control-label " for="inputitemCode">Item & Primary UOM</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-4 ">
+                                <input type="text" id="inputitemCode" placeholder="itemCode" name="itemCode" th:field="*{itemCode}" class="form-control" required="required" autofocus/>
+                                <p th:errors="*{itemCode}" class="help-block"></p>
+                            </div>
+                            <script th:inline="javascript">
+
+                                function SearchReqItemObj(objparms) {
+//                                            alert('x');
+                                    var objparmV = objparms;
+                                    $('#inputmasterItem').val(objparmV.id.id).trigger("change");
+                                    $('#inputprimUom').val(objparmV.defaultUom.id).trigger("change");
+                                    $('#inputuomCode').val(objparmV.defaultUom.uomCode).trigger("change");
+                                    $('#inputtrnsUom').val(objparmV.defaultUom.id).trigger("change");
+                                    $('#inputtrnsUomCode').val(objparmV.defaultUom.uomCode).trigger("change");
+                                    $('#inputconversionRate').val(objparmV.defaultUom.defaultConvRate).trigger("change");
+                                    document.getElementById('inputtrnsUomCode').readOnly =false;
+                                    document.getElementById('inputtrnsQty').readOnly =false;
+                                    document.getElementById('inputunitPrice').readOnly =false;
+                                    document.getElementById('inputamount').readOnly =false;
+//                                    document.getElementById('lastPurchasePrice').disabled = false;
+
+                                };
+
+                                document.getElementById('inputitemCode').oninput = function() {
+                                    var lItmCode = document.getElementById('inputitemCode').value;
+
+                                    if (lItmCode.length > 2) {
+                                        var  lInvOrg=document.getElementById('inputmasterItemInvOrgId').value;
+
+                                        var itemUrl = '/AYE/ACRC/SearchOrgItemCode/' + lInvOrg + '/' + lItmCode;
+//                                            alert(itemUrl);
+                                        autocomwithobjectwod(itemUrl, 'itemCode', '#inputitemCode', 'description', 'reqLineItem');
+                                        document.getElementById('inputitemCode').focus();
+                                    }
+
+
+                                }
+                            </script>
+                            <div class="col-sm-4 ">
+                                <input type="text" id="inputuomCode" placeholder="uomCode"
+                                       name="itemCode" th:field="*{uomCode}" class="form-control" readonly="readonly"/>
+
+                                <p th:errors="*{uomCode}" class="help-block"></p>
+                            </div>
+                            <!--<div class="col-sm-1 ">-->
+                            <!--<button type="button" data-toggle="modal" th:id="lastPurchasePrice" data-target="#modal-warning"-->
+                                    <!--th:attr="data-target='#modal-warning'" class="clickMe" data-id="price" disabled >-->
+                                <!--<span class="glyphicon">&#xe164;</span>-->
+                            <!--</button>-->
+                                <!--<script th:inline="javascript">-->
+                                        <!--var mb = '#lastPurchasePrice';-->
+                                    <!--$(mb).click(function(){-->
+<!--//                                        alert('cc');-->
+                                        <!--getContent(1);-->
+                                    <!--})-->
+
+                                    <!--function getContent(btnId) {-->
+                                        <!--var pId = [[${pageId}]];-->
+                                        <!--var tId = [[${temltId}]];-->
+                                        <!--var invOrgId = document.getElementById('inputmasterItemInvOrgId').value;-->
+                                        <!--var itemId = document.getElementById('inputmasterItem').value;-->
+
+                                        <!--var l_urlVal = '/AYE/procurment/getOnhand/E/'+ pId + '/' + tId+'/'+invOrgId + '/' + itemId;-->
+                                        <!--var l_url = window.location.origin + l_urlVal;-->
+                                        <!--$('#replace_poLastPrice_div').load(l_url);-->
+                                    <!--};-->
+
+                                    <!--$(document).ready(function()-->
+                                    <!--{-->
+                                        <!--var lItemId1 = document.getElementById('inputmasterItem').value;-->
+                                        <!--if (lItemId1.length>0)-->
+                                        <!--{-->
+                                            <!--document.getElementById('lastPurchasePrice').disabled = false;-->
+                                        <!--}else-->
+                                        <!--{-->
+                                            <!--document.getElementById('lastPurchasePrice').disabled = true;-->
+                                        <!--}-->
+                                    <!--})-->
+
+                                <!--</script>-->
+                            <!--</div>-->
+                        </div>
+                        <div class="col-sm-12">
+
+                            <div class="col-sm-4 " align="center"></div>
+                            <div class="col-sm-4 " align="center">UOM</div>
+                            <div class="col-sm-4 " align="center">Qty</div>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="inputprimUom" placeholder="primUom" th:field="*{primUom}" name="primUom" />
+                            <span class="help-block" th:if="${#fields.hasErrors('primUom')}" th:errors="*{primUom}">Id Error</span>
+                        </div>
+
+                        <div th:class="${#fields.hasErrors('uomCode')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputuomCode">UOM & Qty</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-4 ">
+                                <input type="text" id="inputtrnsUomCode" placeholder="trnsUomCode"
+                                       name="trnsUomCode" th:field="*{trnsUomCode}" class="form-control" required="required"/>
+
+                                <input type="hidden" id="inputorgHierarchy"
+                                       name="orgHierarchy" th:field="*{orgHierarchy}" class="form-control"/>
+
+                                <p th:errors="*{trnsUomCode}" class="help-block"></p>
+                            </div>
+                            <script th:inline="javascript">
+
+
+                                $('#inputtrnsUomCode').ready(function()
+                                {
+                                    var itemVal =document.getElementById('inputitemCode').value;
+//                                    alert('x');
+                                    if (itemVal.length>0)
+                                    {
+                                        document.getElementById('inputtrnsUomCode').readOnly =false;
+//                                        document.getElementById('inputamount').readOnly =false;
+                                    }else
+                                    {
+                                        document.getElementById('inputtrnsUomCode').readOnly =true;
+                                        document.getElementById('inputtrnsQty').readOnly =true;
+//                                        document.getElementById('inputunitPrice').readOnly =true;
+
+                                    }
+                                });
+
+//                                $("#inputtrnsUomCode").ready(function () {
+//                                    var date = $('#inputdate').val();
+//                                    if (date != "") {
+//                                        $("#inputperiodName").val(moment(date).format('MMM-YY'));
+//                                    }
+//                                });
+
+                                function SearchReqUomObj(objparms) {
+//                                            alert('x');
+                                    var objparmL = objparms;
+                                    $('#inputtrnsUom').val(objparmL.toUom.id).trigger("change");
+                                    $('#inputconversionRate').val(objparmL.convRate).trigger("change");
+                                };
+
+
+                                var x = '#inputitemCode';
+
+
+
+                                document.getElementById('inputtrnsUomCode').oninput = function () {
+                                    if (document.getElementById('inputitemCode').value.length>1)
+                                    {
+                                        var itmId = document.getElementById('inputmasterItem').value;
+                                        var orgId = document.getElementById('inputmasterItemInvOrgId').value;
+//                                            alert(itmId);
+                                        var urlvals = '/AYE/ACRC/SearchUomByItem/' + orgId + '/' + itmId;
+//                                    alert(urlvals);
+                                        var displayfield = '#inputtrnsUomCode';
+                                        var dbfield = '#inputtrnsUomCode';
+                                        var getvalue = 'toCode';
+
+                                        autocomwithobject(urlvals, 'toCode', '#inputtrnsUomCode', null, 'convRate', 'reqLineUOM');
+                                        document.getElementById('inputtrnsUomCode').focus();
+
+                                    }
+                                }
+
+                            </script>
+                            <div class="col-sm-4 ">
+                                <input style="text-align: end" type="text" id="inputtrnsQty" placeholder="trnsQty"
+                                       name="Qty" th:field="*{trnsQty}" class="form-control" required="required"/>
+
+                                <p th:errors="*{trnsQty}" class="help-block"></p>
+                            </div>
+
+                            <script th:inline="javascript">
+                                document.getElementById('inputtrnsQty').oninput = function(){
+                                    var lQty;
+                                    var convrate;
+                                    var lQAmount;
+                                    var lUnitPrice1;
+                                    var lAmount1;
+                                    var erate1;
+//                                    lUnitPrice1=document.getElementById('inputunitPrice').value;
+                                    convrate=document.getElementById('inputconversionRate').value;
+                                    lQty=document.getElementById('inputtrnsQty').value;
+//                                    erate1=document.getElementById('inputexchRate').value;
+                                    if (lQty.length>0)
+                                    {
+
+                                        lQAmount =convrate*lQty;
+//                                         alert(lAmount);
+                                        document.getElementById('inputprimaryQty').value=lQAmount;
+
+
+                                    }else
+                                    {
+                                        document.getElementById('inputprimaryQty').value=0;
+//                                        document.getElementById('inputamount').value=0;
+                                    }
+                                };
+                            </script>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="inputprimaryQty" placeholder="primaryQty" th:field="*{primaryQty}" name="primaryQty"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('primaryQty')}" th:errors="*{primaryQty}">Id Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="inputtrnsUom" placeholder="trnsUom" th:field="*{trnsUom}" name="trnsUom"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('trnsUom')}" th:errors="*{trnsUom}">Id Error</span>
+                        </div>
+
+
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="inputconversionRate" placeholder="conversionRate" th:field="*{conversionRate}" name="conversionRate"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('conversionRate')}" th:errors="*{conversionRate}">Id Error</span>
+                        </div>
+
+
+
+                        <div th:class="${#fields.hasErrors('subinventory')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class=" col-sm-3 control-label " for="inputsubinventory">Subinventory</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="subinventory" id="inputsubinventory"
+                                        th:field="*{subinventory}" required="required">
+                                    <option value="">Please select One</option>
+                                    <option th:each="sub : ${subInvs}" th:text="${sub.code}" th:value="${sub.id}"
+                                            th:attr="data-locConfrom=${sub.isLocatorControl}">
+                                        module
+                                    </option>
+                                </select>
+                                <input type="hidden" id="locSubinvLocConfrom"
+                                       th:field="*{subinventory.isLocatorControl}"
+                                       th:value="*{subinventory}"/>
+                                <script th:inline="javascript">
+                                    $("#inputsubinventory").change(function () {
+                                        var varSubinvLocConfrom = ($(this.options[this.selectedIndex]).attr('data-locConfrom'));
+//                                        alert(varSubinvLocConfrom +'xx');
+
+                                        document.getElementById('locSubinvLocConfrom').value = varSubinvLocConfrom;
+                                        if (varSubinvLocConfrom == "false") {
+//                                                alert(varSubinvLocCon);
+                                            document.getElementById('inputsubinvLocator').readOnly = true;
+                                            document.getElementById("inputsubinvLocator").value = "";
+                                        } else {
+                                            document.getElementById('inputsubinvLocator').readOnly = false;
+                                        }
+                                    })
+
+                                    $(document).ready(function(){
+                                        var varSubinv= document.getElementById('inputsubinventory').value ;
+//                                        alert(varSubinv+'xx');
+
+//                                        document.getElementById('locSubinvLocConfrom').value = varSubinvLocConfrom;
+                                        if (varSubinv == "") {
+//                                                alert("Y");
+                                            document.getElementById('inputsubinvLocator').readOnly = true;
+                                            document.getElementById("inputsubinvLocator").value = "";
+                                        } else if (varSubinv!="")
+                                        {
+//                                            alert("x");
+                                            var fromSubLocCon = document.getElementById('locSubinvLocConfrom').value;
+//                                            var fromSubLocCon = ($(this.options[this.selectedIndex]).attr('data-locConfrom'));
+                                            if (fromSubLocCon == "false") {
+//                                                alert(fromSubLocCon);
+                                                document.getElementById('inputsubinvLocator').readOnly = true;
+                                                document.getElementById("inputsubinvLocator").value = "";
+                                            } else {
+                                                document.getElementById('inputsubinvLocator').readOnly = false;
+                                            }
+
+                                        }
+                                        else {
+                                            document.getElementById('inputsubinvLocator').readOnly = false;
+                                        }
+                                    });
+                                </script>
+                                <!--<input type="hidden" id="inputSubinvLocContrl" th:field="*{fromSubinventory.isLocatorControl}" />-->
+                            </div>
+                            <div class="col-sm-4">
+
+                                <input type="text" class="form-control" name="subinvLocator" id="inputsubinvLocator"
+                                       th:field="*{subinvLocator}" th:value="*{subinvLocator}"
+                                       required="required" />
+                                <script th:inline="javascript">
+                                    var mods = [[${mode}]];
+                                    var trns = [[*{id}]];
+
+
+                                    function SearchFloctObj(objparms) {
+//                                            alert('x');
+                                        var objparmV = objparms;
+                                        $('#inputsubinvLocator').val(objparmV.id).trigger("change");
+                                    }
+                                    ;
+
+                                    document.getElementById('inputsubinvLocator').oninput = function () {
+                                        FromLocatorInf();
+                                    };
+
+                                    function FromLocatorInf() {
+                                        var fLoc = document.getElementById('inputsubinvLocator').value;
+                                        if (fLoc.length > 2) {
+                                            var displayfieldfrom = [['#inputsubinvLocator']];
+                                            var varFromSubinv = document.getElementById('inputSubinventory').value;
+                                            getLocator(varFromSubinv, displayfieldfrom, 'floc');
+                                            document.getElementById('inputsubinvLocator').focus();
+                                        }
+                                        ;
+                                    }
+
+                                </script>
+
+                            </div>
+                        </div>
+
+                        <div th:class="${#fields.hasErrors('subinventory')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class=" col-sm-3 control-label " for="inputsubinventory">Additional Information</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="inputlineNotes" placeholder="Notes" th:field="*{lineNotes}" name="lineNotes"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('lineNotes')}" th:errors="*{lineNotes}">lineNotes Error</span>
+                            </div>
+
+                        </div>
+
+
+
+                            <div class="form-group">
+                            <input type="hidden" class="form-control" id="inputcolumncreatedBy" placeholder="columncreatedBy"
+                                   th:field="*{commonColumn.createdBy}" name="columncreatedBy"/>
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{commonColumn.creationDate}" name="columnDate"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('commonColumn.creationDate')}"
+                                  th:errors="*{commonColumn.creationDate}">User Name Error</span>
+                        </div>
+
+                        <div>
+                            <button type="button" data-toggle="modal" data-target="#modal-RecordHistory" th:id="btnIdHM"
+                                    th:attr="data-target='#modal-RecordHistory'"  title="Record History" >
+                                <span class="glyphicon glyphicon-record"></span>
+                            </button>
+                            <script th:inline="javascript">
+                                document.getElementById('btnIdHM').onclick =
+                                        function () {
+                                            var obj = [[${poReqLines.commonColumn}]];
+
+                                            histabledataset(obj);
+                                        };
+
+                            </script>
+
+                        </div>
+                        <div data-th-replace="fragments/recordHistoryModal :: recordhis-modal"></div>
+
+
+                        <div class="text-right">
+                            <a th:href="@{/requsition/reqLines/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${reqId}" class="btn btn-default">New Line</a>
+
+                            <a th:href="@{/requsition/reqHeader/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${reqId}" class="btn btn-default">Back</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+
+
+                </form>
+
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>Sl</th>
+                        <th>Item</th>
+                        <th>UomCode</th>
+                        <th>Quantity</th>
+                        <th>SubInv</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <div th:if="!${#lists.isEmpty(nPoReqLines)}">
+                        <tr th:each="l,iter   : ${nPoReqLines}">
+
+                            <td th:text="*{iter.index}"></td>
+                            <td th:text="*{l.itemCode}"></td>
+                            <td th:text="*{l.uomCode}"></td>
+                            <td th:text="*{l.trnsQty}"></td>
+                            <td th:text="*{l.subInvCode}"></td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <a th:href="@{/requsition/reqLines/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${l.poReqHeader.id}+'/'+${l.id}"
+                                       class="btn btn-success"><span
+                                            class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+
+                                </div>
+
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <a th:href="@{'/requsition/reqLinesDelete/U/'}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${l.poReqHeader.id}+'/'+${l.id}"
+                                       class="btn btn-danger"><span
+                                            class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    </div>
+                    <div th:if="${#lists.isEmpty(nPoReqLines)}">
+                        <tr>
+                            <td>No Data exists!</td>
+                        </tr>
+                    </div>
+
+                    </tbody>
+
+                </table>
+            </div>
+            <div class="panel-footer">
+            </div>
+        </div>
+        <!--</div>-->
+    </div>
+</div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>
+<!--<div class="modal modal-warning fade in" th:id="modal-warning">-->
+
+    <!--<div class="modal-dialog">-->
+        <!--<div class="modal-content">-->
+            <!--<div class="modal-header">-->
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                    <!--<span aria-hidden="true">×</span></button>-->
+                <!--<h5 class="modal-title">Last 5 Transactions</h5>-->
+
+                <!--<div class="modal-body">-->
+
+                    <!--<div class="table-striped">-->
+                        <!--<div id="replace_poLastPrice_div"></div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->

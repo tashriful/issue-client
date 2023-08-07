@@ -1,0 +1,275 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <script th:inline="javascript">
+        function selectedobj(value, ind) {
+            if (ind == 'HiercReq') {
+                SearchHircReqObj(value);
+            }
+        }
+        ;
+    </script>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+
+                <div class="panel-heading">Manage Purchase Requisition Types</div>
+                <div class="panel-body">
+
+                    <form th:action="@{'/reqTrnsType/addTrnsType/'+${mode}+'/'+${pageId}+'/'+${temltId}}"
+                          th:object="${reqTrnsType}" th:method="post">
+                        <!--<button type="submit" name="rpt" th:value="Journal_voucher" class="btn btn-primary">Voucher</button>-->
+                        <!--color: #ed1c24;-->
+                         <span style="font-weight: bold" th:each="m :${msg}">
+                    <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                        <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                        <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+                    </p>
+                 </span>
+
+                        <div class="form-group">
+                            <!--<label for="inputSegment1">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid"
+                                   th:field="*{id}"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}"
+                                  th:errors="*{id}">Name Error</span>
+                        </div>
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputorgHierarchy">Organization</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-4 ">
+                                <select class="form-control" name="orgHierarchy" id="inputorgHierarchy"
+                                        th:field="*{orgHierarchy}" required="required">
+                                    <option value="">Please select One</option>
+                                    <option th:each="o : ${orgs}"
+                                            th:value="${o.id}"
+                                            th:text="${o.code}">
+                                    </option>
+                                </select>
+
+
+
+
+
+                            </div>
+                            <div class="col-sm-4 ">
+                                <select class="form-control" name="typeOfReq" id="inputtypeOfReq" th:field="*{typeOfReq}"
+                                        required="required">
+                                    <option value="">Please select One</option>
+                                    <option th:each="o : ${T(com.aye.web.model.Requisiton.TypeOfReq).values()}"
+                                            th:value="${o}"
+                                            th:text="${o}">
+                                    </option>
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+
+                            <label class="col-sm-3 control-label " for="inputtrnsTypeName">Transaction Type Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input class="form-control" type="text" id="inputtrnsTypeName" placeholder="Name"
+                                       th:field="*{name}" name="name" required="required"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('name')}"
+                                      th:errors="*{name}">Name Error</span>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input type="text" class="form-control" id="inputreqPrefix" placeholder="Prifix"
+                                       th:field="*{reqPrefix}"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('reqPrefix')}"
+                                      th:errors="*{reqPrefix}">Name Error</span>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputenableAppHierarchy">Hierarchy</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-2 ">
+                                <select class="form-control" name="type" id="inputenableAppHierarchy" th:field="*{enableAppHierarchy}">
+                                    <!--<option value=""> Select </option>-->
+                                    <option  th:text="Yes"
+                                             th:value="1" >module</option>
+                                    <option  th:text="No"
+                                             th:value="0" >module</option>
+                                </select>
+
+                            </div>
+                            <div class="col-sm-6 ">
+                                <input type="hidden" id="inputapprovalHierarchyHeader" placeholder="Default Approval Hierarchy" name="approvalHierarchyHeader"
+                                       th:field="*{approvalHierarchyHeader}" class="form-control"/>
+                                <input type="text" id="inputapprovalHierarchyHeaderName" placeholder="Default Approval Hierarchy" name="approvalHierarchyHeaderName"
+                                       th:field="*{approvalHierarchyHeader.name}" class="form-control" readonly/>
+                                <script th:inline="javascript">
+                                    $(document).ready(function(){
+                                        if($('#inputorgHierarchy').val()==''||$('#inputenableAppHierarchy').val()==0)
+                                        {
+                                            $('#inputapprovalHierarchyHeaderName').attr('readonly',true);
+                                        }
+
+                                        if($('#inputorgHierarchy').val()!=''||$('#inputenableAppHierarchy').val()==1)
+                                        {
+                                            $('#inputapprovalHierarchyHeaderName').removeAttr('readonly');
+                                        }
+                                    });
+
+                                    $('#inputorgHierarchy').on('change',function()
+                                    {
+
+                                        if(($('#inputorgHierarchy').val()==''||$('#inputorgHierarchy').val()==null)||($('#inputenableAppHierarchy').val()==0))
+                                        {
+                                            $('#inputapprovalHierarchyHeaderName').attr('readonly',true);
+
+                                        }else{
+                                            $('#inputapprovalHierarchyHeaderName').removeAttr('readonly');
+
+                                        }
+                                    });
+
+                                    $('#inputenableAppHierarchy').on('change',function()
+                                    {
+                                        if($('#inputenableAppHierarchy').val()==1)
+                                        {
+                                            $('#inputapprovalHierarchyHeaderName').removeAttr('readonly');
+                                        }else{
+                                            $('#inputapprovalHierarchyHeaderName').attr('readonly',true);
+                                        }
+                                    });
+                                    function SearchHircReqObj(objparm) {
+                                        var objparmV = objparm;
+
+                                        $('#inputapprovalHierarchyHeader').val(objparmV.id).trigger("change");
+                                        $('#inputapprovalHierarchyHeaderName').val(objparmV.name).trigger("change");
+                                    };
+                                    $('#inputapprovalHierarchyHeaderName').on('input',function(){
+                                        var lName=$('#inputapprovalHierarchyHeaderName').val();
+                                        if (lName.length>1)
+                                        {
+                                            var bgId = [[${bg.id}]]
+                                            var amId = [[${appModule.id}]]
+                                            var urlval = '/AYE/ACRC/SearchActiveHierarchyName/' + bgId + '/' + lName+ '/' + amId;
+                                            var displayfield = '#inputapprovalHierarchyHeaderName';
+                                            var dbfield = '#inputapprovalHierarchyHeader';
+                                            var getvalue = 'name';
+                                            var indc = 'HiercReq';
+                                            var opt = "groupValueType";
+//                                        alert(urlval);
+                                            autocomwithobject(urlval, getvalue, displayfield, dbfield, opt, indc);
+                                            $('#inputapprovalHierarchyHeaderName').focus();
+                                        }
+                                    });
+
+                                </script>
+
+                            </div>
+
+                        </div>
+                        <div class="form-group ">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumn" placeholder="column"
+                                   th:field="*{commonColumn.createdBy}" name="column"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('commonColumn.createdBy')}"
+                                      th:errors="*{commonColumn.createdBy}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{commonColumn.creationDate}" name="columnDate"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('commonColumn.creationDate')}"
+                                      th:errors="*{commonColumn.creationDate}">User Name Error</span>
+                        </div>
+
+
+                        <div class="form-group  col-sm-12 text-right Padding10px">
+                            <a th:href="@{/reqTrnsType/addTrnsType/E/}+${pageId}+'/'+${temltId}"
+                               class="btn btn-default">New</a>
+                            <button type="submit" name="save" class="btn btn-primary">Save</button>
+                        </div>
+
+
+                    </form>
+
+                    <div>
+                        <div class="row">
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Organization</th>
+                                    <th>Name</th>
+                                    <th>PO Prefix</th>
+                                    <th>Hierarchy</th>
+                                    <th>Edit</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <div th:if="!${#lists.isEmpty(trnsTypes)}">
+                                    <tr th:each="trns : ${trnsTypes}">
+                                        <td th:text="*{trns.orgHierarchy.code}"></td>
+                                        <td th:text="*{trns.name}"></td>
+                                        <td th:text="*{trns.reqPrefix}"></td>
+                                        <td th:text="*{trns.approvalHierarchyHeader !=null ? trns.approvalHierarchyHeader.name:''}"></td>
+                                        <td>
+                                            <div class="btn-group" role="group" aria-label="...">
+                                                <a th:href="@{/reqTrnsType/addTrnsType/U/} + ${pageId}+'/'+${temltId}+'/'+${trns.id}"
+                                                   class="btn btn-success"><span
+                                                        class="glyphicon glyphicon-edit"
+                                                        aria-hidden="true">Edit</span></a>
+                                            </div>
+                                            <div class="btn-group" role="group" aria-label="...">
+                                                <a th:href="@{/reqTrnsType/deleteTrnsType/U/} + ${pageId}+'/'+${temltId}+'/'+${trns.id}"
+                                                   class="btn btn-danger"><span
+                                                        class="glyphicon glyphicon-trash"
+                                                        aria-hidden="true">Delete</span></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                </div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+
+</body>
+</html>

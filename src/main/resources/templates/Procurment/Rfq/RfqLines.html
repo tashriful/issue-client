@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <!--<link-->
+    <!--href="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/easy-autocomplete.min.css"-->
+    <!--rel="stylesheet" type="text/css"/>-->
+    <!--<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>-->
+    <!--<script-->
+    <!--src="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/jquery.easy-autocomplete.min.js"-->
+    <!--type="text/javascript"></script>-->
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <script th:inline="javascript">
+
+        var xMode;
+        var xPageId;
+        var xtempId ;
+        var xHdrId ;
+        var poReqSearchObj;
+        function selectedobj(value, ind) {
+            if(ind == 'rfqSup')
+            {
+                SearchRfqSupObj(value);
+            }else
+          if(ind == 'poRfqReqItemSerc')
+            {
+
+                SearchPoRfqReqItemObj(value);
+            }else
+          if(ind == 'reqNumberSerchReqPo')
+            {
+                SearchPoReqObjRfqLineSearch(value);
+            }
+        };
+
+
+        function getRfqSupInf(pSup, pdisplay, pindc) {
+            var varOrg = document.getElementById('inputorgHierarchy').value;
+
+            var displayfieldfrom = pdisplay;
+            var indc = pindc;
+            AutocomFunc('/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + pSup,
+                    displayfieldfrom,
+                    'name',
+                    null,
+                    indc);
+        };
+
+
+
+
+    </script>
+</head>
+
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 ">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading" th:text="${poRfqLines.poRfqHeader.rfqNumber+' - RFQ Lines.'}"></div>
+                <div class="panel-body">
+                    <form th:action="@{'/rfq/rfqLines/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${rfqId}}"
+                          th:object="${poRfqLines}" th:method="post">
+                        <!--+${role.role}  +${role.role}-->
+
+                 <span style="font-weight: bold" th:each="m :${msg}">
+                        <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                            <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                            <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+                        </p>
+                 </span>
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid" placeholder="Id" th:field="*{id}"
+                                   name="id"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}"
+                                  th:errors="*{id}">Id Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputpoRfqHeader" th:field="*{poRfqHeader}"
+                                   name="poRfqHeader"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('poRfqHeader')}"
+                                  th:errors="*{poRfqHeader}">Id Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="hidden" id="inputorgHierarchy" th:field="*{orgHierarchy}"/>
+                            <input type="hidden" id="inputinventoryInformations" th:field="*{inventoryInformations}"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('orgHierarchy')}" th:errors="*{orgHierarchy}">Id Error</span>
+                        </div>
+
+
+                        <div th:class="${#fields.hasErrors('supplierLine')} ? 'form-group has-error' :'form-group required col-sm-12'">
+                            <label class="col-sm-3 control-label " for="inputsupplierLineId">Supplier</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-4 ">
+                                <input type="hidden" id="inputsupplierLineId" th:field="*{supplierLine}" required="required"/>
+                                <input type="text" id="inputsupplierLineName" placeholder="Supplier" name="supplierLine" th:field="*{supplierLine.name}"
+                                       class="form-control" required="required" autofocus/>
+                                <p th:errors="*{supplierLine}" class="help-block"></p>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input type="text" id="inputsupplierLineAddress" placeholder="Address" th:field="*{supplierLine.siteAddress}"
+                                       class="form-control" readonly/>
+                            </div>
+                            <script th:inline="javascript">
+                                $(document).ready(function(){
+                                    xMode=[[${mode}]];
+                                    xPageId=[[${pageId}]];
+                                    xtempId =[[${temltId}]];
+                                    if([[${poRfqLines.poRfqHeader.id}]]!=null)
+                                    {
+                                        xHdrId=[[${poRfqLines.poRfqHeader.id}]];
+                                    }
+
+                                    if(![[${verifyUserEmail}]])
+                                    {
+                                        $('#inputnotifySupplier,option:selected').attr('disabled','disabled');
+                                    }
+                                });
+                                function SearchRfqSupObj(objparms) {
+//                                            alert('x');
+                                    var objparmV = objparms;
+                                    $('#inputsupplierLineId').val(objparmV.id).trigger("change");
+                                    $('#inputsupplierEmail').val(objparmV.email).trigger("change");
+                                    $('#inputsupplierLineAddress').val(objparmV.siteAddress).trigger("change");
+                                };
+
+                                document.getElementById('inputsupplierLineName').oninput = function () {
+                                    myFunction();
+                                };
+                                function myFunction() {
+                                    var innerVar = document.getElementById('inputsupplierLineName').value;
+                                    if (innerVar.length > 2) {
+
+                                        var displayfieldfrom = [['#inputsupplierLineName']];
+
+                                        getRfqSupInf(innerVar, displayfieldfrom, 'rfqSup');
+//                                        document.getElementById('fromLocator').focus();
+                                        document.getElementById('inputsupplierLineName').focus();
+                                    }
+                                }
+                            </script>
+                            </div>
+                        <div th:class="${#fields.hasErrors('supplierEmail')} ? 'form-group has-error' :'form-group required col-sm-12'">
+                            <label class="col-sm-3 control-label " for="inputsupplierEmail">E-mail & Notify </label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-6 ">
+                                <input type="email" id="inputsupplierEmail" placeholder="supplierEmail"
+                                       name="supplierEmail" th:field="*{supplierEmail}" class="form-control"/>
+
+                                <p th:errors="*{supplierEmail}" class="help-block"></p>
+                            </div>
+
+                            <div class="col-sm-2 ">
+                                <select id="inputnotifySupplier" placeholder="notifySupplier"
+                                        name="notifySupplier" th:field="*{notifySupplier}" class="form-control">
+                                    <option th:value="0">No</option>
+                                    <option th:value="1">YES</option>
+                                </select>
+                                </div>
+
+                        </div>
+
+                        <div th:class="${#fields.hasErrors('startDate')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputstartDate">Date</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-4 ">
+                                <input type="date" id="inputstartDate" placeholder="startDate"
+                                       name="startDate" th:field="*{startDate}" class="form-control"/>
+
+                                <p th:errors="*{startDate}" class="help-block"></p>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input type="date" id="inputendDate" placeholder="endDate"
+                                       name="endDate" th:field="*{endDate}" class="form-control"/>
+
+                                <p th:errors="*{endDate}" class="help-block"></p>
+                            </div>
+
+                        </div>
+
+
+
+                            <div class="form-group">
+                            <input type="hidden" class="form-control" id="inputcolumncreatedBy" placeholder="columncreatedBy"
+                                   th:field="*{commonColumn.createdBy}" name="columncreatedBy"/>
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{commonColumn.creationDate}" name="columnDate"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('commonColumn.creationDate')}"
+                                  th:errors="*{commonColumn.creationDate}">User Name Error</span>
+                        </div>
+
+                        <div>
+                            <button type="button" data-toggle="modal" data-target="#modal-RecordHistory" th:id="btnIdHM"
+                                    th:attr="data-target='#modal-RecordHistory'"  title="Record History" >
+                                <span class="glyphicon glyphicon-record"></span>
+                            </button>
+                            <script th:inline="javascript">
+                                document.getElementById('btnIdHM').onclick =
+                                        function () {
+                                            var obj = [[${poRfqLines.commonColumn}]];
+
+                                            histabledataset(obj);
+                                        };
+
+                            </script>
+
+                        </div>
+                        <div data-th-replace="fragments/recordHistoryModal :: recordhis-modal"></div>
+
+
+                        <div class="text-right">
+                            <a th:href="@{/rfq/rfqLines/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${rfqId}" class="btn btn-default">New Line</a>
+                            <a th:href="@{/rfq/rfqHeader/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${rfqId}" class="btn btn-default">Back</a>
+                            <a th:href="@{/rfq/requsitionReprocess/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${rfqId}" class="btn btn-warning" title="Re-Process RFQ Detail Data">
+                                <span class="glyphicon glyphicon-registration-mark"></span></a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" data-toggle="modal" data-target="#modal-OpenReqInfo" th:id="addReqId"
+                                    th:attr="data-target='#modal-OpenReqInfo'"  title="Add Requition Lines" >
+                                <span class="glyphicon glyphicon-plus-sign"></span>
+                            </button>
+
+                        </div>
+
+
+
+                </form>
+
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>Sl</th>
+                        <th>Supplier</th>
+                        <th>Email</th>
+                        <th>Notified</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <div th:if="!${#lists.isEmpty(poRfqLinesList)}">
+                        <tr th:each="l,iter   : ${poRfqLinesList}">
+
+                            <td th:text="*{iter.count}"></td>
+                            <td th:text="*{l.supplierLine.name}"></td>
+                            <td th:text="*{l.supplierEmail}"></td>
+                            <td th:text="(*{l.notifySupplier} ? 'Yes':'No')"></td>
+                            <td th:text="*{l.startDate}"></td>
+                            <td th:text="*{l.endDate}"></td>
+
+                            <td>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <a th:href="@{/rfq/rfqLines/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${rfqId}+'/'+${l.id}"
+                                       class="btn btn-success"><span
+                                            class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+
+                                </div>
+
+                                <div  th:if="${#lists.size(l.poRfqDetailses)} eq 0" class="btn-group" role="group" aria-label="..." >
+                                    <a th:href="@{/rfq/rfqLineDelete/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${rfqId}+'/'+${l.id}"
+                                       class="btn btn-danger"><span
+                                            class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+
+                                </div>
+
+                                <div  class="btn-group" role="group" aria-label="..." >
+                                    <a th:href="@{/rfq/rfqDetails/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${rfqId}+'/'+${l.id}"
+                                       class="btn btn-primary"><span
+                                            class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    </div>
+                    <div th:if="${#lists.isEmpty(poRfqLinesList)}">
+                        <tr>
+                            <td>No Data exists!</td>
+                        </tr>
+                    </div>
+
+                    </tbody>
+
+                </table>
+            </div>
+            <div class="panel-footer">
+            </div>
+        </div>
+        <!--</div>-->
+        </div>
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading" th:text="${poRfqLines.poRfqHeader.rfqNumber+' - RFQ Detail Infos..'}"></div>
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>Sl</th>
+                        <th>Number</th>
+                        <th>Item</th>
+                        <th>Uom</th>
+                        <th>Qty</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <div th:if="!${#lists.isEmpty(poRfqDetailInfos)}">
+                        <tr th:each="l,iter   : ${poRfqDetailInfos}">
+
+                            <td th:text="*{iter.count}"></td>
+                            <td th:text="*{l.reqNumber}"></td>
+                            <td th:text="*{l.itemCode}"></td>
+                            <td th:text="*{l.trnsUomCode}"></td>
+                            <td th:text="*{l.trnsQty}"></td>
+                        </tr>
+                    </div>
+                    <div th:if="${#lists.isEmpty(poRfqLinesList)}">
+                        <tr>
+                            <td>No Data exists!</td>
+                        </tr>
+                    </div>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+        <div data-th-replace="Procurment/Rfq/OpenReqInfo :: OpenReqInfo"></div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>
+<!--<div class="modal modal-warning fade in" th:id="modal-warning">-->
+
+    <!--<div class="modal-dialog">-->
+        <!--<div class="modal-content">-->
+            <!--<div class="modal-header">-->
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                    <!--<span aria-hidden="true">×</span></button>-->
+                <!--<h5 class="modal-title">Last 5 Transactions</h5>-->
+
+                <!--<div class="modal-body">-->
+
+                    <!--<div class="table-striped">-->
+                        <!--<div id="replace_poLastPrice_div"></div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->

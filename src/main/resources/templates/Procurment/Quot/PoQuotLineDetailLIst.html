@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="PoQuotLineDetail" th:fragment="PoQuotLineDetail" class="PoQuotLineDetail">
+    <div class="form-group col-sm-12">
+
+        <div th:unless="${#lists.isEmpty(poQuotationDetails)}">
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Req. Number</th>
+                    <th>Item</th>
+                    <th>UOM</th>
+                    <th>Qty</th>
+                    <th>Dept.</th>
+                    <th>Requestor</th>
+
+                </tr>
+
+                </thead>
+                <tbody>
+                <tr th:each="b : ${poQuotationDetails}">
+
+                    <td th:text="${b.poReqHeader.reqNumber}" ></td>
+                    <td th:text="${b.itemCode}" ></td>
+                    <td th:text="${b.trnsUomCode}" ></td>
+                    <td th:text="${b.trnsQty}" ></td>
+                    <td th:text="${b.poReqHeader.department}" ></td>
+                    <td th:text="${b.poReqHeader.commonColumn.createdBy.firstName+' '+b.poReqHeader.commonColumn.createdBy.lastName}" ></td>
+
+
+                </tr>
+
+
+                </tbody>
+
+            </table>
+
+            <div>
+
+
+            </div>
+
+        </div>
+        <div th:if="${#lists.isEmpty(poQuotationDetails)}">
+            <tr>
+                <td>No Data exists!</td>
+            </tr>
+            </div>
+    </div>
+</div>
+</body>
+</html>

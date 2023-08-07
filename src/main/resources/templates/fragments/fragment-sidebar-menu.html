@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div id="sidebar-menu" class="main_menu_side hidden-print main_menu"
+     data-th-fragment="sidebar-menu">
+    <div class="menu_section">
+        <!--<h3>General</h3>-->
+
+        <ul class="nav side-menu">
+            <li><a th:href="@{/main}"><i class="fa fa-home"></i> Home </a>
+<!--                <ul class="nav child_menu">-->
+<!--                    <li><a th:href="@{/user}">User</a></li>-->
+<!--                    <li><a th:href="@{/department}">Department</a></li>-->
+<!--                    <li><a th:href="@{/team}">Team</a></li>-->
+<!--                    <li><a th:href="@{/employee}">Employee</a></li>-->
+<!--                </ul>-->
+            </li>
+            <li><a><i class="fa fa-gear"></i> Setup <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu">
+                    <li><a th:href="@{/user}">User</a></li>
+                    <li><a th:href="@{/department}">Department</a></li>
+                    <li><a th:href="@{/team}">Team</a></li>
+                    <li><a th:href="@{/employee}">Employee</a></li>
+                </ul>
+            </li>
+            <li><a><i class="fa fa-ticket"></i> Ticket <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu">
+                    <li><a th:href="@{/ticket}">Add Ticket</a></li>
+                    <li><a th:href="@{/ticket/assignedTickets}">Assigned Tickets</a></li>
+                    <li><a th:href="@{/ticket/allTickets/department}">Department Tickets</a></li>
+
+                </ul>
+            </li>
+
+        </ul>
+
+    </div>
+
+</div>
+</html>

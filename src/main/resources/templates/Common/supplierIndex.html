@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+
+    <link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>
+
+    <script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>
+    <script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Manage Supplier</div>
+                <div class="panel-body" >
+                    <!--<form action="'/Customer/customerIndx/E/'+${pageId}+'/'+${temltId}"-->
+                          <!--th:action="@{'/Customer/customerIndx/E/'+${pageId}+'/'+${temltId}}" th:object="${search}">-->
+
+                    <form  th:if="${crt}=='N'" id="searchform" action="'/Supplier/supplierIndex/E/'+${pageId}+'/'+${temltId}"
+                            th:action="@{'/Supplier/supplierIndex/E/'+${pageId}+'/'+${temltId}}" th:object="${search}">
+
+                        <!--<div class="form-group" >-->
+                            <!--<label for="inputname">Name</label>-->
+                            <!--<input type="text" class="form-control" id="inputname" placeholder="Supplier Name" th:field="*{name}" name="name" />-->
+                            <!--&lt;!&ndash;<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>&ndash;&gt;-->
+                            <!--<span class="help-block" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</span>-->
+                        <!--</div>-->
+
+                        <div class="form-group required col-sm-12" >
+
+                            <label class="col-sm-3 control-label " for="inputname" >Supplier Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control "  placeholder="Supplier Name" type="text" id="inputname"
+                                             th:field="*{name}" name="Sname"/>
+                                <input class="form-control "  placeholder="Supplier Name" type="hidden" id="inputnameid"
+                                       name="Snameid"/>
+
+                                <script th:inline="javascript">
+
+
+
+                                    var urlval ='/AYE/ACRC/getSupplierList';
+                                    var displayfield = '#inputname';
+                                    var dbfield = '#inputnameid'
+                                    var getvalue = 'supplierName';
+                                    autocom(urlval, getvalue, displayfield, dbfield);
+
+                                </script>
+
+
+
+
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group required col-sm-12" >
+
+                            <label class="col-sm-3  " for="inputname" >Supplier Address</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control "  placeholder="Supplier Address" type="text" id="inputAddress"
+                                       th:field="*{address}" name="address"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('address')}"
+                                      th:errors="*{address}">address Error</span>
+                            </div>
+
+                        </div>
+
+
+
+
+                        <!--<div class="form-group">-->
+                            <!--<label for="inputAddress">Address</label>-->
+                            <!--<input type="text" class="form-control" id="inputAddress" placeholder="Supplier Address" th:field="*{address}" name="address" />-->
+                            <!--&lt;!&ndash;<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>&ndash;&gt;-->
+                            <!--<span class="help-block" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Name Error</span>-->
+                        <!--</div>-->
+                        <div class="text-right Padding10px">
+                            <!--commonCodesAdd/{mode}/{pageId}/{temltId}-->
+                            <!--<a th:href="@{/Common/commonCodesAdd/}+'E/'+${pageId}+'/'+${temltId}" class="btn btn-default">Cancel</a>-->
+                            <button type="submit" class="btn btn-primary">Search</button>
+                            <a th:href="@{/Supplier/supplierIndexCrt/E/} + ${pageId}+'/'+${{temltId}}"
+                               title="Create Supplier Informations" class="btn btn-primary">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true">Create</span></a>
+                        </div>
+
+
+                    </form>
+
+
+
+                    <table th:if="${crt}=='N'" id="hdrlist" class="table table-bordered table-hover table-striped marginbtm10px">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                            <th>Fax</th>
+                            <th>E-Mail</th>
+                            <th>Person</th>
+                            <th>Site Show/ Hide</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <div th:if="!${#lists.isEmpty(suppliers)}">
+                            <div th:each="supplier : ${suppliers}">
+                            <tr>
+                                <td rowspan="2"  th:text="*{supplier.supplierName}"></td>
+                                <td th:text="*{supplier.address}"></td>
+                                <td th:text="*{supplier.phoneNumber}"></td>
+                                <td th:text="*{supplier.fax}"></td>
+                                <td th:text="*{supplier.email}"></td>
+                                <td th:text="*{supplier.personName}"></td>
+                                <td width="10px"><a href="#" th:id="${supplier.id}" th:title="${supplier.id}">Click</a></td>
+                                <td>
+                                    <div class="btn-group" role="group" aria-label="...">
+
+
+                                        <a  th:href="@{/Supplier/supplier/}+'U'+ '/' +${pageId}+'/'+${temltId}+'/'+${supplier.id}"
+                                           title="Edit Supplier Informations" class="btn btn-success">
+                                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+
+                                        <a th:href="@{/Supplier/supplierLine/E/} + ${pageId}+'/'+${{temltId}}+'/'+${supplier.id}"
+                                           title="Add Supplier Sites" class="btn btn-primary">
+                                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+
+                                    </div>
+                                </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td colspan="7" >
+                                        <div th:id="extra+${supplier.id}" style="display: none; " th:if="!${#lists.isEmpty(supplier.supplierLines)}">
+                                            <div class="col-sm-12 " style="padding-bottom: 20px; padding-left: 0px;">
+                                                <div  colspan="6" style="text-align: left ; background-color:#D5DBDB; color: #222222;" class="colps_div_hdr col-sm-6">
+                                                    Site Informations</div>
+                                                <div class="col-sm-12 colps_div_hdr" th:each="suppl : ${supplier.supplierLines}" >
+                                                    <div class="col-sm-3 " style="border-right: 1px solid transparent" th:text="*{suppl.orgHierarchy.code}"></div>
+                                                    <div class="col-sm-3 " style="border-right: 1px solid transparent" th:text="*{suppl.siteName}"></div>
+                                                    <div class="col-sm-3 " style="border-right: 1px solid transparent"  th:text="*{suppl.siteAddress}"></div>
+                                                    <div class=" col-sm-3 btn-group" role="group" aria-label="..." align="right">
+
+                                                        <a th:href="@{/Supplier/supplierLine/U/} + ${pageId}+'/'+${temltId}+'/'+${supplier.id}+'/'+${suppl.id}" title="Edit Site"
+                                                           class="smbtn btn-success">
+                                                            <span class="glyphicon glyphicon-edit" aria-hidden="true">Edit Site</span></a>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <script th:inline="javascript">
+                                    var a='#'+[[${supplier.id}]];
+                                    //alert(a);
+                                    $(a).click(function() {
+                                        var dbfield = [[${supplier.id}]];
+                                        var df='#extra'+[[${supplier.id}]];
+                                        $(df + $(this).attr('id').substr(5)).slideToggle("slow");
+                                        event.preventDefault();
+
+                                    });
+                                    //                        $("a[id^=show_]").click(function(event) {
+                                    //                            $("#extra_" + $(this).attr('id').substr(5)).slideToggle("slow");
+                                    //                            event.preventDefault();
+                                    //                        })
+                                </script>
+
+
+
+
+                                <!--dddd-->
+                                <!--<tr>-->
+                            <!--<td></td>-->
+                            <!--<td colspan="6">-->
+                                <!--<div th:if="!${#lists.isEmpty(supplier.supplierLines)}" >-->
+                                <!--<table  class="table" style="margin-bottom: 0px;" >-->
+
+                                    <!--<th colspan="4" style="line-height: 0px;text-align: center "  >Site Informations</th>-->
+                                    <!--&lt;!&ndash;<th style="line-height: 0px ">Site Name</th>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<th  style="line-height: 0px ">Site Address</th>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<th  style="line-height: 0px "></th>&ndash;&gt;-->
+
+                                    <!--<tr  th:each="suppl : ${supplier.supplierLines}">-->
+
+                                        <!--<td th:text="*{suppl.orgHierarchy.code}"></td>-->
+                                        <!--<td th:text="*{suppl.siteName}"></td>-->
+                                        <!--<td th:text="*{suppl.siteAddress}"></td>-->
+
+                                        <!--<td>-->
+
+                                            <!--<div class="btn-group" role="group" aria-label="...">-->
+
+                                                <!--<a th:href="@{/Supplier/supplierLine/U/} + ${pageId}+'/'+${temltId}+'/'+${supplier.id}+'/'+${suppl.id}"-->
+                                                   <!--title="Edit Site"-->
+                                                   <!--class="smbtn btn-success">-->
+                                                    <!--<span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>-->
+
+                                            <!--</div>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+                                <!--</table>-->
+
+                                <!--</div>-->
+                            <!--</td>-->
+                        <!--</tr>-->
+
+                            <!--</tr>-->
+                            </div>
+                        </div>
+                        <div th:if="${#lists.isEmpty(suppliers)}">
+                            <tr>
+                                <td>No Data exists!</td>
+                            </tr>
+                        </div>
+
+                        </tbody>
+                        <!--<div id="find_keyword">-->
+                        <!--<div class="ui-widget" th:each="sorg: ${OrgAcc}">-->
+                        <!--<input type="text" id="tagQuery" th:value="*{sorg.id}"> </input>-->
+                        <!--</div>-->
+                        <!--</div>-->
+
+
+                        <!--<div>-->
+                        <!--<label> Sessions Attribuites </label> <select  >-->
+                        <!--&lt;!&ndash;<option th:value="${manus}" th:text="${manus}"></option>&ndash;&gt;-->
+                        <!--<option th:each="message : ${OrgAcc}" th:text="${message.name}"></option>-->
+                        <!--&lt;!&ndash;<option th:each="message : ${manus}" th:value="${message.id}"&ndash;&gt;-->
+                        <!--&lt;!&ndash;th:text="${message.menuName}"></option>&ndash;&gt;-->
+                        <!--</select>-->
+                        <!--</div>-->
+
+                    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <form  th:if="${crt}==Y" id="crtform" action="'/Supplier/supplier/'+${mode}+'/'+${pageId}+'/'+${temltId}" th:action="@{'/Supplier/supplier/'+${mode}+'/'+${pageId}+'/'+${temltId}}"
+                           th:object="${supplier}" th:method="post">
+                        <!--+${role.role}  +${role.role}-->
+                        <span style="color: #ed1c24;font-weight: bold" th:text="${msg}"  ></span>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid" placeholder="Id" th:field="*{id}" name="id" />
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}" th:errors="*{id}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3 control-label " for="inputname" >Supplier Name</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control " required="required"  placeholder="Supplier Name" type="text" id="inputsupplierName"
+                                       th:field="*{supplierName}" name="supplierName"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}">Supplier Name Error</span>
+                            </div>
+                        </div>
+
+
+                        <!--<div class="form-group">-->
+                            <!--<label for="inputsupplierName">Name</label>-->
+                            <!--<input type="text" class="form-control" id="inputsupplierName" placeholder="supplierName" th:field="*{supplierName}" name="supplierName" />-->
+                            <!--&lt;!&ndash;<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>&ndash;&gt;-->
+                            <!--<span class="help-block" th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}">Customer Name Error</span>-->
+                        <!--</div>-->
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3 control-label " for="inputname" >Supplier Address</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control " required="required"  placeholder="Supplier Address" type="text" id="inputsupplierName"
+                                       th:field="*{address}" name="address"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Supplier Name Error</span>
+                            </div>
+                        </div>
+
+                        <!--<div class="form-group">-->
+                            <!--<label for="inputaddress">Address</label>-->
+                            <!--<input type="text" class="form-control" id="inputaddress" placeholder="address" th:field="*{address}" name="address" />-->
+                            <!--&lt;!&ndash;<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>&ndash;&gt;-->
+                            <!--<span class="help-block" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Address Error</span>-->
+                        <!--</div>-->
+
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3  " for="inputphoneNumber" >Phone Number</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control "   placeholder="phoneNumber" type="text" id="inputphoneNumber"
+                                       th:field="*{phoneNumber}" name="address"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">Supplier Name Error</span>
+                            </div>
+                        </div>
+
+                        <!--<div class="form-group">-->
+                            <!--<label for="inputphoneNumber">Phone Number</label>-->
+                            <!--<input type="tel" class="form-control" id="inputphoneNumber" placeholder="phoneNumber" th:field="*{phoneNumber}" name="phoneNumber" />-->
+                            <!--&lt;!&ndash;<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>&ndash;&gt;-->
+                            <!--<span class="help-block" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">Phone Number Error</span>-->
+                        <!--</div>-->
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3  " for="inputfax" >Fax</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control "   placeholder="Fax" type="text" id="inputfax"
+                                       th:field="*{fax}" name="address"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('fax')}" th:errors="*{fax}">Fax Name Error</span>
+                            </div>
+                        </div>
+
+                        <!--<div class="form-group">-->
+                            <!--<label for="inputfax">Fax</label>-->
+                            <!--<input type="text" class="form-control" id="inputfax" placeholder="fax" th:field="*{fax}" name="fax" />-->
+                            <!--&lt;!&ndash;<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>&ndash;&gt;-->
+                            <!--<span class="help-block" th:if="${#fields.hasErrors('fax')}" th:errors="*{fax}">Fax Error</span>-->
+                        <!--</div>-->
+
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3  " for="inputemail" >E-mail</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control "   placeholder="Email" type="text" id="inputemail"
+                                       th:field="*{email}" name="inputemail"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">inputemail Name Error</span>
+                            </div>
+                        </div>
+
+                        <!--<div class="form-group">-->
+                            <!--<label for="inputemail">E-mail</label>-->
+                            <!--<input type="email" class="form-control" id="inputemail" placeholder="email" th:field="*{email}" name="email" />-->
+                            <!--&lt;!&ndash;<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>&ndash;&gt;-->
+                            <!--<span class="help-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">email Error</span>-->
+                        <!--</div>-->
+
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3  " for="inputsupBinNo" >BIN No.</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control "   placeholder="BIN No" type="text" id="inputsupBinNo"
+                                       th:field="*{supBinNo}" name="supBinNo"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('supBinNo')}" th:errors="*{supBinNo}">BIN No Error</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3  " for="inputsupplierType" >Suppplier Type</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <select class="form-control " type="text" id="inputsupplierType"
+                                        th:field="*{supplierType}" required>
+                                    <option value="">Select one</option>
+                                    <option th:each="modt : ${T(com.aye.web.model.SupplierHeader.SupplierType).values()}"
+                                            th:text="${modt.displayName}" th:value="${modt}" ></option>
+                                </select>
+
+                                <span class="help-block" th:if="${#fields.hasErrors('supplierType')}" th:errors="*{supplierType}">supplierType Error</span>
+                            </div>
+                        </div>
+
+                        <!--<div class="form-group">-->
+                        <!--<div class="form-group">-->
+                            <!--<label for="inputpersonName">Person Name</label>-->
+                            <!--<input type="text" class="form-control" id="inputpersonName" placeholder="personName" th:field="*{personName}" name="personName" />-->
+                            <!--&lt;!&ndash;<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>&ndash;&gt;-->
+                            <!--<span class="help-block" th:if="${#fields.hasErrors('personName')}" th:errors="*{personName}">personName Error</span>-->
+                        <!--</div>-->
+
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumn" placeholder="column" th:field="*{column.createdBy}" name="column" />
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('column.createdBy')}" th:errors="*{column.createdBy}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate" th:field="*{column.creationDate}" name="columnDate" />
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('column.creationDate')}" th:errors="*{column.creationDate}">User Name Error</span>
+                        </div>
+
+
+                        <div class="text-right Padding10px">
+                            <!--commonCodesAdd/{mode}/{pageId}/{temltId}-->
+                            <a th:href="@{'/Supplier/supplierIndex/E/'+${pageId}+'/'+${temltId}}" class="btn btn-default">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+
+
+                    </form>
+
+
+                        <table th:if="${crt}==Y" class="table table-bordered table-hover table-striped marginbtm10px" style="margin-bottom: 0px;" >
+                            <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                            <th>Fax</th>
+                            <th>E-Mail</th>
+                            <th>Person</th>
+                            <th>Action</th>
+                            </tr>
+                            <tr  th:each="newsupp : ${suppliernew}">
+                                <td th:text="*{newsupp.supplierName}"></td>
+                                <td th:text="*{newsupp.address}"></td>
+                                <td th:text="*{newsupp.phoneNumber}"></td>
+                                <td th:text="*{newsupp.fax}"></td>
+                                <td th:text="*{newsupp.email}"></td>
+                                <td th:text="*{newsupp.personName}"></td>
+                                <td>
+                                    <div class="btn-group" role="group" aria-label="...">
+
+
+                                        <a  th:href="@{/Supplier/supplier/} +'U/'+ ${pageId}+'/'+${temltId}+'/'+${newsupp.id}"
+                                            title="Edit Supplier Informations" class="btn btn-success">
+                                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+
+                                        <a th:href="@{/Supplier/supplierLine/E/} + ${pageId}+'/'+${{temltId}}+'/'+${newsupp.id}"
+                                           title="Add Suppliers Details" class="btn btn-primary">
+                                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+
+                                    </div>
+                                </td>
+                            </tr>
+                            </table>
+
+
+                    <!--<script th:inline="javascript">-->
+
+                        <!--var crtmod= [[${crt}]];-->
+                        <!--if (crtmod=='Y')-->
+                        <!--{-->
+
+                            <!--document.getElementById('crtform').style.display = 'block';-->
+                            <!--document.getElementById('hdrlist').style.display = 'none';-->
+                            <!--document.getElementById('searchform').style.display = 'none';-->
+
+                        <!--}-->
+                        <!--else {-->
+                            <!--document.getElementById('crtform').style.display = 'none';-->
+
+                        <!--}-->
+
+                    <!--</script>-->
+
+
+
+
+
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

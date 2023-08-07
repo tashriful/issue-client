@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="poRcvLineCreate" th:fragment="poRcvLineCreate" class="poRcvLineCreate">
+    <div class=" col-sm-12 table-responsive dist_view" th:if="!${#lists.isEmpty(poRcvHeader.poRcvLines)}">
+
+
+        <div>
+            <div class="col-sm-12 brder accgl-col">
+                <div class="col-sm-1 accgl-col brderright" style="width: 20px">SL</div>
+                <div class="col-sm-2 accgl-col brderright " align="center" style="width: 115px">Po Number</div>
+                <div class="col-sm-3 accgl-col brderright" align="center">Supplier</div>
+                <div class="col-sm-3 accgl-col brderright" align="center">Item</div>
+                <div class="col-sm-2 accgl-col brderright" align="center">Sub & Locator</div>
+                <div class="col-sm-1 accgl-col brderright" align="center">Quantity</div>
+                <div class="col-sm-1 accgl-col brderrigh" align="center" style="width: 30px">Action</div>
+            </div>
+
+            <div class="col-sm-12 accgl-col brder "
+                 th:each="lines,rowStat : *{poRcvLines}">
+                <div class="col-sm-1  form-group accgl-col high_control top_marg brderright"
+                     th:text="${rowStat.count}" style="width: 20px">1
+                </div>
+
+
+                <div class="col-sm-2 form-group accgl-col top_marg brderright" style="width: 115px">
+                    <input th:type="hidden"  th:field="*{poRcvLines[__${rowStat.index}__].id}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].poRcvHeader}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].poHeader}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].poLines}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].supplierLine}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].masterItem.id.id}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].masterItem.id.inventoryInformations}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].rcvPrimUom}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].rcvPrimUomCode}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].rcvPrimaryQty}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].rcvTrnsUom}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].rcvTrnsUomCode}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].unitPrice}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].amount}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].subinventory}" />
+                    <!--<input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].subInvCode}" />-->
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].subinvLocator}" />
+                    <!--<input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].subinvLocCode}" />-->
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].conversionRate}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].currency}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].currencyCode}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].exchRate}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].exchDate}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].commonColumn.createdBy}" />
+                    <input th:type="hidden" th:field="*{poRcvLines[__${rowStat.index}__].commonColumn.creationDate}" />
+                    <input class="td form-control " th:type="text"
+                           th:field="*{poRcvLines[__${rowStat.index}__].poHeader.poNumber}"
+                           height="2" readonly="readonly"/>
+
+                </div>
+
+
+                <div class="col-sm-3 form-group accgl-col top_marg brderright">
+                    <input class="td form-control texthide" th:type="text"
+                           th:field="*{poRcvLines[__${rowStat.index}__].supplierLine.name}"
+                           th:title="*{poRcvLines[__${rowStat.index}__].supplierLine.name}"
+                           height="2" readonly="readonly"/>
+                </div>
+
+                <div class="col-sm-3 form-group accgl-col top_marg brderright">
+                    <input class="td form-control " th:type="text"
+                           th:field="*{poRcvLines[__${rowStat.index}__].itemCode}"
+                           th:title="*{poRcvLines[__${rowStat.index}__].itemCode}"
+                           height="2" readonly="readonly"/>
+                </div>
+
+                <div class="col-sm-1 form-group accgl-col top_marg brderright">
+                    <input class="td form-control " th:type="text"
+                           th:field="*{poRcvLines[__${rowStat.index}__].subInvCode}"
+                           height="2" readonly="readonly"/>
+                </div>
+                <div class="col-sm-1 form-group accgl-col top_marg brderright">
+                    <input class="td form-control " th:type="text"
+                           th:field="*{poRcvLines[__${rowStat.index}__].subinvLocCode}"
+                           height="2" readonly="readonly"/>
+                </div>
+
+
+                <div class="col-sm-1 form-group accgl-col top_marg brderright">
+                    <input class="td form-control " th:type="text"
+                           th:field="*{poRcvLines[__${rowStat.index}__].rcvTrnsQty}"
+                           height="2" readonly="readonly"/>
+                </div>
+
+
+                <div class="col-sm-1 form-group accgl-col top_marg "  style="width: 30px">
+                    <div class="btn-group" role="group" aria-label="..." th:if="${poRcvHeader.rcvStatus == T(com.aye.web.model.RcvStatus).N}" >
+                        <a th:href="@{/poReceive/rcvLine/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'
+                                    +*{poRcvLines[__${rowStat.index}__].poRcvHeader.id} +'/'
+                                    +*{poRcvLines[__${rowStat.index}__].id}"
+                           class="btn btn-success"><span
+                                class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

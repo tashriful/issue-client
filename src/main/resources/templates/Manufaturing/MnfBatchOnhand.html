@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="mnfBatchOnhandResult" th:fragment="mnfBatchOnhandResult" class="mnfBatchOnhandResult">
+    <div class="form-group col-sm-12">
+
+        <div th:unless="${#lists.isEmpty(batchOnhand)}">
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                <!--<tr>-->
+                <!--<th th:text="#{results.ordTrnsTypes.id}">Id</th>-->
+                <!--<th th:text="#{results.ordTrnsTypes.trnsTypeName}">Name</th>-->
+                <!--<th th:text="#{results.ordTrnsTypes.description}">Desc.</th>-->
+                <!--<th th:text="#{results.ordTrnsTypes.startDates}">Start</th>-->
+                <!--<th th:text="#{results.ordTrnsTypes.active}">End</th>-->
+                <!--<th th:text="#{results.ordTrnsTypes.priceListHeader.name}">Price List</th>-->
+                <!--<th th:text="#{results.ordTrnsTypes.invOrg.code}">Inv.Org</th>-->
+                <!--<th th:text="#{results.ordTrnsTypes.orgHierarchy.code}">Org</th>-->
+                <!--<th th:text="#{results.ordTrnsTypes.glCategories.categoriesCode}">Gl Categories</th>-->
+                <!--</tr>-->
+                <tr>
+                    <!--<th>Id</th>-->
+                    <th>Item</th>
+                    <th>UOM</th>
+                    <th>Sub Inventory</th>
+                    <!--<th>Locator</th>-->
+                    <th>Closing</th>
+
+                </tr>
+
+                </thead>
+                <tbody>
+                <tr th:each="b : ${batchOnhand}">
+
+                    <td th:text="${b.masterItem.itemCode}" ></td>
+                    <td th:text="${b.uomCode}" ></td>
+                    <td th:text="${b.subInvCode}" ></td>
+                    <!--<td th:text="${b.locatorCode}" ></td>-->
+                    <td th:text="${b.closing}" ></td>
+
+
+                </tr>
+
+
+                </tbody>
+
+            </table>
+            <!--<script>-->
+
+                <!--function myfunc(ele) {-->
+                    <!--var p1;-->
+                    <!--var p2;-->
+                    <!--var values = new Array();-->
+                    <!--$.each($("input[name='c.id']:checked").parents("td").siblings(), function() {-->
+<!--//                        alert($(this).index());-->
+                        <!--if ($(this).index()==1)-->
+                        <!--{-->
+                            <!--p1=$(this).text();-->
+<!--//                            alert(p1);-->
+                        <!--}else if ($(this).index()==2)-->
+                        <!--{-->
+                            <!--p2=$(this).text();-->
+<!--//                            alert(p2);-->
+                        <!--}-->
+<!--//                        values.push($(this).text());-->
+<!--//                        alert("val-&#45;&#45;"+values);-->
+                    <!--});-->
+<!--//                    alert(p1+p2);-->
+                    <!--getcodcomfmodal(p1,p2);-->
+                <!--}-->
+
+
+            <!--</script>-->
+
+
+
+            <div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rcv" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="91828089-48f4-4215-ba73-18321f5d61ea">
+	<property name="ireport.zoom" value="1.1000000000000052"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="dataset1" uuid="26852014-9449-4c9a-813f-7f25a3e6ba4f"/>
+	<subDataset name="dataset2" uuid="6d5824bb-8b96-4441-9113-b86d5ff85866"/>
+	<parameter name="TrnNumber" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select inf.name,h.trns_date,h.from_subinv,h.to_subinv,h.status,d.id,h.trns_number,h.created_by,h.trns_date,itm.item_code, d.primary_qty,u.User_name
+from inv_trns_header h,inv_trns_details d,inv_item_m itm, ORGANIZATION_HIERARCHY hkey,inv_informations inf,AYEUSER u,INV_TRNS_TYPES trnsType
+where h.id=d.trns_header_id
+and d.item_id=itm.item_id
+and h.inv_org_id=itm.inv_org_id
+and h.inv_org_id=inf.id
+and inf.ou_id=hkey.id
+and h.created_by=u.user_id
+and h.id = $P{TrnNumber}
+and h.TRNS_TYPE_ID=trnsType.id
+]]>
+	</queryString>
+	<field name="NAME" class="java.lang.String"/>
+	<field name="TRNS_DATE" class="java.sql.Timestamp"/>
+	<field name="FROM_SUBINV" class="java.lang.String"/>
+	<field name="TO_SUBINV" class="java.lang.String"/>
+	<field name="STATUS" class="java.lang.String"/>
+	<field name="ID" class="java.math.BigDecimal"/>
+	<field name="TRNS_NUMBER" class="java.lang.String"/>
+	<field name="CREATED_BY" class="java.math.BigDecimal"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="PRIMARY_QTY" class="java.math.BigDecimal"/>
+	<field name="USER_NAME" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="47" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="7" width="367" height="20" uuid="a1f2b657-61be-4943-be43-20650106f1e4"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="48" splitType="Stretch">
+			<textField>
+				<reportElement x="117" y="1" width="100" height="20" uuid="0b63fbaa-c631-49f1-b171-6478ef9a7c8c"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TRNS_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="1" width="104" height="20" uuid="99ea6dce-eb05-44d0-8bb1-e54532aeb2b2"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Transaction Number]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="21" width="104" height="20" uuid="dd14b919-6110-41ef-9dbd-2f74f6129352"/>
+				<text><![CDATA[Created By :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="341" y="21" width="92" height="20" uuid="50e4273e-206c-4021-96e5-2ae18fb18a30"/>
+				<text><![CDATA[Created Date:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="442" y="1" width="113" height="20" uuid="854674bb-90b0-4bea-a50a-07d354f5425e"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="341" y="1" width="94" height="20" uuid="0f596ee5-721b-45f9-a18e-a52ed790a3c7"/>
+				<text><![CDATA[Printed Date :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="442" y="21" width="100" height="20" uuid="76d58629-9cbb-4979-bf73-7ff0e613e196"/>
+				<textFieldExpression><![CDATA[$F{TRNS_DATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="117" y="23" width="100" height="20" uuid="60792fb2-7805-45f2-bbca-d2d370e5f75f"/>
+				<textFieldExpression><![CDATA[$F{USER_NAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="24" splitType="Stretch">
+			<staticText>
+				<reportElement x="146" y="2" width="276" height="20" uuid="57ad44f9-aab5-4c72-a427-c6218788e1e7"/>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="442" y="2" width="100" height="20" uuid="23e67414-bcd8-40cd-b1f8-c02cf2123fe8"/>
+				<text><![CDATA[Issued Qty]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="0" width="553" height="1" uuid="61672acb-deee-4acf-b8a4-ce18847e620c"/>
+			</line>
+			<line>
+				<reportElement x="554" y="0" width="1" height="24" uuid="4c90db98-1ca0-4851-bec7-0609f8249905"/>
+			</line>
+			<line>
+				<reportElement x="0" y="0" width="1" height="24" uuid="de059a31-74bf-4ea9-ab3f-7247002ac872"/>
+			</line>
+			<staticText>
+				<reportElement x="70" y="2" width="68" height="20" uuid="c4a5e529-6582-495a-a8bf-6ce0335d16f7"/>
+				<text><![CDATA[Item Id]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="3" width="68" height="20" uuid="95b421ca-2f13-4463-9c09-9ce6ffc399b2"/>
+				<text><![CDATA[Sr. No]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="23" width="555" height="1" uuid="7540afcc-d9e3-4e50-a6ce-705b052f7113"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="442" y="2" width="100" height="20" uuid="bea0bf9b-742b-40e5-8da0-8f7019f58b65"/>
+				<textFieldExpression><![CDATA[$F{PRIMARY_QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="66" y="3" width="78" height="20" uuid="0cc0e428-ca27-4597-afec-27d4469fffcf"/>
+				<textFieldExpression><![CDATA[$F{ID}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="16" y="0" width="29" height="22" uuid="b0ecc2f5-8a86-40c9-adf6-a272f7aa3ae5"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dataset2" uuid="8bc425d2-d06e-4078-bcae-f8d569137c00">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.JREmptyDataSource(1)]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="22" width="29"/>
+				</jr:list>
+			</componentElement>
+			<textField>
+				<reportElement x="6" y="3" width="39" height="20" uuid="2f0a0444-743f-46af-bdb1-e9e12295ceb1"/>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="146" y="3" width="179" height="20" uuid="d5433bec-0d89-410d-9422-052eabdfddff"/>
+				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="1" width="1" height="22" uuid="2d0c026b-cc67-4369-822b-6285a3b08a14"/>
+			</line>
+			<line>
+				<reportElement x="554" y="1" width="1" height="22" uuid="84154f64-355d-421a-a364-f8ffa86a87bc"/>
+			</line>
+			<line>
+				<reportElement x="0" y="22" width="555" height="1" uuid="30250f6b-9e6f-4ab6-8da8-9193b4080a19"/>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="23" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="509" y="34" width="41" height="20" uuid="0b43a7cb-24f8-40b2-9bfd-e8273369b614"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="400" y="34" width="100" height="20" uuid="1906933c-66a0-4c43-90e3-d4fe86fa0c89"/>
+				<text><![CDATA[Page Number :]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

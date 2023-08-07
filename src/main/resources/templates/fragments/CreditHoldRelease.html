@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+      layout:decorator="fragments/layout">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <!--<script src="@{//code.jquery.com/jquery-1.12.2.min.js}"></script>-->
+    <!--<script th:src="@{/js/json-path-picker.js}"></script>-->
+    <!--<script src="jquery.beautify-json.js"></script>-->
+    <!--<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>-->
+
+    <!--<link th:href="@{/css/json-path-picker.css}" rel="stylesheet"/>-->
+    <link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>
+
+
+    <script th:src="@{/js/easyAutocomplete/autocompleteInv.js}"></script>
+    <script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>
+    <script th:src="@{/js/validation.js}"></script>
+</head>
+<body >
+
+
+
+
+<div class="modal modal-creditHoldRelease fade in" th:id="modal-creditHoldRelease"   data-th-fragment="creditHoldRelease-modal">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span></button>
+                <h5 class="modal-title" style="border-bottom: 1px solid">Credit Hold/Release</h5>
+                <div >
+                <div class="modal-body" th:id="modalCrId">
+                    <form th:object="${creditHoldRelease}" th:method="post">
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputcreditHoldReleaseAction">Name</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input type="hidden" id="inputId" th:field="*{id}" name="id"/>
+                                <input type="hidden" id="inputappModule" th:field="*{appModule}" />
+                                <input type="hidden" id="inputorgHierarchy" th:field="*{orgHierarchy}" />
+                                <input type="hidden" id="inputorderHeader" th:field="*{orderHeader}" />
+                                <input type="hidden" id="inputdeliveryHeader" th:field="*{deliveryHeader}" />
+                                <input type="hidden" id="inputholdAmount" th:field="*{holdAmount}"/>
+                                <input type="hidden" id="inputholdReason" th:field="*{holdReason}" />
+                                <input type="hidden" id="inputreleaseReason" th:field="*{releaseReason}" />
+                                <input type="hidden" id="inputisRelease" th:field="*{isRelease}" />
+                                <input type="hidden" id="inputreleaseBy" th:field="*{releaseBy}" />
+                                    <input type="hidden" id="inputcolumn" th:field="*{column.createdBy}" />
+                                    <input type="hidden" id="inputcolumnDate" th:field="*{column.creationDate}" />
+
+                                <select  id="inputcreditHoldReleaseAction" th:field="*{creditHoldReleaseAction}" class="form-control">
+                                    <option th:each="d :${T(com.aye.web.model.CreDirHoldReleaseReason.CreditHoldReleaseAction).values()}"
+                                            th:text="${d}"
+                                            th:value="${d}"></option>
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputnote">Nots to User</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <textarea type="text" id="inputnote" th:field="*{note}" class="form-control" >
+                                    </textarea>
+
+                            </div>
+                        </div>
+                        <div class="btn_padd" align="right">
+                            <a class="btn btn-success"
+                               th:id="CrHrActId"  th:text="Go" th:title="HIT" rel="tooltip">
+                            </a>
+                            <script th:inline="javascript">
+                                $('#CrHrActId').on('click',function(){
+                                    lCreditHoldRelease = null;
+                                    var lColumn=null;
+
+                                    var action= $('#inputcreditHoldReleaseAction').val();
+                                    var lUrl;
+                                    var sUserId= [[${creditHoldRelease.column.createdBy.id}]];
+
+                                    if(action=='HOLD')
+                                    {
+                                        lUrl = window.location.origin+'/AYE/CreditHoldRelease/creditHold/'+sUserId;
+                                    }else if(action=='RELEASE')
+                                    {
+                                        lUrl = window.location.origin+'/AYE/CreditHoldRelease/creditRelease/'+sUserId;
+                                    }
+
+                                    var lTrnsSource=$('#inputTrnsSourceName').val();
+//                                    var lTrnsId=getTrnsId($('#inputTrnsSourceName').val());
+                                    lColumn =[[${creditHoldRelease.column}]];
+                                    lCreditHoldRelease={
+                                        id:$('#inputId').val(),
+                                        appModule:$('#inputappModule').val(),
+                                        orgHierarchy: $('#inputorgHierarchy').val(),
+                                        orderHeader:$('#inputorderHeader').val(),
+                                        deliveryHeader:$('#inputdeliveryHeader').val(),
+                                        holdAmount: $('#inputholdAmount').val(),
+                                        holdReason: $('#inputholdReason').val(),
+                                        releaseReason: $('#inputreleaseReason').val(),
+                                        isRelease: $('#inputisRelease').val(),
+                                        holdBy: $('#inputholdBy').val(),
+                                        releaseBy:$('#inputreleaseBys').val(),
+                                        note: $('#inputnote').val(),
+                                        creditHoldReleaseAction:action
+//                                        column:lColumn
+                                    };
+//                                    alert(lUrl);
+//                                    var lUrl = window.location.origin+'/AYE/CreditHoldRelease/creditRelease'
+                                    $.post(lUrl,lCreditHoldRelease);
+//                                    alert('Success');
+                                    location.reload();
+                                })
+                            </script>
+
+                        </div>
+
+                    </form>
+
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+
+</html>

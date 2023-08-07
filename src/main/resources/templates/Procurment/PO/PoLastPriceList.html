@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="PoLastPriceResult" th:fragment="PoLastPriceResult" class="PoLastPriceResult">
+    <div class="form-group col-sm-12">
+
+        <div th:unless="${#lists.isEmpty(poLinesTrns.content)}">
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Supplier</th>
+                    <th>Item</th>
+                    <th>UOM</th>
+                    <th>Price</th>
+                    <th>PO Date</th>
+                    <!--<th>Closing</th>-->
+
+                </tr>
+
+                </thead>
+                <tbody>
+                <tr th:each="b : ${poLinesTrns}">
+
+                    <td th:text="${b.poHeader.supplierName}" ></td>
+                    <td th:text="${b.itemCode}" ></td>
+                    <td th:text="${b.trnsUomCode}" ></td>
+                    <!--<td th:text="${b.subinventory.code}" ></td>-->
+                    <!--<td th:text="${b.subinvLocator !=null ? b.subinvLocator.locatorV.concatedSegment:''}" ></td>-->
+                    <td th:text="${b.unitPrice}" ></td>
+                    <td th:text="${b.poHeader.poDate}" ></td>
+                    <!--<td th:text="${b.poHeader.poNumber}" ></td>-->
+
+
+                </tr>
+
+
+                </tbody>
+
+            </table>
+
+            <div>
+
+
+            </div>
+
+        </div>
+        <div th:if="${#lists.isEmpty(poLinesTrns.content)}">
+            <tr>
+                <td>No Data exists!</td>
+            </tr>
+            </div>
+    </div>
+</div>
+</body>
+</html>

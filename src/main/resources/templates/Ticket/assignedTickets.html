@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="fragments/layout">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}">
+
+  <title>Ticket</title>
+
+  <script th:src="@{/webjars/jquery/2.2.4/jquery.min.js}"></script>
+  <!-- Bootstrap -->
+  <script th:src="@{/webjars/bootstrap/3.4.1/js/bootstrap.min.js}"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script th:src="@{/js/jqueryAutoComplete/jquery-1.11.2.min.js}"></script>
+  <script th:src="@{/js/jqueryAutoComplete/jquery.easy-autocomplete.min.js}"></script>
+  <script th:src="@{/js/jqueryAutoComplete/autocompleteEmployee.js}"></script>
+  <script th:src="@{/js/ticket/viewTicket.js}"></script>
+
+
+</head>
+<body>
+
+
+<div class="right_col" role="main" data-layout-fragment="content">
+  <div style="margin: auto;width: 90%" class="row">
+
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Assigned Tickets</h3>
+          <div th:if="${message != null}"
+               style="width: 100%;margin:0 auto;margin-top: 10px;margin-bottom: 10px"
+               class="alert alert-info align-content-center" role="alert">
+            <span th:if="${message != null}" th:text="${message}"></span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="form-group col-sm-12" style="margin-top: 3%">
+            <table class="table table-bordered table-hover table-striped">
+              <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Summary</th>
+                <th scope="col">Description</th>
+                <th scope="col">Department</th>
+                <th scope="col">Team</th>
+                <th scope="col">Assigned To</th>
+                <th scope="col">Target Date</th>
+                <th scope="col">Resolution Date</th>
+                <th scope="col">Status</th>
+
+                <th scope="col">Action</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="t, rowStat  : ${tickets}">
+                <th scope="row" th:text="${rowStat.index+1}"></th>
+                <td th:text="${t.summary}"></td>
+                <td th:text="${t.description}"></td>
+                <td th:text="${t.departmentName}"></td>
+                <td th:text="${t.teamName}"></td>
+                <td th:text="${t.assignedToName}"></td>
+                <td th:text="${t.targetResolutionDate}"></td>
+                <td th:text="${t.actualResolutionDate}"></td>
+                <td th:text="${t.status}"></td>
+                <td>
+                  <a th:href="@{'/ticket/view/' + ${t.id}}"><i class="fa fa-edit"></i>View</a> ||
+                  <a th:href="@{'/ticket/assigned/edit/' + ${t.id}}"><i class="fa fa-edit"></i>Edit</a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+
+  </script>
+
+
+</div>
+
+
+<!-- jQuery -->
+
+</body>
+</html>

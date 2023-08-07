@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="fragments/layout">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}">
+
+  <title>Employee</title>
+
+  <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+  <!-- Bootstrap -->
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <script th:src="@{/js/jqueryAutoComplete/jquery-1.11.2.min.js}"></script>
+  <script th:src="@{/js/jqueryAutoComplete/jquery.easy-autocomplete.min.js}"></script>
+  <script th:src="@{/js/jqueryAutoComplete/autocompleteEmployee.js}"></script>
+
+
+</head>
+<body>
+
+<div class="right_col" role="main" data-layout-fragment="content">
+  <div style="margin: auto;width: 70%" class="row">
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Update Employee</h3>
+          <div th:if="${message != null}"
+               style="width: 100%;margin:0 auto;margin-top: 10px;margin-bottom: 10px"
+               class="alert alert-info align-content-center" role="alert">
+            <span th:if="${message != null}" th:text="${message}"></span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <form th:object="${employee}" th:action="@{/employee/update}" method="post">
+
+            <div th:if="${employee}">
+              <input type="hidden" name="id"  th:if="${employee}" th:value="${employee.id}"/>
+            </div>
+
+            <div class=" col-sm-12">
+              <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" th:field="*{name}" id="name" placeholder="Enter Employee Name..."
+                       name="name" required>
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <div class="form-group required">
+                <label for="designation">Designation:</label>
+                <input type="text" class="form-control" th:field="*{designation}" id="designation"
+                       placeholder="Enter Designation..."
+                       name="designation" required>
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <div class="form-group required">
+                <label for="address">Address:</label>
+                <input type="text" class="form-control" th:field="*{address}" id="address" placeholder="Enter Address..."
+                       name="address" required>
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <div class="form-group required">
+                <label for="user">User :</label>
+                <input class="form-control" th:field="*{userName}" id="user" placeholder="Enter User Name..."
+                       required>
+                <input type="hidden" name="userId" th:field="*{userId}"  id="userId"/>
+
+
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <div class="form-group required">
+                <label for="department">Department:</label>
+                <input class="form-control" th:field="*{departmentName}" id="department" placeholder="Enter Department Name..."
+                       required>
+                <input type="hidden" name="departmentId" th:field="*{departmentId}" id="departmentId"/>
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label for="deptHead">Is Dept Head:</label>
+                <select class="form-control"  th:placeholder="*{'Select Department Head'}" name="deptHead" id="deptHead">
+                  <option value="">Select Department Head</option>
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label for="team">teamId:</label>
+                <input type="text" class="form-control" th:field="*{teamName}" id="team" placeholder="Enter Team..."
+                       name="team">
+                <input type="hidden" id="teamId" th:value="*{teamId}" name="teamId">
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label for="teamHead">Is Team Head:</label>
+                <select class="form-control" th:placeholder="*{'Select team Head'}" name="teamHead" id="teamHead">
+                  <option value="">Select Team Head</option>
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <button type="submit" value="submit" class="btn btn-primary">Submit</button>
+            </div>
+
+          </form>
+
+          <div class="form-group col-sm-12" style="margin-top: 5%">
+            <table class="table table-bordered table-hover table-striped">
+              <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Department</th>
+                <th scope="col">Department Head</th>
+                <th scope="col">Team</th>
+                <th scope="col">Team Head</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="e, rowStat  : ${employees}">
+                <th scope="row" th:text="${rowStat.index+1}"></th>
+                <td th:text="${e.name}"></td>
+                <td th:text="${e.departmentName}"></td>
+                <td th:text="${e.deptHead == null ? 'No' : (e.deptHead ? 'Yes' : 'No')}"></td>
+                <td th:text="${e.teamName == null ? 'N/A' : e.teamName}"></td>
+                <td th:text="${e.teamHead == null ? 'No' : (e.teamHead ? 'Yes' : 'No')}"></td>
+                <td>
+                  <a th:href="@{'/employee/edit/' + ${e.id}}"><i class="fa fa-edit"></i>Edit</a>
+                  || <a th:href="@{'/employee/delete/' + ${e.id}}"><i class="fa fa-remove"></i>Remove</a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+
+  </script>
+
+
+</div>
+
+
+<!-- jQuery -->
+
+</body>
+</html>

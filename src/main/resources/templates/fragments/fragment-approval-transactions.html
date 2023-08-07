@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div id="sidebar-menu" class="main_menu_side hidden-print main_menu"
+     data-th-fragment="approval-transactions">
+
+    <div class="menu_section">
+        <div>
+            <div class="container body">
+                <div class="row">
+                    <div th:if="!${#lists.isEmpty(openAppTrns)}" class="col-sm-12">
+                        <!--<div class="container">-->
+                        <div class="panel panel-default">
+                            <!-- Default panel contents -->
+
+
+                            <div class="panel-body">
+
+
+                        <span style="font-weight: bold" th:each="m :${msg}">
+                            <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                                <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                                <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+                            </p>
+                        </span>
+                                <div class=" col-sm-12  list-unstyled dist_view" >
+                                    <span style="font-weight: bold; color: #0d0202~ " >Require Your Action</span>
+                                    <div class="col-sm-12 brder accgl-col" >
+                                        <div class="col-sm-2 accgl-col brderright" align="center" style="color: #0d0202" >Type</div>
+                                        <div class="col-sm-3 accgl-col brderright " align="center" style="color: #0d0202" >From User</div>
+                                        <div class="col-sm-3 accgl-col brderright" align="center" style="color: #0d0202" >Date</div>
+                                        <div class="col-sm-3 accgl-col brderright" align="center" style="color: #0d0202" >Note</div>
+                                        <div class="col-sm-1 accgl-col " align="center" style="color: #0d0202" >Action</div>
+                                        <!--<div class="col-sm-1 accgl-col " align="center">Note</div>-->
+
+                                    </div>
+
+                                    <div class="col-sm-12 accgl-col brder"  th:each=" c : ${openAppTrns}">
+                                        <div class="col-md-2 text-center top_marg brderright">
+                                            <span  style="color: #0d0202" th:text="${c.trnsSource.detailName}"></span>
+                                        </div>
+                                        <div class="col-md-3 accgl-col high_control top_marg brderright text-center">
+                                            <span style="color: #0d0202" th:text="${{c.firstName+' '+c.lastName}}"></span>
+                                        </div>
+                                        <div class="col-md-3 accgl-col high_control top_marg brderright text-center">
+                                            <!--<span th:text="${{c.commonColumn.creationDate}}"></span>-->
+                                            <span style="color: #0d0202" th:text="${{c.date}}"></span>
+                                        </div>
+                                        <div class="col-md-3 accgl-col high_control top_marg brderright text-center" >
+
+                                            <span  style="color: #0d0202" th:text="${c.note}"></span>
+                                        </div>
+                                        <div class="col-md-1 accgl-col high_control top_marg  text-center" >
+                                            <a th:href="@{/AppTrns/getTrns/}+'E/1/1/' +${c.id}" title="Add Detail" class="btn btn-primary"><span
+                                                    class="glyphicon glyphicon-unchecked" aria-hidden="true"></span></a>
+                                        </div>
+                                        <!--<div class="col-md-1 accgl-col high_control top_marg ">-->
+                                        <!--<span th:text="${c.note}"></span>-->
+                                        <!--</div>-->
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+
+
+                            <!--<div class="panel-footer">-->
+                            <!--</div>-->
+                        </div>
+                        <!--</div>-->
+                    </div>
+
+
+
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+</div>
+
+</html>

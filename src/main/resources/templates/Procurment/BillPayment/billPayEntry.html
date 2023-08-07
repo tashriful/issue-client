@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <script th:inline="javascript">
+
+    var xlocalTotAmount=0;
+
+        function fieldActivity(pVal)
+        {
+//            alert('ya? '+pVal)
+            if (pVal=='PRE_PAY')
+            {
+                document.getElementById('RcvNumberBlock').style.display="none";
+                document.getElementById('inputpoRcvHeader').value="";
+                document.getElementById('inputrcvNumber').value="";
+                document.getElementById('glHeaderBlock').style.display="none";
+                document.getElementById('inputglHeader').value="";
+                document.getElementById('inputglHeaderDocument').value="";
+                document.getElementById('poNumberBlock').style.display="block";
+                document.getElementById('inputpoNumber').value="";
+                document.getElementById('inputpoHeaderId').value="";
+
+            }else if (pVal=='GRN')
+            {
+                document.getElementById('RcvNumberBlock').style.display="block";
+                document.getElementById('glHeaderBlock').style.display="block";
+                document.getElementById('inputglHeader').value="";
+                document.getElementById('poNumberBlock').style.display="block";
+                document.getElementById('inputpoRcvHeader').value="";
+                document.getElementById('inputrcvNumber').value="";
+                document.getElementById('inputpoNumber').value="";
+                document.getElementById('inputpoHeaderId').value="";
+
+            }else if (pVal=='MNUL')
+            {
+                document.getElementById('poNumberBlock').style.display="none";
+                document.getElementById('RcvNumberBlock').style.display="none";
+                document.getElementById('glHeaderBlock').style.display="block";
+                document.getElementById('inputglHeader').value="";
+                document.getElementById('inputpoRcvHeader').value="";
+                document.getElementById('inputrcvNumber').value="";
+                document.getElementById('inputpoNumber').value="";
+                document.getElementById('inputpoHeaderId').value="";
+            }
+        }
+
+
+
+        function selectedobj(value, ind) {
+            if(ind == 'poNumberSerchBillPay')
+            {
+                SearchBillPayPoObj(value);
+            }else             if (ind == 'billPaySup') {
+                SearchBilPaySup(value);
+            }else if (ind == 'billPayRcvSerc') {
+                SearchBillPayRcvNumObj(value);
+            }else if (ind == 'billPayApDocument') {
+                SearchBilPayApInv(value);
+            }
+        };
+
+
+
+        function getBillPaySupInf(pSup, pdisplay, pindc) {
+            var varOrg = document.getElementById('inputorgHierarchy').value;
+
+            var displayfieldfrom = pdisplay;
+            var urlval = '/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + pSup;
+            var displayfield = pdisplay;
+            var getvalue = 'name';
+            var getDesc = 'siteAddress';
+            var indc = pindc;//'segment2desc';
+
+            autocomwithobject('/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + pSup,
+                    getvalue, displayfield, null, getDesc, indc);
+        }
+        ;
+
+        function getBillPayApDocument(pSup, pdisplay, pindc) {
+            var varOrg = document.getElementById('inputorgHierarchy').value;
+            var varBillType = document.getElementById('inputbillType').value;
+
+            var displayfieldfrom = pdisplay;
+            var urlval = '/AYE/ACRC/SearchOrganizationGlApDocument/' + varOrg +'/'+varBillType ;
+            var displayfield = pdisplay;
+            var getvalue = 'documentNumber';
+            var getDesc = 'null';
+            var indc = pindc;//'segment2desc';
+
+            autocomwithobject(urlval,
+                    getvalue, displayfield, null, getDesc, indc);
+        }
+        ;
+
+        function setCreateBillBtn(pid)
+        {
+
+            var pLidC = 0;
+            var cLineId;
+            var amtdr=0;
+            localTotAmount =0;
+            $('.pFlag').each(function () {
+                if ($(this).is(':checked'))
+                {
+                    var lId='#amt'+$(this).get(0).id;
+                    amtdr = parseFloat($(lId).attr('value'));
+
+//                    alert(lId);
+
+//                    alert($(lId).attr('value'));
+                    localTotAmount=localTotAmount+amtdr;
+                    pLidC=pLidC+1;
+                }
+            });
+
+            if (pLidC==0)
+            {
+                $('#cretaeBillId').prop('disabled',true);
+            }else
+            {
+                $('#cretaeBillId').prop('disabled',false);
+            }
+
+//            billamtCalc();
+//            alert(localTotAmount);
+        }
+
+
+
+    </script>
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-11 col-sm-offset-1">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Bill Payment</div>
+                <div class="panel-body">
+
+
+                    <form th:action="@{'/BillPay/billEntry/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId} }"
+                          th:object="${billPaySearch}" th:method="post">
+
+
+                        <div class="col-sm-9 col-sm-offset-1">
+
+                            <div class="form-group col-sm-12">
+                                <label class="col-sm-3 control-label " for="inputpoNumber">Payment Type</label>
+                                <div class="col-sm-1 ">
+                                    <b>:</b>
+                                </div>
+                                <div class="col-sm-8 ">
+                                    <select id="inputbillType"
+                                            name="billType" th:field="*{billType}" class="form-control" required="required">
+                                        <option value="">Select One</option>
+                                        <option th:each="t : ${T(com.aye.web.model.Bill.BillType).values()}"
+                                                th:text="${t.displayName}"
+                                                th:value="${t}"></option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div id="RcvNumberBlock" >
+                            <div class="form-group col-sm-12">
+                                <label class="col-sm-3 control-label " for="inputrcvNumber">Receive Number</label>
+                                <div class="col-sm-1 ">
+                                    <b>:</b>
+                                </div>
+                                <div class="col-sm-8 ">
+                                    <input class="form-control" type="text" id="inputrcvNumber"
+                                           th:field="*{rcvNumber}" name="rcvNumber" />
+                                    <input class="form-control" type="hidden" id="inputpoRcvHeader"
+                                           th:field="*{poRcvHeader}" name="poRcvHeader" />
+                                    <input class="form-control" type="hidden" id="inputrcvTrnsType"
+                                           th:field="*{rcvTrnsType}" name="rcvTrnsType" />
+                                </div>
+                                <script th:inline="javascript">
+                                    $(document).ready(function()
+                                    {
+                                        var varBillType = $("#inputbillType :selected").val();
+//                                        alert(varBillType);
+                                        fieldActivity(varBillType)
+//                                        if (varBillType=='PRE_PAY')
+//                                        {
+//                                            document.getElementById('RcvNumberBlock').style.display="none";
+//                                            document.getElementById('inputpoRcvHeader').value="";
+//                                            document.getElementById('inputrcvNumber').value="";
+//                                           document.getElementById('glHeaderBlock').style.display="none";
+//                                            document.getElementById('inputglHeader').value="";
+//                                            document.getElementById('inputglHeaderDocument').value="";
+//                                            document.getElementById('poNumberBlock').style.display="block";
+//                                            document.getElementById('inputpoNumber').value="";
+//                                            document.getElementById('inputpoHeaderId').value="";
+//
+//                                        }else if (varBillType=='GRN')
+//                                        {
+//                                            document.getElementById('RcvNumberBlock').style.display="block";
+//                                            document.getElementById('glHeaderBlock').style.display="block";
+//                                            document.getElementById('inputglHeader').value="";
+//                                            document.getElementById('poNumberBlock').style.display="block";
+//                                            document.getElementById('inputpoRcvHeader').value="";
+//                                            document.getElementById('inputrcvNumber').value="";
+//                                            document.getElementById('inputpoNumber').value="";
+//                                            document.getElementById('inputpoHeaderId').value="";
+//
+//                                        }else if (varBillType=='MNUL')
+//                                        {
+//                                            document.getElementById('poNumberBlock').style.display="none";
+//                                            document.getElementById('RcvNumberBlock').style.display="none";
+//                                            document.getElementById('glHeaderBlock').style.display="block";
+//                                            document.getElementById('inputglHeader').value="";
+//                                            document.getElementById('inputpoRcvHeader').value="";
+//                                            document.getElementById('inputrcvNumber').value="";
+//                                            document.getElementById('inputpoNumber').value="";
+//                                            document.getElementById('inputpoHeaderId').value="";
+//                                        }
+                                    });
+
+                                    $("#inputbillType").change(function () {
+//                                            alert("x");
+                                        var varBillType = $("#inputbillType :selected").val();
+                                        fieldActivity(varBillType);
+//                                        if (varBillType=='PRE_PAY')
+//                                        {
+//                                            document.getElementById('RcvNumberBlock').style.display="none";
+//                                            document.getElementById('inputpoRcvHeader').value="";
+//                                            document.getElementById('inputrcvNumber').value="";
+//                                            document.getElementById('glHeaderBlock').style.display="none";
+//                                            document.getElementById('inputglHeader').value="";
+//                                            document.getElementById('inputglHeaderDocument').value="";
+//                                            document.getElementById('poNumberBlock').style.display="block";
+//                                        }else if (varBillType=='GRN')
+//                                        {
+//                                            document.getElementById('RcvNumberBlock').style.display="block";
+//                                            document.getElementById('glHeaderBlock').style.display="block";
+//                                            document.getElementById('poNumberBlock').style.display="block";
+//                                        }else if (varBillType=='MNUL')
+//                                        {
+//                                            document.getElementById('poNumberBlock').style.display="none";
+//                                            document.getElementById('RcvNumberBlock').style.display="none";
+//                                            document.getElementById('glHeaderBlock').style.display="block";
+//                                            document.getElementById('inputpoRcvHeader').value="";
+//                                            document.getElementById('inputrcvNumber').value="";
+//                                            document.getElementById('inputpoNumber').value="";
+//                                            document.getElementById('inputpoHeaderId').value="";
+//                                        }
+                                    });
+
+                                    function SearchBillPayRcvNumObj(objparms) {
+
+                                        var objparmV = objparms;
+                                        $('#inputpoRcvHeader').val(objparmV.id).trigger("change");
+                                    };
+
+                                    document.getElementById('inputrcvNumber').oninput = function () {
+                                        if (document.getElementById('inputrcvNumber').value.length==0)
+                                        {
+                                            document.getElementById('inputpoRcvHeader').value='';
+                                        }
+
+
+                                        myFunctionBillPayRcv();
+                                    };
+                                    function myFunctionBillPayRcv() {
+                                        var innerVar = document.getElementById('inputrcvNumber').value;
+                                        var locRcvTrnsType =document.getElementById('inputrcvTrnsType').value;
+                                        if (innerVar.length > 1) {
+
+
+                                            var displayfieldfrom = [['#inputrcvNumber']];
+                                            var varLocOrg = document.getElementById('inputorgHierarchy').value;
+                                            var  locInvOrg=document.getElementById('inputinvOrg').value;
+
+                                            var indcRcv = 'billPayRcvSerc';
+                                            var rcvNumUrl ;
+//                                            rcvNumUrl ="/AYE/ACRC/SearchRcvNumber/"+varLocOrg+'/'+locInvOrg;
+                                            rcvNumUrl ="/AYE/ACRC/SearchRcvNumberByType/"+varLocOrg+'/'+locInvOrg+'/'+locRcvTrnsType;
+                                            var temp = 'rcvTrnsType';
+
+                                            autocomwithobject(rcvNumUrl, 'rcvNumber', displayfieldfrom, null, temp ,indcRcv);
+                                            document.getElementById('inputrcvNumber').focus();
+                                        }
+                                    }
+                                </script>
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label class="col-sm-3 control-label " for="inputrcvStartDate">Receive Date</label>
+                                <div class="col-sm-1 ">
+                                    <b>:</b>
+                                </div>
+
+                                <div class="col-sm-4  ">
+                                    <input class="form-control" type="date" value="01-01-2019" id="inputrcvStartDate"
+                                           th:field="*{{rcvStartDate}}"
+                                           name="rcvStartDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('rcvStartDate')}"
+                                      th:errors="*{rcvStartDate}">Date Error</span>
+                                </div>
+
+                                <div class="col-sm-4  ">
+                                    <input class="form-control" type="date" value="01-01-2019" id="inputrcvEndDate"
+                                           th:field="*{{rcvEndDate}}"
+                                           name="rcvEndDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('rcvEndDate')}"
+                                      th:errors="*{rcvEndDate}">Date Error</span>
+                                </div>
+
+                            </div>
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label class="col-sm-3 control-label " for="inputpoStartDate">Po Date</label>
+                                <div class="col-sm-1 ">
+                                    <b>:</b>
+                                </div>
+
+                                <div class="col-sm-4  ">
+                                    <input class="form-control" type="date" value="01-01-2019" id="inputpoStartDate"
+                                           th:field="*{{poStartDate}}"
+                                           name="fromDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('poStartDate')}"
+                                      th:errors="*{poStartDate}">Date Error</span>
+                                </div>
+
+                                <div class="col-sm-4  ">
+                                    <input class="form-control" type="date" value="01-01-2019" id="inputpoEndDate"
+                                           th:field="*{{poEndDate}}"
+                                           name="poToDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('poEndDate')}"
+                                      th:errors="*{poEndDate}">Date Error</span>
+                                </div>
+
+                            </div>
+
+
+                            <div id="poNumberBlock" class="form-group col-sm-12">
+                                <label class="col-sm-3 control-label " for="inputpoNumber">Po Number</label>
+                                <div class="col-sm-1 ">
+                                    <b>:</b>
+                                </div>
+                                <div class="col-sm-8 ">
+                                    <input class="form-control" type="text" id="inputpoNumber"
+                                           th:field="*{poNumber}" name="poNumber" />
+                                    <input type="hidden" th:field="*{orgHierarchy}"  id="inputorgHierarchy" />
+                                    <input type="hidden" th:field="*{poHeader}" id="inputpoHeaderId" name="poHeader"/>
+                                    <input type="hidden" th:field="*{invOrg}" id="inputinvOrg" />
+
+                                    <script th:inline="javascript">
+
+                                        function SearchBillPayPoObj(objparms) {
+//                                            alert('x');
+                                            var objparmV = objparms;
+
+                                            $('#inputpoHeaderId').val(objparmV.id).trigger("change");
+                                        };
+
+
+                                        document.getElementById('inputpoNumber').oninput = function () {
+                                            // myFunction();
+
+
+
+                                            var poNum = document.getElementById('inputpoNumber').value;
+                                            if (poNum.length==0)
+                                            {
+                                                document.getElementById('inputpoHeaderId').value='';
+                                            }
+                                            if (poNum.length > 1) {
+
+                                                var  lInvOrg=document.getElementById('inputinvOrg').value;
+                                                var  lOrg=document.getElementById('inputorgHierarchy').value;
+
+                                                var poUrl = '/AYE/ACRC/SearchOrgPoNum/' +lOrg+ '/' +  lInvOrg +'/'+poNum;
+//                                            alert(poUrl);
+                                                autocomwithobject(poUrl, 'poNumber', '#inputpoNumber', null, 'poDate', 'poNumberSerchBillPay');
+                                                document.getElementById('inputpoNumber').focus();
+                                            }
+                                        }
+
+                                    </script>
+                                <span class="help-block" th:if="${#fields.hasErrors('poNumber')}"
+                                      th:errors="*{poNumber}">Name Error</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label class="col-sm-3 control-label " for="inputsupplierLine">Supplier Name</label>
+                                <div class="col-sm-1 ">
+                                    <b>:</b>
+                                </div>
+                                <div class="col-sm-8 ">
+                                    <input class="form-control" type="hidden" id="inputsupplierLine"
+                                           th:field="*{supplierLine}" name="supplierLine" />
+                                    <input class="form-control" type="text" id="inputsupplierLineName"
+                                           th:field="*{supplierName}" name="supplierName" />
+
+                                    <script th:inline="javascript">
+
+                                        function SearchBilPaySup(objparms) {
+//                                            alert('x');
+                                            var objparmV = objparms;
+                                            $('#inputsupplierLine').val(objparmV.id).trigger("change");
+                                            // $('#inputsupplierAddress').val(objparmV.siteAddress).trigger("change");
+                                        };
+                                        document.getElementById('inputsupplierLineName').oninput = function () {
+//                                            alert('xx');
+                                            myFunction();
+                                        };
+                                        function myFunction() {
+                                            var innerVar = document.getElementById('inputsupplierLineName').value;
+                                            if (innerVar.length > 2) {
+//                                           alert('xX');
+                                                var displayfieldfrom = [['#inputsupplierLineName']];
+
+                                                getBillPaySupInf(innerVar, displayfieldfrom, 'billPaySup');
+//                                        document.getElementById('fromLocator').focus();
+                                                document.getElementById('inputsupplierLineName').focus();
+                                            }
+                                        }
+
+                                    </script>
+                                    <!--<input type="hidden" th:field="*{orgHierarchy}" name="orgHierarchy" id="inputorgHierarchy" />-->
+                                <span class="help-block" th:if="${#fields.hasErrors('supplierLine')}"
+                                      th:errors="*{supplierLine}">Name Error</span>
+                                </div>
+                            </div>
+
+                            <div id="glHeaderBlock">
+                            <div class="form-group col-sm-12">
+                                <label class="col-sm-3 control-label " for="inputglHeader">GL Document</label>
+                                <div class="col-sm-1 ">
+                                    <b>:</b>
+                                </div>
+                                <div class="col-sm-8 ">
+                                    <input class="form-control" type="hidden" id="inputglHeader"
+                                           th:field="*{glHeaderSearch}" name="glHeader" />
+                                    <input class="form-control" type="text" id="inputglHeaderDocument"
+                                           th:field="*{glHeaderSearch.documentNumber}" name="documentNumber" />
+
+                                    <script th:inline="javascript">
+
+                                        function SearchBilPayApInv(objparms) {
+//                                            alert('x');
+                                            var objparmV = objparms;
+                                            $('#inputglHeader').val(objparmV.glHeaderId).trigger("change");
+                                            // $('#inputsupplierAddress').val(objparmV.siteAddress).trigger("change");
+                                        };
+                                        document.getElementById('inputglHeaderDocument').oninput = function () {
+                                            myFunctionGl();
+                                        };
+                                        function myFunctionGl() {
+                                            var innerVar = document.getElementById('inputglHeaderDocument').value;
+                                            if (innerVar.length > 2) {
+//                                           alert('xX');
+                                                var displayfieldfrom = [['#inputglHeaderDocument']];
+
+                                                getBillPayApDocument(innerVar, displayfieldfrom, 'billPayApDocument');
+//                                        document.getElementById('fromLocator').focus();
+                                                document.getElementById('inputglHeaderDocument').focus();
+                                            }
+                                        }
+
+                                    </script>
+
+                                    <!--<input type="hidden" th:field="*{orgHierarchy}" name="orgHierarchy" id="inputorgHierarchy" />-->
+                                <span class="help-block" th:if="${#fields.hasErrors('glHeaderSearch')}"
+                                      th:errors="*{glHeaderSearch}">Name Error</span>
+                                </div>
+                            </div>
+                            </div>
+                            <!--<div class="out enterleave">-->
+
+
+                                <!--<span class="insAmt" ></span>-->
+
+                            <!--</div>-->
+                            <div class="text-right Padding10px" align="right">
+
+                                <a th:href="@{/BillPay/search/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                                class="btn btn-success">Search</a>
+                                <button type="submit" name="search"  class="btn btn-primary">
+                                    Find
+                                </button>
+                                <!--<a th:href="@{/procurment/poHeader/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"-->
+                                <!--class="btn btn-default">New</a>-->
+                            <span th:if="!${#lists.isEmpty(billPayLinesDtoList)}">
+                            <button id="cretaeBillId" type="submit" name="create"  class="btn btn-primary">Create</button>
+                                </span>
+
+                            </div>
+                            <div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class=" col-sm-12 table-responsive dist_view" th:if="!${#lists.isEmpty(billPayLinesDtoList)}">
+
+
+                            <div class="col-sm-12 brder accgl-col ">
+                                <div class="col-sm-1 accgl-col brderright" style="width: 20px">Sl</div>
+
+                                <div class="col-sm-3 accgl-col brderright" align="center" style="width: 228px">
+                                    <div th:if="${(billPaySearch.billType == T(com.aye.web.model.Bill.BillType).GRN)}">GRN,Date & PO Number</div>
+                                    <div th:if="${(billPaySearch.billType == T(com.aye.web.model.Bill.BillType).PRE_PAY)}">PO Number & Date </div>
+                                    <div th:if="${(billPaySearch.billType == T(com.aye.web.model.Bill.BillType).MNUL)}">Invoice & Date </div>
+                                </div>
+                                <div class="col-sm-2 accgl-col brderright" align="center">Name</div>
+                                <div class="col-sm-2 accgl-col brderright" align="center">Item</div>
+                                <div class="col-sm-1 accgl-col brderright" align="center" style="width: 55px;">Uom</div>
+                                <div class="col-sm-1 accgl-col brderright " align="center">Qty</div>
+                                <div class="col-sm-1 accgl-col brderright " align="center">Price</div>
+                                <div class="col-sm-2 accgl-col brderright " align="center" style="width: 100px">Amount</div>
+                                <!--<div class="col-sm-3 accgl-col brderright" align="center">Note</div>-->
+                                <div class="col-sm-1 accgl-col " align="center" style="width: 20px" id="selectAll">Select</div>
+                                <script th:inline="javascript">
+
+                                </script>
+
+                            </div>
+                            <div id="listTab">
+                            <div class="col-sm-12 accgl-col brder bulk_action "
+                                 th:each="line,rowStat  : ${billPayLinesDtoList.billPayLinesDtos}">
+                                <div class="col-sm-1  form-group accgl-col high_control top_marg brderright"
+                                     th:text="${rowStat.count}" style="width: 20px">1
+                                </div>
+                                <div class="col-sm-3 form-group accgl-col top_marg brderright" style="width: 228px;">
+
+                                    <div th:if="${(billPaySearch.billType == T(com.aye.web.model.Bill.BillType).GRN)}" >
+                                        <input type="text" class="td form-control textabsolute"
+                                               th:value="
+                                               ${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].rcvNumber+' - '+
+                                               billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].rcvDate+' - '+
+                                               billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poNumber}"
+                                               readonly/>
+                                        <input type="hidden" class="td form-control "
+                                               th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].rcvNumber}"
+                                               readonly="readonly"/>
+                                    </div>
+                                    <div th:if="${(billPaySearch.billType == T(com.aye.web.model.Bill.BillType).PRE_PAY)}">
+                                        <input type="text" class="td form-control "
+                                               th:value="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poNumber+' - '+billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poDate }" readonly/>
+                                        <input type="hidden" class="td form-control "
+                                               th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poNumber}"
+                                               readonly="readonly"/>
+                                    </div>
+
+                                    <div th:if="${(billPaySearch.billType == T(com.aye.web.model.Bill.BillType).MNUL)}">
+                                        <input type="text" class="td form-control "
+                                               th:value="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].documentNumber+' - '+billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poDate }" readonly/>
+                                        <input type="hidden" class="td form-control "
+                                               th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poNumber}"
+                                               readonly="readonly"/>
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-2 form-group accgl-col top_marg brderright">
+
+                                    <input type="text" class="td form-control "
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].supplierLine.name}"
+                                           readonly="readonly"/>
+                                    <input type="hidden"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].supplierLine}"
+                                           readonly="readonly"/>
+
+                                </div>
+
+                                <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                                    <div th:if="${(billPaySearch.billType != T(com.aye.web.model.Bill.BillType).MNUL)}">
+                                        <input type="text" class="td form-control "
+                                               th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].masterItem.itemCode}"
+                                               th:title="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].masterItem.itemCode}"
+                                               readonly="readonly"/>
+                                        <input type="hidden" name="id"
+                                               th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].masterItem.id.id}"/>
+                                        <input type="hidden" name="id"
+                                               th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].masterItem.id.inventoryInformations.id}"/>
+
+                                    </div>
+
+                                    <div th:if="${(billPaySearch.billType == T(com.aye.web.model.Bill.BillType).MNUL)}">
+                                        <input type="text" class="td form-control "
+                                               readonly="readonly"/>
+                                    </div>
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].lineId}"/>
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poHeader}"/>
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poRcvLines}"/>
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poRcvHeader}"/>
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poLines}"/>
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].poNumber}"/>
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].commonColumn.createdBy}"/>
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].commonColumn.creationDate}"/>
+                                </div>
+
+
+                                <div class="col-sm-1 form-group accgl-col top_marg brderright" style="width: 55px;">
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].primUom}"/>
+
+                                    <!--<input type="hidden" name="id" th:field="${orderLineList.orderLines[__${rowStat.index}__].orderUomCode}"/>-->
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].currency}"/>
+
+                                    <input type="hidden" name="glHeaderid"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].glHeader}"/>
+
+                                    <input type="hidden" name="glLinesid"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].glLines}"/>
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].currencyCode}"/>
+
+
+                                    <input type="text" class="td form-control "
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].uomCode}"
+                                           readonly="readonly"/>
+                                    <!--<input type="hidden"-->
+                                    <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderUom}"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                    <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].defaultUomCode}"/>-->
+                                </div>
+
+                                <div class="col-sm-1 form-group accgl-col top_marg brderright">
+
+                                    <input type="text" class="td form-control " style="text-align: end"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].primaryQty}"
+                                           th:title="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].primaryQty}"
+                                           readonly="readonly"/>
+                                    <!--<input type="text"  class="td form-control " name="orderDefaultUomQtyid"-->
+                                    <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderDefaultUomQty}" readonly="readonly"/>-->
+
+                                    <!--<input type="hidden"-->
+                                    <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderUomQty}"-->
+                                    <!--/>-->
+                                </div>
+
+                                <div class="col-sm-1 form-group accgl-col top_marg brderright">
+                                    <input type="text" name="amount" readonly="readonly"  class="td form-control "
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].unitPrice}"/>
+                                </div>
+                                <div class="col-sm-2 form-group accgl-col top_marg brderright"  style="width: 100px">
+                                    <input type="text" name="amount" readonly="readonly"  class="td form-control billAmount" style="text-align: end"
+                                           th:id="amt+${rowStat.count}"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].amount}"
+                                           th:title="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].amount}"/>
+                                </div>
+                                <div class="col-sm-1 form-group  accgl-col top_marg " style="width: 20px">
+                                    <input class="form-control pFlag"
+                                           th:id="${rowStat.count}"
+                                           th:field="${billPayLinesDtoList.billPayLinesDtos[__${rowStat.index}__].flag}"
+                                           onclick="return setCreateBillBtn(this.id)"
+                                           type="checkbox"/>
+                                    <script th:inline="javascript">
+                                        $(document).ready(function(){
+                                            var amtdr1=0;
+                                            var lShAmt=0;
+                                            var xl ='#'+[[${rowStat.count}]];
+                                            $(xl).mouseover(function()
+                                                {
+                                                    if ($(xl).is(':checked')!=true)
+                                                    {
+                                                        var lIds='#amt'+[[${rowStat.count}]];
+                                                    amtdr1 = parseFloat($(lIds).attr('value'));
+                                                    lShAmt =localTotAmount+amtdr1;
+
+                                                    }else {
+                                                        lShAmt =localTotAmount;
+                                                    }
+                                                    $(xl).attr({
+                                                        "title" : lShAmt
+                                                    });
+                                            })
+
+                                        })
+
+                                    </script>
+
+                                </div>
+
+
+                            </div>
+
+                            <script>
+                                $(document).ready(function()
+                                {
+
+                                    setCreateBillBtn(0);
+                                })
+                            </script>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                    <!--<div class="panel-footer">-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

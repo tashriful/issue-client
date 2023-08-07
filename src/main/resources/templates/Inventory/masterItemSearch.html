@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+      layout:decorator="fragments/layout">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <link th:insert="Inventory/InvScriptLink"/>
+
+    <script th:inline="javascript">
+
+        var searchObj;
+
+        function selectedobj(value, ind) {
+            if (ind == 'InvItem') {
+
+                InvItemObj(value);
+            }
+        }
+    </script>
+
+
+</head>
+<body>
+<div th:replace="fragments/general.html :: footer"></div>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+
+
+                <div>
+                    <div class="panel-body">
+                        <div class="panel-heading">Search Inventory Item</div>
+                        <form id="search" th:action="@{'/InvItem/search/'+${mode}+'/'+ ${pageId}+'/'+${temltId}}"
+                              th:object="${masterItemSearch}" method="post">
+                            <div style="display: none"
+                                 th:class="${#fields.hasErrors('itemId')} ? 'form-group has-error' :'form-group  col-sm-12 ' ">
+                                <label class="col-sm-3 control-label " for="inputitemid">Inv Org</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8 ">
+
+                                    <input type="text" id="inputitemidInvOrg" placeholder="itemid"
+                                           name="itemid" th:field="*{invOrg}" value="*{invOrg}" class="form-control"/>
+
+
+                                    <p th:errors="*{itemId}" class="help-block"></p>
+                                </div>
+
+
+                            </div>
+
+
+                            <div th:class="${#fields.hasErrors('itemCode')} ? 'form-group has-error' :'form-group  col-sm-12 ' ">
+                                <label class="col-sm-3 control-label " for="inputitemCode">Item Code</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8 ">
+                                    <input type="text" id="inputitemCode" placeholder="Code"
+                                           name="itemid" th:field="*{itemCode}" class="form-control"/>
+
+                                    <input type="hidden" id="inputitemid" placeholder="itemid"
+                                           name="itemid" th:field="*{itemId}" value="*{itemId}" class="form-control"/>
+
+
+                                    <p th:errors="*{itemCode}" class="help-block"></p>
+
+                                    <script th:inline="javascript">
+
+                                        document.getElementById('inputitemCode').oninput = function () {
+                                            myFunction()
+
+                                        };
+                                        function myFunction() {
+                                            var innerVar = document.getElementById('inputitemCode').value;
+
+                                            if (innerVar.length > 1) {
+                                                //  alert('kkk')
+
+                                                callAutoCom(innerVar);
+                                                document.getElementById('inputitemCode').focus();
+                                            }
+                                        }
+
+                                        function InvItemObj(objparms) {
+//                                            alert('x');
+                                            var objparmV = objparms;
+
+                                            var lItemCode = '#inputitemCode';
+                                            var lItemId = '#inputitemid';
+                                            var lInvOrg = '#inputitemidInvOrg';
+//
+
+                                            // alert('xx');
+
+                                            $(lItemCode).val(objparmV.itemCode).trigger("change");
+                                            $(lItemId).val(objparmV.id.id).trigger("change");
+
+
+                                        }
+                                        ;
+
+                                        function callAutoCom(itm) {
+                                            var morgid = document.getElementById('inputitemidInvOrg').value;
+                                            var item = null;
+                                            // var morgid=($(this.options[this.selectedIndex]).attr('data-invorgid'));
+                                            var displayfieldvar = '#inputitemCode';
+                                            var dbfieldvar = '#inputitemid';
+                                            //alert(dbfieldvar);
+                                            var displayfield = displayfieldvar;
+
+                                            var dbfield = dbfieldvar;
+                                            var getvalue = 'itemCode';
+                                            var indRcvItemLine = 'InvItem';
+                                            var urlval = '/AYE/ACRC/SearchOrgItemCodeForLov/' + morgid + '/' + itm;
+                                            autocomwithobjectwod(urlval, getvalue, displayfield, dbfield, indRcvItemLine);
+                                            //alert(urlval);
+
+                                        }
+
+
+                                    </script>
+                                </div>
+
+
+                            </div>
+
+                            <div th:class="${#fields.hasErrors('itemCode')} ? 'form-group has-error' :'form-group  col-sm-12 ' ">
+                                <label class="col-sm-3 control-label " for="inputitemCode">Item Categories</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8 ">
+                                <input type="hidden" id="inputkeySegmentHeader" placeholder="keySegmentHeader"
+                                       name="keySegmentHeader" th:field="*{keySegmentHeader}" class="form-control"/>
+
+                                <input type="hidden" class="form-control" id="inputinvItemClassifications"
+                                       th:field="*{invItemCatComV}" name="invItemClassifications"/>
+                                <input class="form-control" th:type="text"  placeholder="Item Categories"
+                                       th:field="*{invItemCatComV.concatedSegment}" id="invItemClassificationsV" />
+
+                                <span class="help-block" th:if="${#fields.hasErrors('invItemCatComV')}" th:errors="*{invItemCatComV}"> materialAccV Error</span>
+
+                                <script th:inline="javascript">
+
+
+                                    var org = $('#inputkeySegmentHeader').val();
+                                    //alert(org);
+
+                                    //                                var urlval = '/AYE/ACRC/SearchCodeCombItm/' + org;
+                                    var urlval = '/AYE/ACRC/SearchCodeCombItmCat/' + org;
+                                    var displayfield = '#invItemClassificationsV';
+                                    //   alert(displayfield)
+                                    var dbfield = '#inputinvItemClassifications';
+                                    //alert(dbfield)
+                                    var getvalue = 'concatedSegment';
+                                    autocom(urlval, getvalue, displayfield, dbfield);
+
+
+                                </script>
+
+                                </div>
+                            </div>
+
+                            <div class="text-right Padding10px">
+                                <!--<a  th:href="@{/InvItem/MasterItem/E/}+${pageId}+'/'+${temltId}"-->
+                                <!--class="btn btn-default">Cancel</a>-->
+                                <button type="submit" name="search" class="btn btn-primary">Find</button>
+
+                                <a th:href="@{/InvItem/MasterItem/E/}+${pageId}+'/'+${temltId}"
+                                   class="btn btn-default">New</a>
+
+
+                            </div>
+
+
+                            <div class="form-group col-sm-12 marginbtm10px">
+                                <table class="table table-bordered table-hover table-striped" id="tblDataLine"
+                                       style="margin-bottom: 0px !important;">
+                                    <thead>
+                                    <tr class="tablhtop">
+                                        <th colspan="7"
+                                            style="padding-top: 2px !important; padding-bottom: 2px !important; border-right-style:hidden !important;">
+                                            Item Master Informtions
+                                        </th>
+                                        <th colspan="1"
+                                            style=" text-align:right; padding-top: 2px !important; padding-bottom: 2px !important;">
+
+                                            <a onclick="exportTableToExcel('tblDataLine')">
+                                                <i class="fa fa-file-excel-o fa_custom_excell fa-1x" aria-hidden="true"
+                                                   title="File Export in Excell"></i>
+                                            </a>
+
+                                        </th>
+                                    </tr>
+
+
+                                    <th>Code</th>
+                                    <th>Desc.</th>
+                                    <th>UOM</th>
+                                    <th>Status</th>
+                                    <th>COGS ACC.</th>
+                                    <th>EXP. ACC.</th>
+                                    <th>Sales Acc.</th>
+                                    <th>Action</th>
+
+                                    </thead>
+                                    <tbody>
+
+
+                                    <tr th:each="itm : ${masterItems}">
+                                        <td>
+                                            <div class="texthide" th:text="${itm.itemCode}"
+                                                 th:title="${itm.itemCode}"></div>
+                                        </td>
+                                        <td>
+                                            <div class="texthide" th:text="${itm.description}"
+                                                 th:title="${itm.description}"></div>
+                                        </td>
+                                        <td th:text="(${itm.defaultUom.uomCode} ? ${itm.defaultUom.uomCode}:'')"></td>
+                                        <td th:text="${itm.status}"></td>
+                                        <td th:text="( ${itm.cogsAccountV} ? ${itm.cogsAccountV.ccCode} : '' )"
+                                            th:title="${itm.cogsAccountV.ccDesc}"></td>
+                                        <td th:text="( ${itm.expenseAccountV} ? ${itm.expenseAccountV.ccCode} : '' )"
+                                            th:title="${itm.expenseAccountV.ccDesc}"></td>
+                                        <td th:text="( ${itm.salesAccountV} ? ${itm.salesAccountV.ccCode} : '' )"
+                                            th:title="${itm.salesAccountV.ccDesc}"></td>
+
+                                        <td>
+
+                                            <div class="btn-group" role="group" aria-label="..." name="edit">
+                                                <a th:href="@{/InvItem/editItem/U/} + ${pageId}+'/'+${temltId}+'/'+${itm.id.id}"
+                                                   class="btn btn-success"><span class="glyphicon glyphicon-edit"
+                                                                                 title="Edit item"
+                                                                                 aria-hidden="true"></span></a>
+                                            </div>
+                                            <div class="btn-group" role="group" aria-label="..." name="edit">
+                                                <a th:href="@{/InvCategories/addItemCategories/E/} + ${pageId}+'/'+${temltId}+'/'+${itm.id.orgId.keySegmentHeader.id}+'/'
+                                                    +${itm.id.id}+'/'+${itm.id.orgId.id}+'/M'" title="Item Categories"
+                                                   class="btn btn-success"><span class="glyphicon glyphicon-edit"
+                                                                                 aria-hidden="true"></span></a>
+                                            </div>
+                                            <div class="btn-group" role="group" aria-label="..." name="edit">
+                                                <a th:href="@{/InvItem/ItemAssignee/E/} + ${pageId}+'/'+${temltId}+'/'+${itm.id.id}+'/'+${itm.id.orgId.keySegmentHeader.id}"
+                                                   class="btn btn-success" title="Item Assigne"><span
+                                                        class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                                            </div>
+
+
+                                        </td>
+
+                                    </tr>
+
+
+                                    <div th:if="${#lists.isEmpty(masterItems)}">
+                                        <tr>
+                                            <td>No Data exists!</td>
+                                        </tr>
+                                    </div>
+
+                                    </tbody>
+
+                                </table>
+
+
+                                <div data-th-replace="fragments/pagination :: page-pagination">
+
+
+                                </div>
+                                <!--<div data-th-replace="fragments/pagination :: page-pagination">-->
+
+
+                                <!--</div>-->
+
+
+                                <!--</div>-->
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

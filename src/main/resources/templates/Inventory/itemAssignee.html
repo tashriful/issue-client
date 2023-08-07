@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <link th:insert="Inventory/InvScriptLink"/>
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Assignee Inventory Item -<p th:text="${masterItem.itemCode}"></p></div>
+                <div class="panel-body">
+                    <form th:action="@{'/InvItem/ItemAssignee/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${itemId}+'/'+${segCode}}"
+                          th:object="${itemOrgs}" th:method="post">
+                        <span style="font-weight: bold" th:each="m :${msg}">
+            <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+            </p></span>
+                        <!--+${role.role}  +${role.role}-->
+                        <span style="color: #ed1c24;font-weight: bold" th:if="${itemCatChk==false}"><p>Category Not Assigned</p></span>
+
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Select?</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <div th:if="!${#lists.isEmpty(itemOrgs)}">
+                                <tr th:each="org,rowStat  : ${itemOrgs.itemOrgList}">
+                                    <td>
+                                        <input class="form-control" type="text" th:field="${itemOrgs.itemOrgList[__${rowStat.index}__].code}" readonly="readonly" />
+                                        <input type="hidden" name="id" th:field="${itemOrgs.itemOrgList[__${rowStat.index}__].id}"/>
+                                    </td>
+                                    <td >
+                                        <input class="form-control" type="text" th:field="${itemOrgs.itemOrgList[__${rowStat.index}__].name}" readonly="readonly"/>
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="text" th:field="${itemOrgs.itemOrgList[__${rowStat.index}__].address}" readonly="readonly"/>
+                                    </td>
+                                    <td>
+                                        <div th:if="${itemCatChk==true}" >
+                                        <input th:field="${itemOrgs.itemOrgList[__${rowStat.index}__].flag}"
+                                               th:checked="${itemOrgs.itemOrgList[__${rowStat.index}__].flag} ? 'checked'"
+                                               type="checkbox"/>
+                                        <div class="btn-group" role="group" aria-label="..." name="edit"
+                                             th:if="${itemOrgs.itemOrgList[__${rowStat.index}__].flag}"
+                                             onclick="return true">
+                                            <a th:href="@{/InvItem/OrgItem/E/}+ ${pageId}+'/'+${temltId}+'/'+${itemId}+'/'
+                                            +${itemOrgs.itemOrgList[__${rowStat.index}__].id}+'/'+${segCode}"
+                                            class="btn btn-success"><span
+                                                class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+
+                                        </div>
+                                        </div>
+                                    </td>
+
+
+                                    <!--<td th:text="${org.address}"></td>-->
+                                    <!--<td>-->
+                                        <!--<input type="checkbox" name="flag" th:checked="${flag} ? 'checked'"/>-->
+                                        <!--&lt;!&ndash;<div class="btn-group" role="group" aria-label="...">&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<a th:href="@{/InvItem/editDetail/} + ${pageId}+'/'+${temltId}+'/'+${CalendarId}+'/'+${cal.id}"&ndash;&gt;-->
+                                               <!--&lt;!&ndash;class="btn btn-success"><span&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;class="glyphicon glyphicon-edit" aria-hidden="true">Edit</span></a>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                    <!--</td>-->
+
+                                </tr>
+                            </div>
+                            <div th:if="${#lists.isEmpty(itemOrgs)}">
+                                <tr>
+                                    <td>No Data exists!</td>
+                                </tr>
+                            </div>
+
+                            </tbody>
+
+                        </table>
+
+
+                        <div class="text-right">
+                            <a  th:href="@{/InvItem/editItem/U/}+${pageId}+'/'+${temltId}+'/'+${masterItem.id.id}"
+                                class="btn btn-default">Back</a>
+                            <button type="submit" name="assignee" class="btn btn-primary">Save</button>
+                            <a th:href="@{/InvItem/search/E/}+${pageId}+'/'+${temltId}"
+                               class="btn btn-primary">Search</a>
+                        </div>
+
+
+                    </form>
+
+
+
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

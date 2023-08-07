@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PoBalance" language="groovy" pageWidth="1000" pageHeight="595" orientation="Landscape" columnWidth="960" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a3553cd7-6a59-4b9f-b377-ab94f116c3a5">
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="pf_date" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pt_date" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="p_org_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT OH.NAME ORG_NAME,OH.CODE ORG_CODE,OH.ADDRESS ORG_ADDRESS,po.ORG_ID,
+       po.PO_NUMBER,
+       po.TRNS_DATE,
+       po.PO_HEADER_ID,
+       po.PO_LINE_ID,
+       Supplier.supplier_name,
+       Supplier.sup_address,
+       ITEM.ITEM_CODE,
+       ITEM.DESCRIPTION,
+       po.TRANSACTION_QTY PO_QTY,
+       PO.AMOUNT PO_AMOUNT,
+       rcv.PO_LINE_ID RCV_PO_LINE_ID,
+       rcv.PO_HEADER_ID rcv_PO_HEADER_ID,
+       rcv.RECEIVE_NUMBER,
+       rcv.RECEIVE_DATE,
+       rcv.PO_RECEIVE_HEADER_ID,
+       rcv.RECEIVE_LINE_ID,
+       Rcv_TRANSACTION_QTY,
+       rcv.PRIMARY_UOM_CODE RCV_UOM,
+       Rcv_AMOUNT,
+       CASE
+          WHEN rcv.STATUS = 'I' THEN 'Invoice'
+          WHEN rcv.STATUS = 'C' THEN 'Confirme'
+          WHEN rcv.STATUS = 'N' THEN 'New'
+          ELSE ''
+       END RCV_STATUS,
+rcv.RCV_TRNS_TYPE
+  FROM (SELECT HDR.ID PO_HEADER_ID,
+               HDR.ORG_ID,
+               HDR.PO_NUMBER,
+               HDR.SUPPLIER_LINE_ID,
+               HDR.TRNS_DATE,
+               LIN.PO_LINE_ID,
+               LIN.INV_ORG_ID,
+               LIN.ITEM_ID,
+               LIN.PRIMARY_QTY,
+               LIN.PRIMARY_UOM_ID,
+               LIN.PRIMARY_UOM_CODE,
+               LIN.TRANSACTION_QTY,
+               LIN.TRNS_UOM_ID,
+               LIN.TRNS_UOM_CODE,
+               LIN.UOM_CONV_RATE,
+               LIN.SUBINV_ID,
+               LIN.SUB_INV_CODE,
+               LIN.SUBINV_LOCATOR_ID,
+               LIN.UNIT_PRICE,
+               hdr.CURRENCY_ID,
+               hdr.CURRENCY_CODE,
+               LIN.EXCHANGE_RATE,
+               LIN.AMOUNT
+          FROM PO_HEADER hdr, PO_LINES lin
+         WHERE HDR.ID = LIN.PO_HEADER_ID) po,
+       (SELECT RL.PO_LINE_ID,
+               prh.ORG_ID,
+               rl.PO_HEADER_ID,
+               rl.INV_ORG_ID,
+               rl.ITEM_ID,
+               PRH.RECEIVE_DATE,
+               rl.PRIMARY_QTY Rcv_PRIMARY_QTY,
+               rl.PRIMARY_UOM_ID,
+               rl.PRIMARY_UOM_CODE,
+               rl.TRANSACTION_QTY Rcv_TRANSACTION_QTY,
+               rl.TRNS_UOM_ID,
+               rl.TRNS_UOM_CODE,
+               rl.UOM_CONV_RATE,
+               rl.SUBINV_ID,
+               rl.SUB_INV_CODE,
+               rl.SUBINV_LOCATOR_ID,
+               rl.AMOUNT Rcv_AMOUNT,
+               RL.PO_RECEIVE_HEADER_ID,
+               RL.ID RECEIVE_LINE_ID,
+               PRH.RECEIVE_NUMBER,
+               PRH.STATUS,
+PRH.RCV_TRNS_TYPE
+          FROM PO_RECEIVE_LINE rl, PO_RECEIVE_HEADER prh
+         WHERE RL.PO_RECEIVE_HEADER_ID = PRH.ID) rcv,
+       (SELECT SL.ORG_ID org_id,
+               sl.id supplier_id,
+               SL.NAME supplier_name,
+               SL.SITE_ADDRESS sup_address
+          FROM SUPPLIER_LINE sl) Supplier,
+       (SELECT ITEM.ITEM_ID,
+               ITEM.INV_ORG_ID,
+               ITEM.ITEM_CODE,
+               ITEM.DESCRIPTION
+          FROM INV_ITEM_M item) item,
+          ORGANIZATION_HIERARCHY oh
+ WHERE     po.PO_HEADER_ID = rcv.PO_HEADER_ID(+)
+       AND po.PO_LINE_ID = rcv.PO_LINE_ID(+)
+       AND po.INV_ORG_ID = ITEM.INV_ORG_ID
+       AND po.ITEM_ID = ITEM.ITEM_ID
+       AND PO.SUPPLIER_LINE_ID = Supplier.supplier_id
+       AND PO.ORG_ID = Supplier.org_id
+       and PO.ORG_ID =oh.id
+       and oh.id=$P{p_org_id}
+       and po.TRNS_DATE between $P{pf_date} and $P{pt_date}
+order by po.PO_NUMBER,rcv.RECEIVE_NUMBER]]>
+	</queryString>
+	<field name="ORG_NAME" class="java.lang.String"/>
+	<field name="ORG_CODE" class="java.lang.String"/>
+	<field name="ORG_ADDRESS" class="java.lang.String"/>
+	<field name="ORG_ID" class="java.math.BigDecimal"/>
+	<field name="PO_NUMBER" class="java.lang.String"/>
+	<field name="TRNS_DATE" class="java.sql.Timestamp"/>
+	<field name="PO_HEADER_ID" class="java.math.BigDecimal"/>
+	<field name="PO_LINE_ID" class="java.math.BigDecimal"/>
+	<field name="SUPPLIER_NAME" class="java.lang.String"/>
+	<field name="SUP_ADDRESS" class="java.lang.String"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="DESCRIPTION" class="java.lang.String"/>
+	<field name="PO_QTY" class="java.math.BigDecimal"/>
+	<field name="PO_AMOUNT" class="java.math.BigDecimal"/>
+	<field name="RCV_PO_LINE_ID" class="java.math.BigDecimal"/>
+	<field name="RCV_PO_HEADER_ID" class="java.math.BigDecimal"/>
+	<field name="RECEIVE_NUMBER" class="java.lang.String"/>
+	<field name="RECEIVE_DATE" class="java.sql.Timestamp"/>
+	<field name="PO_RECEIVE_HEADER_ID" class="java.math.BigDecimal"/>
+	<field name="RECEIVE_LINE_ID" class="java.math.BigDecimal"/>
+	<field name="RCV_TRANSACTION_QTY" class="java.math.BigDecimal"/>
+	<field name="RCV_UOM" class="java.lang.String"/>
+	<field name="RCV_AMOUNT" class="java.math.BigDecimal"/>
+	<field name="RCV_STATUS" class="java.lang.String"/>
+	<field name="RCV_TRNS_TYPE" class="java.lang.String"/>
+	<variable name="totalRcvAmount" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{RCV_AMOUNT}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="135" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="72" width="802" height="20" uuid="65821f64-cc6b-4da3-a011-76ebb0c7b62f"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA['From :'+new SimpleDateFormat("MM/dd/yyyy").format($P{pf_date})+' To :'+ new SimpleDateFormat("MM/dd/yyyy").format($P{pt_date})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="1" width="802" height="32" uuid="c2609349-f100-43b2-8433-3c0b45ce5252"/>
+				<textElement textAlignment="Center">
+					<font size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="33" width="802" height="20" uuid="1ef60ed4-6499-4434-aa57-bcdd348f4900"/>
+				<textElement textAlignment="Center">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TH" x="0" y="115" width="78" height="20" uuid="ffa35ecb-a1bc-49b9-8c15-037b22ccb901"/>
+				<text><![CDATA[PO_NUMBER]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="78" y="115" width="57" height="20" uuid="93b83f42-98e9-4bb8-9695-0eb60f8e6e5d"/>
+				<text><![CDATA[TRNS_DATE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="135" y="115" width="100" height="20" uuid="5c9cd428-da71-4139-967a-2608e13f8db2"/>
+				<text><![CDATA[SUPPLIER_NAME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="235" y="115" width="100" height="20" uuid="15205615-2fae-42d6-89b3-bc070e2665f7"/>
+				<text><![CDATA[DESCRIPTION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="335" y="115" width="62" height="20" uuid="f5e60afc-5f92-4230-99f2-4ef254ca1ffe"/>
+				<text><![CDATA[PO_QTY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="397" y="115" width="61" height="20" uuid="b59ee2fa-f25f-4ede-aa77-7bd96c8dadb7"/>
+				<text><![CDATA[PO_AMOUNT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="458" y="115" width="77" height="20" uuid="20cb433f-89ad-4da9-ba68-86940e342909"/>
+				<text><![CDATA[RECEIVE_NUMBER]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="535" y="115" width="56" height="20" uuid="ccdd8996-9206-416b-8b23-32a77d74dbf7"/>
+				<text><![CDATA[RECEIVE_DATE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="654" y="115" width="68" height="20" uuid="e3d035a2-26a9-4253-8dc1-49a6adc0c46c"/>
+				<text><![CDATA[RCV_TRANSACTION_QTY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="722" y="115" width="73" height="20" uuid="050e38c5-a718-4cdf-b4ac-7134109cf0fa"/>
+				<text><![CDATA[RCV_UOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="795" y="115" width="70" height="20" uuid="cc88a8be-d47c-4a3d-b1c7-17a0d1ab41dc"/>
+				<text><![CDATA[RCV_AMOUNT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="865" y="115" width="48" height="20" uuid="d7026c31-2f47-425a-89b5-71ce58bd1dad"/>
+				<text><![CDATA[RCV_STATUS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" x="591" y="115" width="63" height="20" uuid="77740915-90a1-4942-9bb7-f88a87a5f1c1"/>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="0" y="0" width="78" height="20" uuid="7327ca27-a11a-4979-8c51-249fb0707462"/>
+				<textFieldExpression><![CDATA[$F{PO_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement style="table_TD" x="78" y="0" width="57" height="20" uuid="2300c9a3-c47f-4b69-ba97-490afb42defd"/>
+				<textFieldExpression><![CDATA[$F{TRNS_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="135" y="0" width="100" height="20" uuid="ce7cb944-b7a3-4853-bd7c-bb8e84a041c7"/>
+				<textFieldExpression><![CDATA[$F{SUPPLIER_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="235" y="0" width="100" height="20" uuid="dd95567f-3bb1-4da0-9632-c8a83c889963"/>
+				<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="335" y="0" width="62" height="20" uuid="79102594-ee8f-4410-b555-373b7d53fbc9"/>
+				<textFieldExpression><![CDATA[$F{PO_QTY}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="397" y="0" width="61" height="20" uuid="cb72df61-4629-4ea5-bd30-e3b91a7d9158"/>
+				<textFieldExpression><![CDATA[$F{PO_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="458" y="0" width="77" height="20" uuid="775323b6-e09a-4e69-b7f1-e5b478034e28"/>
+				<textFieldExpression><![CDATA[$F{RECEIVE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement style="table_TD" x="535" y="0" width="56" height="20" uuid="3c5f5754-5798-4c3b-a2a8-d396b78dd35d"/>
+				<textFieldExpression><![CDATA[$F{RECEIVE_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="654" y="0" width="68" height="20" uuid="84655d82-f276-4216-b619-b320cb887c9e"/>
+				<textFieldExpression><![CDATA[$F{RCV_TRANSACTION_QTY}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="722" y="0" width="73" height="20" uuid="59c6b552-cea4-4721-8788-8beb69ff9217"/>
+				<textFieldExpression><![CDATA[$F{RCV_UOM}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="795" y="0" width="70" height="20" uuid="49425a05-75f9-44ea-9058-b8bfdbe8bf61"/>
+				<textFieldExpression><![CDATA[$F{RCV_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="865" y="0" width="48" height="20" uuid="e2db42af-e2d5-48af-a165-152035302cdf"/>
+				<textFieldExpression><![CDATA[$F{RCV_STATUS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="591" y="0" width="63" height="20" uuid="d83c1269-d05e-4fb7-a0c2-44b90002f324"/>
+				<textFieldExpression><![CDATA[$F{RCV_TRNS_TYPE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="50">
+			<textField>
+				<reportElement x="767" y="1" width="100" height="20" uuid="1dd362d7-8df8-411a-8d69-62790dcce07f"/>
+				<textFieldExpression><![CDATA[$V{totalRcvAmount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <script th:inline="javascript">
+
+        function createPoFromReqQuot1()
+        {
+//            alert(arr.length);
+            if(arr.length>0)
+            {
+
+                createPoFromReqQt(arr,[[${mode}]],[[${pageId}]],[[${temltId}]],[[${invOrgId}]]);
+            }
+        }
+
+        function selectedobj(value, ind) {
+            if(ind == 'reqNumberSerchReqPo')
+            {
+//                alert('1');
+                SearchPoReqObj(value);
+            }else             if (ind == 'GRNSupSerc') {
+//                alert('selectedobj');
+                SearchSupObjSrcGrn(value);
+            }else             if (ind == 'reqUserSerc') {
+//                alert('selectedobj');
+                SearchReqUserSercObj(value);
+            }else if (ind == 'poReqItemSerc') {
+//                alert('selectedobj');
+                SearchPoReqItemObj(value);
+            }else if(ind == 'poReqSupSrch')
+            {
+                SearchPoReqApSSupObj(value);
+            }else if(ind == 'qtaPoReqNumberSerch')
+            {
+                SearchQtaPoReqObj(value);
+            }
+
+        };
+
+
+
+        function getPoReqSupInf(pSup, pdisplay, pindc) {
+            var varOrg = document.getElementById('inputorgHierarchy').value;
+            var displayfieldfrom = pdisplay;
+            var indc = pindc;
+            AutocomFunc('/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + pSup,
+                    displayfieldfrom,
+                    'name',
+                    null,
+                    indc);
+        };
+
+
+        var lIndQt;
+        function setCreateBtnPOFrmReq(ele)
+        {
+            var currentRow=$(ele).closest("tr");
+            var pLidC = 0;
+            var indBtn = 0;
+            var cLineId;
+            $('.selectFlg').each(function () {
+                if ($(this).is(':checked'))
+                {
+                    var curlIndQt;
+                    var currentRow=$(this).closest("tr");
+                    var lHdrId=currentRow.find(".c_headerId").html();
+
+                    if(lHdrId!='')
+                    {
+                        curlIndQt=true;
+                    }else
+                    {
+                        curlIndQt=false;
+                    }
+
+                    if(lIndQt==null||lIndQt=='')
+                    {
+                        lIndQt=curlIndQt;
+                    }else
+                    {
+                        if(lIndQt!=curlIndQt)
+                        {
+                            indBtn++;
+                            alert('Cannot Select Multiple Type.');
+                        }
+                    }
+                    pLidC=pLidC+1;
+                }
+            });
+            if ((pLidC==0)||(indBtn>0))
+            {
+                $('#createPoId').attr('disabled',true);
+            }else
+            {
+                $('#createPoId').removeAttr('disabled');
+            }
+
+        }
+
+    </script>
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Requisition Search For PO - <b th:text="${poReqSearch.invOrg.code}"></b></div>
+                <div class="panel-body">
+                    <form th:action="@{'/procurment/requsition/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId} }"
+                          th:object="${poReqSearch}" th:method="post">
+
+                            <span style="font-weight: bold" th:each="m :${msg}">
+                                <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                                    <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                                    <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+                                </p>
+                            </span>
+
+
+
+                    <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputreqNumber">Req. Number</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control" type="text" id="inputreqNumber"
+                                       th:field="*{reqNumber}" name="reqNumber" placeholder="Requisition Number" />
+                                <input type="hidden" th:field="*{orgHierarchy}"  id="inputorgHierarchy" />
+                                <input type="hidden" th:field="*{poReqHeader}" id="inputpoReqHeaderId" />
+                                <input type="hidden" th:field="*{invOrg}" id="inputinvOrg" />
+
+                                <script th:inline="javascript">
+
+                                    function SearchPoReqObj(objparms) {
+//                                            alert('x');
+                                        var objparmV = objparms;
+                                        $('#inputpoReqHeaderId').val(objparmV.poReqHeader.id).trigger("change");
+                                    };
+                                    document.getElementById('inputreqNumber').oninput = function () {
+                                       // myFunction();
+                                        var poNum = document.getElementById('inputreqNumber').value;
+                                        if (poNum.length==0)
+                                        {
+                                            document.getElementById('inputpoReqHeaderId').value='';
+                                        }
+                                        if (poNum.length > 1) {
+//                                            alert('x');
+                                            var  lOrg=document.getElementById('inputorgHierarchy').value;
+                                            var poReqUrl = '/AYE/ACRC/SearchOrgApproveReqNum/' +lOrg+'/'+poNum;
+//                                            alert(poReqUrl);//
+                                            autocomwithobject(poReqUrl , 'reqNumber', '#inputreqNumber', null, 'reqDate', 'reqNumberSerchReqPo');
+                                            document.getElementById('inputreqNumber').focus();
+                                        }
+                                        }
+
+                                </script>
+                                <span class="help-block" th:if="${#fields.hasErrors('reqNumber')}"
+                                      th:errors="*{reqNumber}">Name Error</span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputreqFromDate">Req. Date</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputreqFromDate"
+                                       th:field="*{{reqFromDate}}"
+                                       name="fromDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('reqFromDate')}"
+                                      th:errors="*{reqFromDate}">Date Error</span>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputreqToDate"
+                                       th:field="*{{reqToDate}}"
+                                       name="reqToDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('reqToDate')}"
+                                      th:errors="*{reqToDate}">Date Error</span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputMasterItem">Item Code</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control" type="hidden" id="inputMasterItemidId"
+                                       th:field="*{masterItem.id.id}"/>
+                                <input class="form-control" type="hidden" id="inputMasterItemidinventoryInformationsId"
+                                       th:field="*{masterItem.id.inventoryInformations.id}"/>
+                                <input class="form-control" type="text" id="inputMasterItem"
+                                       th:field="*{masterItem.itemCode}" placeholder="Item Code" />
+                            </div>
+                            <script th:inline="javascript">
+
+                                function SearchPoReqItemObj(objparms) {
+//                                            alert('x');
+                                    var objparmV = objparms;
+                                    $('#inputMasterItemidId').val(objparmV.id.id).trigger("change");
+                                    $('#inputMasterItemidinventoryInformationsId').val(objparmV.id.inventoryInformations.id).trigger("change");
+
+                                };
+
+                                document.getElementById('inputMasterItem').oninput = function() {
+//                                    alert('x');
+                                    var lItmCode = document.getElementById('inputMasterItem').value;
+                                    if (lItmCode.length==0)
+                                    {
+                                        document.getElementById('inputMasterItemidId').value='';
+                                        document.getElementById('inputMasterItemidinventoryInformationsId').value='';
+
+                                    }
+                                    if (lItmCode.length > 2) {
+                                        var  lInvOrg=document.getElementById('inputinvOrg').value;
+
+                                        var itemUrl = '/AYE/ACRC/SearchOrgItemCode/' + lInvOrg + '/' + lItmCode;
+//                                            alert(itemUrl);
+                                        autocomwithobject(itemUrl, 'itemCode', '#inputMasterItem', null, 'description', 'poReqItemSerc');
+                                        document.getElementById('inputMasterItem').focus();
+                                    }
+                                }
+                            </script>
+
+                        </div>
+
+                        <div th:class="${#fields.hasErrors('department')} ? 'form-group has-error' :'form-group col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputdepartment">Department</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-8 ">
+
+                                <select id="inputdepartment" name="department" th:field="*{department}" class="form-control" >
+                                    <option value="">Select One</option>
+                                    <option th:each="d :${departments}" th:text="${d.codeDetail}" th:value="${d.codes}"></option>
+
+                                </select>
+                                <p th:errors="*{department}" class="help-block"></p>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputsupplierLine">Supplier & Quotation</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input class="form-control" type="hidden" id="inputsupplierLine"
+                                       th:field="*{supplierLine}"  />
+
+                                <input class="form-control" type="text" id="inputsupplierLineName"
+                                       th:field="*{supplierLine.name}" placeholder="Supplier Name"  />
+
+                                <span class="help-block" th:if="${#fields.hasErrors('supplierLine')}"
+                                      th:errors="*{supplierLine}">Name Error</span>
+
+                                <script th:inline="javascript">
+                                    function SearchPoReqApSSupObj(objparms) {
+//                                            alert('x');
+                                        var objparmV = objparms;
+                                        $('#inputsupplierLine').val(objparmV.id).trigger("change");
+                                        $('#inputsupplierLineAddress').val(objparmV.siteAddress).trigger("change");
+                                    };
+
+                                    document.getElementById('inputsupplierLineName').oninput = function () {
+                                        $('#inputsupplierLine').val('');
+                                        $('#inputpoQuotationHeader').val('');
+                                        $('#inputqtaNumber').val('');
+                                        myFunctionSup();
+                                    };
+                                    function myFunctionSup() {
+
+                                        var innerVar = document.getElementById('inputsupplierLineName').value;
+
+                                        if (innerVar.length > 2) {
+                                            var displayfieldfrom = [['#inputsupplierLineName']];
+                                            getPoReqSupInf(innerVar, displayfieldfrom, 'poReqSupSrch');
+                                            document.getElementById('inputsupplierLineName').focus();
+                                        }
+                                    }
+                                </script>
+
+                            </div>
+
+                                <div class="col-sm-4 ">
+                                    <input class="form-control" type="text" id="inputqtaNumber"
+                                           th:field="*{poQuotationHeader.qtaNumber}" name="qtaNumber" placeholder="Quotation Number" />
+                                    <input class="form-control" type="hidden" id="inputpoQuotationHeader"
+                                           th:field="*{poQuotationHeader}" name="poQuotationHeader" />
+                                    <script th:inline="javascript">
+
+                                        function SearchQtaPoReqObj(objparms) {
+                                            var objparmV = objparms;
+                                            $('#inputpoQuotationHeader').val(objparmV.id).trigger("change");
+                                        };
+
+
+                                        document.getElementById('inputqtaNumber').oninput = function () {
+
+                                            var quotNum = document.getElementById('inputqtaNumber').value;
+                                            document.getElementById('inputpoQuotationHeader').value='';
+                                            if (quotNum.length > 1) {
+
+                                                var  lInvOrg=document.getElementById('inputinvOrg').value;
+                                                var  lOrg=document.getElementById('inputorgHierarchy').value;
+
+                                                var poUrl;
+                                                if($("#inputsupplierLine").val()!='')
+                                                {
+                                                    poUrl='/AYE/ACRC/SearchOrgSupQuotHeader/' +lOrg+ '/' +  lInvOrg +'/'+$("#inputsupplierLine").val()+'/'+quotNum  ;
+                                                }else
+                                                {
+                                                    poUrl = '/AYE/ACRC/SearchOrgApproveQuotHeader/' +lOrg+ '/' +  lInvOrg +'/'+quotNum  ;
+                                                }
+//                                            alert(poUrl );
+                                                autocomwithobject(poUrl, 'qtaNumber', '#inputqtaNumber', null, 'status', 'qtaPoReqNumberSerch');
+                                                document.getElementById('inputqtaNumber').focus();
+                                            }
+                                        }
+
+                                    </script>
+                                </div>
+
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputcreatedBy">User</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control" type="hidden" id="inputcreatedBy" th:field="*{createdBy}"/>
+                                <input  placeholder="Requisitor User" class="form-control" type="text" id="inputcreatedByUser" th:field="*{createdBy.userName}"/>
+                            </div>
+                            <script th:inline="javascript">
+
+                                function SearchReqUserSercObj(objparms) {
+//                                            alert('x');
+                                    var objparmV = objparms;
+                                    $('#inputcreatedBy').val(objparmV.id).trigger("change");
+
+                                };
+
+                                document.getElementById('inputcreatedByUser').oninput = function() {
+                                    var luserName = document.getElementById('inputcreatedByUser').value;
+                                    if (luserName.length==0)
+                                    {
+                                        document.getElementById('inputcreatedBy').value='';
+
+                                    }
+                                    if (luserName.length > 2) {
+
+                                        var userUrl = '/AYE/ACRC/getUserByname/' + luserName;
+//                                            alert(userUrl);
+                                        autocomwithobject(userUrl , 'userName', '#inputcreatedByUser', null, null, 'reqUserSerc');
+                                        document.getElementById('inputcreatedByUser').focus();
+                                    }
+                                }
+                            </script>
+                            </div>
+
+
+
+
+                        <div class="text-right Padding10px" align="right">
+                            <a th:href="@{/procurment/search/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-default">Search PO.</a>
+                            <!--th:if="${ADD}"-->
+                            <!--<span th:if="${ADD}">-->
+                            <button type="submit" name="searchReq"  class="btn btn-primary" onclick=" return chkPoReqQtaSearchqEmpty()">
+                                Find
+                            </button>
+                                <!--</span>-->
+                            <a th:href="@{/procurment/poHeader/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-default">New</a>                            <!--and ${ADD}-->
+
+                            <a id="createPoId" class="btn btn-primary" onclick="createPoFromReqQuot1()" th:disabled="disabled" >Create PO.</a>
+                            <!--<button id="createPoId" type="submit" th:name="createPo"  class="btn btn-primary" th:disbale="disable">-->
+                                <!--Create PO.-->
+                            <!--</button>-->
+                            <!--<script>-->
+                                <!--$(document).ready(function () {-->
+
+                                    <!--setCreateBtn();-->
+                                <!--});-->
+
+                            <!--</script>-->
+
+                        </div>
+
+
+
+
+                            <!--<a onclick="exportTableToExcel('tblDataLine')" >-->
+                                <!--<i class="fa fa-file-excel-o fa_custom_excell fa-1x" aria-hidden="true" title="File Export in Excell"></i>-->
+                            <!--</a>-->
+                            <!--<div class="col-sm-12 brder accgl-col">-->
+                                <!--<div class="col-sm-1 accgl-col brderright" style="width: 20px">Sl</div>-->
+                                <!--<div class="col-sm-2 accgl-col brderright" style="width: 100px" align="center">Number</div>-->
+                                <!--<div class="col-sm-2 accgl-col brderright" align="center">Item</div>-->
+                                <!--<div class="col-sm-1 accgl-col brderright" align="center">Uom</div>-->
+                                <!--<div class="col-sm-1 accgl-col brderright " align="center">Qty</div>-->
+                                <!--<div class="col-sm-1 accgl-col brderright" align="center">Department</div>-->
+                                <!--<div class="col-sm-4 accgl-col brderright" align="center" style="width: 335px">Approve Date & Note</div>-->
+                                <!--<div class="col-sm-1 accgl-col " align="center">Select</div>-->
+
+                            <!--</div>-->
+                            <!--<div class="col-sm-12 accgl-col brder "-->
+                                 <!--th:each="line,rowStat  : ${poReqBalances.poReqBalanceList}">-->
+                                <!--<div class="col-sm-1  form-group accgl-col high_control top_marg brderright"-->
+                                     <!--th:text="${rowStat.count}" style="width: 20px">1-->
+                                <!--</div>-->
+                                <!--<div class="col-sm-2 form-group accgl-col top_marg brderright" style="width: 100px">-->
+                                    <!--<input type="text" class="td form-control "-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].reqNumber}"-->
+                                           <!--readonly="readonly"/>-->
+                                <!--</div>-->
+
+                                <!--<div class="col-sm-2 form-group accgl-col top_marg brderright">-->
+                                    <!--<input type="text" class="td form-control "-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].masterItem.itemCode}"-->
+                                            <!--th:title="${poReqBalances.poReqBalanceList[__${rowStat.index}__].masterItem.itemCode}"-->
+                                           <!--readonly="readonly"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].poReqLines}"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].poReqHeader}"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].masterItem.id.id}"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].masterItem.id.inventoryInformations.id}"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].primUom}"/>-->
+
+                                    <!--&lt;!&ndash;<input type="hidden" name="id" th:field="${orderLineList.orderLines[__${rowStat.index}__].orderUomCode}"/>&ndash;&gt;-->
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].uomCode}"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].primaryQty}"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].trnsUom}"/>-->
+
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].conversionRate}"/>-->
+
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].createdBy}"/>-->
+
+                                <!--</div>-->
+
+                                <!--<div class="col-sm-1 form-group accgl-col top_marg brderright">-->
+                                    <!--<input type="text" class="td form-control "-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].trnsUomCode}"-->
+                                           <!--readonly="readonly"/>-->
+                                    <!--<input type="hidden"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].subinventory}"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].subInvCode}"/>-->
+                                    <!--<input type="hidden"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].subinvLocator}"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].subinvLocCode}"/>-->
+                                <!--</div>-->
+
+                                <!--<div class="col-sm-1 form-group accgl-col top_marg brderright">-->
+
+                                    <!--<input type="text" class="td form-control " style="text-align: end"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].trnsQty}"-->
+                                           <!--readonly="readonly"/>-->
+                                    <!--&lt;!&ndash;<input type="text"  class="td form-control " name="orderDefaultUomQtyid"&ndash;&gt;-->
+                                           <!--&lt;!&ndash;th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderDefaultUomQty}" readonly="readonly"/>&ndash;&gt;-->
+
+                                    <!--&lt;!&ndash;<input type="hidden"&ndash;&gt;-->
+                                           <!--&lt;!&ndash;th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderUomQty}"&ndash;&gt;-->
+                                            <!--&lt;!&ndash;/>&ndash;&gt;-->
+                                <!--</div>-->
+
+                                <!--<div class="col-sm-1 form-group accgl-col top_marg brderright">-->
+
+                                    <!--<input type="text" class="td form-control "-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].department}"-->
+                                           <!--th:title="${poReqBalances.poReqBalanceList[__${rowStat.index}__].department}"-->
+                                           <!--readonly="readonly"/>-->
+
+                                <!--</div>-->
+                                <!--<div class="col-sm-2 form-group accgl-col top_marg brderright"  style="width: 132px">-->
+
+                                    <!--&lt;!&ndash;th:text="${poReqBalances.poReqBalanceList[__${rowStat.index}__].lastUpdateDate}"&ndash;&gt;-->
+                                        <!--<span th:type="datetime" class="td form-control "-->
+                                    <!--th:text="${#dates.format(poReqBalances.poReqBalanceList[__${rowStat.index}__].lastUpdateDate, 'dd-MMM-yyyy - HH:mm')}"-->
+                                               <!--readonly="readonly"> </span>-->
+                                    <!--</div>-->
+                                <!--<div class="col-sm-2 form-group accgl-col top_marg brderright" style="width: 203px">-->
+                                        <!--<input type="text" class="td form-control "-->
+                                               <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].lineNotes}"-->
+                                               <!--readonly="readonly"/>-->
+
+                                    <!--<input type="hidden" class="td form-control "-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].poQuotationLine}"-->
+                                           <!--readonly="readonly"/>-->
+                                    <!--<input type="hidden" class="td form-control "-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].poQuotationDetail}"-->
+                                           <!--readonly="readonly"/>-->
+
+
+                                <!--</div>-->
+
+
+                                <!--<div class="col-sm-1 form-group  accgl-col top_marg ">-->
+                                    <!--<input type="hidden" class="td form-control qtFlg"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].poQuotationHeader}"-->
+                                           <!--readonly="readonly"/>-->
+                                    <!--<input type="text" class="td form-control "-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].poQuotationHeader.supplierLine.name}"-->
+                                           <!--readonly="readonly"/>-->
+                                    <!--<input class="form-control pFlag"-->
+                                           <!--th:field="${poReqBalances.poReqBalanceList[__${rowStat.index}__].flage}"-->
+                                           <!--onclick="return setCreateBtn()"-->
+                                           <!--type="checkbox"/>-->
+
+                                <!--</div>-->
+
+                            <!--</div>-->
+                            <!--<script>-->
+                                <!--$(document).ready(function () {-->
+                                    <!--poFromReqValidation();-->
+                                    <!--setCreateBtn();-->
+                                <!--});-->
+
+                            <!--</script>-->
+
+
+
+
+                    </form>
+                <div class=" col-sm-12 table-responsive dist_view" th:if="!${#lists.isEmpty(poReqBalances)}" id="tblDataLine">
+
+                    <table class="table table-bordered table-hover table-striped table-sortable" id="tblDataLine">
+                        <thead>
+
+                        <th>Number</th>
+                        <th>Item</th>
+                        <th>UOM</th>
+                        <th>Qty</th>
+                        <th>Dpt.</th>
+                        <th>Notes</th>
+                        <th>Supplier</th>
+                        <th>Rate</th>
+                        <th data-table-sortable-disable>Select</th>
+                        </thead>
+                        <tbody>
+
+                        <div th:each="header : ${poReqBalances.poReqBalanceList}">
+                            <tr>
+                                <td style="font-size: 12px; color: #323232;" th:text="${header.reqNumber}"></td>
+                                <td style="font-size: 12px; color: #323232;" th:text="${header.masterItem.itemCode}"></td>
+                                <td style="font-size: 12px; color: #323232;" th:text="${header.trnsUomCode}"></td>
+                                <td style="font-size: 12px; color: #323232;" th:text="${header.trnsQty}"></td>
+                                <td style="font-size: 12px; color: #323232;" th:text="${header.department}"></td>
+                                <td style="font-size: 12px; color: #323232;"  th:text="${header.lineNotes}"></td>
+                                <td style="font-size: 12px; color: #323232;" th:text="${header?.poQuotationHeader?.supplierLine?.name}"></td>
+                                <td style="font-size: 12px; color: #323232;" th:text="${header?.poQuotationLine?.rate}"></td>
+                                <td class="c_headerId" style="display: none" th:text="${header?.poQuotationHeader?.id}"></td>
+                                <td th:type="checkbox">
+                                    <div>
+                                        <!---->
+                                        <!--<input class="selectFlg" id="inputChkBox" type="checkbox" onclick="setCreateBtnPOFrmReq(this)" th:value="${header.id}"/>-->
+                                        <input class="selectFlg" id="inputChkBox" type="checkbox" onclick="setCreateBtn(this)" th:value="${header.id}"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </div>
+                        <div th:if="${#lists.isEmpty(poReqBalances.poReqBalanceList)}">
+                            <tr>
+                                <td>No Data exists!</td>
+                            </tr>
+                        </div>
+
+                        </tbody>
+
+                    </table>
+
+
+                </div>
+
+            </div>
+                <div class="panel-footer">
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

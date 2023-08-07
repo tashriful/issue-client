@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="OrderDetail" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d1679ae4-0b46-4598-ba40-e18a872b23c5">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="org_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select order_number,Order_Status from aye.ord_order_header
+where org_id=$P{org_id}]]>
+	</queryString>
+	<field name="ORDER_NUMBER" class="java.lang.String"/>
+	<field name="ORDER_STATUS" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="60" y="2" width="100" height="20" uuid="0281c5c0-701e-4e43-a9f4-92aebd484446"/>
+				<text><![CDATA[ORDER_NUMBER]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="299" y="2" width="100" height="20" uuid="9bb6365a-1f4c-4919-ae8c-eaffae3e1091"/>
+				<text><![CDATA[ORDER_STATUS]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<textField>
+				<reportElement x="60" y="36" width="100" height="20" uuid="748fb1dc-3cc2-4247-8375-58243d2b905c"/>
+				<textFieldExpression><![CDATA[$F{ORDER_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="299" y="43" width="100" height="20" uuid="c85b2676-13cd-4821-8eca-8c661e5b9197"/>
+				<textFieldExpression><![CDATA[$F{ORDER_STATUS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

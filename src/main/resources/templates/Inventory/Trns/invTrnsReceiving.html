@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+      layout:decorator="fragments/layout">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head >
+    <link th:insert="Inventory/InvScriptLink"/>
+
+    <script th:inline="javascript">
+
+        var searchObj;
+
+        function selectedobj(value, ind) {
+            //alert('Y'+ind);
+            if (ind=='floc')
+            {
+//                alert('selectedobj');
+                SearchFloctObj(value);
+            }else if(ind=='tloc')
+            {
+                SearchTloctObj(value);
+            }
+            else if(ind=='InvRecvItem')
+            {
+
+                InvRcvItemObj(value);
+            }
+            else if(ind=='seg1InvR')
+            {
+                InvSearchseg1(value);
+            }
+            else if(ind=='seg2InvR')
+            {
+                InvSearchseg2(value);
+            }
+            else if(ind=='seg3InvR')
+            {
+                InvSearchseg3(value);
+            }
+            else if(ind=='seg4InvR')
+            {
+                InvSearchseg4(value);
+            }
+            else if(ind=='seg5InvR')
+            {
+                InvSearchseg5(value);
+            }
+
+        };
+
+
+
+
+        function AutocomFunc(purlval,pdisplayfield,pgetvalue,pgetDesc,pindc) {
+//            alert(purlval);
+//            alert(pdisplayfield);
+//            alert(pgetvalue);
+//            alert(pgetDesc);
+//            alert(pindc);
+
+            var urlval = purlval;//'/AYE/ACRC/SearchCodeComb/' + bSeg;
+            var displayfield = pdisplayfield;//'#toAccountV';
+            var getvalue = pgetvalue;//'concatedSegment';
+            var getDesc = pgetDesc;//'siteAddress';
+            var indc = pindc;//'segment2desc';
+
+            autocomwithobject(urlval, getvalue, displayfield, null, getDesc, indc);
+//mmmm
+        };
+
+
+        function getLocator(pfSub,pdisplay,pindc) {
+//                                                alert('getLocator');
+            var displayfieldfrom =pdisplay;
+            var indc =pindc;
+
+            AutocomFunc('/AYE/ACRC/SearchLocator/' + pfSub,
+                    displayfieldfrom,
+                    'locatorValue',
+                    null,
+                    indc);
+        };
+
+
+        function getcodcomfmodal(pcode,pid){
+//            alert('YY'+pid);
+            document.getElementById("toAccountV").value=pcode;
+            document.getElementById("inputtoAccount").value=pid;
+            $('#modal-warning').modal('hide');
+
+        }
+
+        function multipleFuncCall(param1)
+        {
+            if(checkemptyfield())
+            {
+                prevDbClick(param1);
+            }
+
+        }
+
+    </script>
+
+
+</head>
+<body>
+<div th:replace="fragments/general.html :: footer"></div>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+
+
+                <div th:if="${pageName=='search'}">
+                    <div class="panel-body">
+                        <div class="panel-heading">Search Inventory Receiving Transactions</div>
+                        <form id="search" th:action="@{'/InvTrnsRecv/search/'+${mode}+'/'+ ${pageId}+'/'+${temltId}}"
+                              th:object="${invTrnsSearch}" method="post">
+                            <div
+                                    th:class="${#fields.hasErrors('trnsNumber')} ? 'form-group has-error' :'form-group  col-sm-12 ' ">
+                                <label class="col-sm-3 control-label " for="inputtrnsNumber">Code</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8 ">
+                                    <input type="text" id="inputtrnsNumber" placeholder="Transaction Number"
+                                           name="trnsNumber" th:field="*{trnsNumber}" class="form-control"/>
+                                    <input type="hidden" id="inputtrnsId" th:field="*{trnsid}"/>
+
+                                    <p th:errors="*{trnsNumber}" class="help-block"></p>
+                                </div>
+
+                                <div>
+                                    <input type="hidden" id="inputinvOrg" placeholder="invOrg"
+                                           name="invOrg" th:field="*{invOrg}"
+                                           class="form-control" th:attr="data-invorgid=*{invOrg.id}"/>
+
+                                    <p th:errors="*{invOrg}" class="help-block"></p>
+                                </div>
+
+                                <script th:inline="javascript">
+                                    var invorgId = document.getElementById('inputinvOrg').value;
+                                   // var bSeg = document.getElementById('balSag').value;
+                                   //alert('aaaa');
+                                    //                                        var keySeg = document.getElementById('keySeg').value;
+                                    var urlval = '/AYE/ACRC/SearchRecvNum/'+invorgId;
+//                                    alert(urlval);
+                                    var displayfield = '#inputtrnsNumber';
+                                    var dbfield = '#inputtrnsId';
+                                    var getvalue = 'trnsNumber';
+                                    var templt = 'id';
+                                    autocomwithtemplate(urlval, getvalue, displayfield, dbfield, templt);
+
+
+                                    document.getElementById('inputtrnsNumber').oninput = function () {
+                                        TrnsNumisEmpty();
+                                    };
+
+                                    function TrnsNumisEmpty() {
+                                        var fLoc = document.getElementById('inputtrnsNumber').value;
+                                        if (fLoc.length == 0) {
+                                            // alert('aaaa');
+                                            document.getElementById('inputtrnsId').value=null;
+                                        }
+                                        ;
+                                    }
+
+
+                                </script>
+                            </div>
+                            <div class="form-group required col-sm-12">
+                                <label class=" col-sm-3 control-label " for="inputfromDate">From</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="date" value="01-01-2019" id="inputfromDate"
+                                           placeholder="yyyy-MM-dd" th:field="*{{fromDate}}" name="fromDate"/>
+
+                                    <p th:errors="*{fromDate}" class="help-block"></p>
+                                </div>
+                            </div>
+
+                            <div class="form-group required col-sm-12">
+                                <label class=" col-sm-3 control-label " for="inputtoDate">To</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="date" value="01-01-2019" id="inputtoDate"
+                                           placeholder="yyyy-MM-dd" th:field="*{{toDate}}" name="toDate"/>
+
+                                    <p th:errors="*{toDate}" class="help-block"></p>
+                                </div>
+                            </div>
+
+
+
+
+                            <div th:class="${#fields.hasErrors('trnsType')} ? 'form-group has-error' :'form-group col-sm-12 ' ">
+                                <label class=" col-sm-3 control-label " for="inputtrnsTypeF">Transaction Type</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8">
+
+                                    <select class="form-control" name="trnsType"
+                                            id="inputtrnsTypeF" th:field="*{trnsType}" th:disabled="disable">
+                                        <!--<option value="">Please select One</option>-->
+                                        <option th:each="module : ${trnsTypes}" th:text="${module.trnsCode}"
+                                                  th:value="${module.id}" th:attr="data-action=${module.trnsAction}"
+                                                >
+                                        </option>
+                                    </select>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                            <div th:class="${#fields.hasErrors('fromSubinventory')} ? 'form-group has-error' :'form-group  col-sm-12 ' ">
+                                <label class=" col-sm-3 control-label " for="inputfromSubinventory">From</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8">
+                                    <select class="form-control" name="fromSubinventory" id="inputfromSubinventory"
+                                            th:field="*{fromSubinventory}">
+                                        <option value="">Please select One</option>
+                                        <option th:each="sub : ${subInv}" th:text="${sub.code}" th:value="${sub.id}">
+                                            module
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!--<div id="toSubinventory"-->
+                                 <!--th:class="${#fields.hasErrors('toSubinventory')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">-->
+                                <!--<label class=" col-sm-3 control-label " for="inputtoSubinventory">To</label>-->
+
+                                <!--<div class="col-sm-1 "><b>:</b></div>-->
+                                <!--<div class="col-sm-8">-->
+                                    <!--<select class="form-control" name="toSubinventory" id="toSubinventory"-->
+                                            <!--th:field="*{toSubinventory}">-->
+                                        <!--<option value="">Please select One</option>-->
+                                        <!--<option th:each="sub : ${subInv}" th:text="${sub.code}" th:value="${sub.id}">-->
+                                            <!--module-->
+                                        <!--</option>-->
+                                    <!--</select>-->
+                                <!--</div>-->
+                            <!--</div>-->
+
+                            <!--<div id="inputtoSubinventory"-->
+                            <!--th:class="${#fields.hasErrors('toSubinventory')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">-->
+                            <!--<label class=" col-sm-3 control-label " for="inputtoSubinventory">To</label>-->
+
+                            <!--<div class="col-sm-1 "> <b>:</b> </div>-->
+                            <!--<div class="col-sm-8">-->
+                            <!--<select class="form-control" name="toSubinventory" id="inputtoSubinventory"-->
+                            <!--th:field="*{toSubinventory}" >-->
+                            <!--<option value="">Please select One</option>-->
+                            <!--<option th:each="sub : ${subInv}"-->
+                            <!--th:text="${sub.code}"-->
+                            <!--th:value="${sub.id}">module-->
+                            <!--</option>-->
+                            <!--</select>-->
+                            <!--</div>-->
+                            <!--</div>-->
+                            <div th:class="${#fields.hasErrors('status')} ? 'form-group has-error' :'form-group  col-sm-12 ' ">
+                                <label class=" col-sm-3 control-label " for="inputstatus">Status</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8">
+                                    <select id="inputstatus" placeholder="Status"
+                                            name="status" th:field="*{status}" class="form-control">
+                                        <option value="">Please select One</option>
+                                        <option th:each="status : ${T(com.aye.web.model.Inv.common.InvStatus).values()}"
+                                                th:text="${status.displayName}"
+                                                th:value="${status}"></option>
+
+                                    </select>
+                                    <!--<input type="text" id="inputstatus" placeholder="Status"-->
+                                    <!--name="status" th:field="*{status}" class="form-control"/>-->
+                                    <!--<p th:errors="*{status}" class="help-block"></p>-->
+                                </div>
+                            </div>
+
+                            <div class="text-right Padding10px">
+                                <!--<a  th:href="@{/InvItem/MasterItem/E/}+${pageId}+'/'+${temltId}"-->
+                                <!--class="btn btn-default">Cancel</a>-->
+                                <button type="submit" name="search" th:value="*{invOrg.id}" class="btn btn-primary">Find</button>
+                                <button type="submit" name="go" th:value="*{invOrg.id}" class="btn btn-primary">New</button>
+
+
+                            </div>
+
+
+
+                            <div class="form-group col-sm-12 marginbtm10px">
+                                <table class="table table-bordered table-hover table-striped" id="tblDataLine" style="margin-bottom: 0px !important;">
+                                    <thead>
+<tr class="tablhtop">
+    <th colspan="8" style="padding-top: 2px !important; padding-bottom: 2px !important; border-right-style:hidden !important;">Inventory Issueing Transactions</th>
+    <th  colspan="1" style=" text-align:right; padding-top: 2px !important; padding-bottom: 2px !important;" >
+
+   <a onclick="exportTableToExcel('tblDataLine')" >
+    <i class="fa fa-file-excel-o fa_custom_excell fa-1x" aria-hidden="true" title="File Export in Excell"></i>
+    </a>
+
+</th></tr>
+
+
+                                    <th>Number</th>
+                                    <th>Date</th>
+                                    <th>Org.</th>
+                                    <th>Type</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Acc.</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                    </thead>
+                                    <tbody>
+
+
+                                        <tr th:each="header : ${invTrnsHeaders}">
+                                            <td th:text="${header.trnsNumber}"></td>
+                                            <td th:text="${header.trnsDate}"></td>
+                                            <td th:text="${header.invOrg.code}"></td>
+                                            <!--<td th:text="${header.date}"></td>-->
+                                            <td th:text="${header.trnsType.trnsCode}"></td>
+                                            <td th:text="${header.fromSubinventory.code}"></td>
+                                            <td th:text="${header.toSubinventory}?${header.toSubinventory.code} :''"></td>
+                                            <td th:text="${header.toAccountV}"></td>
+                                            <td th:text="${header.status.displayName}"></td>
+                                            <td>
+                                                <!--<td>-->
+                                                <!--<button type="submit" name="edit" th:value="${header.id}">Edit</button>-->
+                                                <!--</td>-->
+
+                                                <!--th:if="${x.segmenteColumn == T(com.aye.web.model.account.common.GlStatus).N}"-->
+                                                <!--<div class="btn-group" role="group" aria-label="..." name="edit"-->
+                                                <!--th:if="${(header.status == T(com.aye.web.model.account.common.GlStatus).N)}"-->
+                                                <!--onclick="return true">-->
+                                                <!--<a th:href="@{/AccGL/editGlheader/}+ ${pageId}+'/'+${temltId}+'/'+${header.id}"-->
+                                                <!--class="btn btn-success"><span-->
+                                                <!--class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>-->
+                                                <!--</div>-->
+                                                <div class="btn-group" role="group" aria-label="..." name="edit">
+                                                    <a th:href="@{/InvTrnsRecv/editTrns/U/}+ ${pageId}+'/'+${temltId}+'/'+${header.id}"
+                                                       class="btn success"><span
+                                                            class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                                                </div>
+
+
+                                            </td>
+
+
+                                        </tr>
+
+
+                                    <div th:if="${#lists.isEmpty(invTrnsHeaders)}">
+                                        <tr>
+                                            <td>No Data exists!</td>
+                                        </tr>
+                                    </div>
+
+                                    </tbody>
+
+                                </table>
+
+
+
+                                <div data-th-replace="fragments/pagination :: page-pagination">
+
+
+
+                                </div>
+
+
+
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+
+
+                <div th:if="${pageName=='trns'}">
+
+                    <div class="form-group col-sm-12  jepg_cust_head">
+                        <div class="form-group col-sm-5 " style="padding-left: 0; color: #172D44">Add Inventory Receving Transactions &nbsp; <a
+                                th:text="${invTrnsHeader.invOrg.code}"></a></div>
+                        <div class="form-group col-sm-7 text-right Padding10px" style=" font-size: 12px;" align="right" th:if="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}">
+                            <form th:action="@{'/InvTrnsRecv/addTrnsdt/'+${mode}+'/'+ ${pageId}+'/'+${temltId}}"
+                                  th:method="post" th:target="_blank"
+                                  th:if="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}">
+                                <button target="_blank" type="submit" name="rpt" th:value="'rcv :'+${invTrnsHeader.id}" class="btn btn-primary"
+                                        align="center">
+                                    <span class="glyphicon glyphicon-print"></span> Print
+
+                                </button>
+                                <!--<a   th:href="@{/AccGL/AddGlHeader/U/}+${pageId}+'/'+${temltId}"  target="_blank" type="submit" name="rpt" th:value="'Journal_voucher :'+${glHeader.id}" class="btn btn-primary" align="center">Print Voucher</a>-->
+                            </form>
+
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="panel-body">
+
+                        <form id="trns" th:action="@{'/InvTrnsRecv/addTrnsdt/'+${mode}+'/'+ ${pageId}+'/'+${temltId}}"
+                              th:object="${invTrnsHeader}" method="post">
+                            <!--<span style="color: #ed1c24;font-weight: bold" th:text="${msg}"></span>-->
+                            <!--<span style="color: #ed1c24;font-weight: bold" th:text="YYYY"></span>-->
+                            <span style="font-weight: bold" th:each="m :${msg}">
+                            <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                                <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                                <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+                            </p></span>
+                            <div class="submit-progress hidden">
+                                <label th:style="'color:#4aa509;'">Please wait while Saving Data...</label>
+                            </div>
+
+                            <!--<p th:text="${msg}"></p>-->
+                            <div class="form-group">
+                                <input type="hidden" class="form-control" id="inputid"
+                                       placeholder="Id" th:field="*{id}" name="id"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}"
+                                  th:errors="*{id}">id Error</span>
+                            </div>
+
+
+                            <div
+                                    th:class="${#fields.hasErrors('trnsNumber')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                                <label class="col-sm-3 control-label " for="inputtrnsNumber">Code</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8 ">
+                                    <input type="text" id="inputtrnsNumber" placeholder="Transaction Number"
+                                           name="trnsNumber" th:field="*{trnsNumber}" class="form-control"
+                                           th:readonly="readonly"/>
+
+                                    <p th:errors="*{trnsNumber}" class="help-block"></p>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group required col-sm-12">
+                                <label class=" col-sm-3 control-label " for="inputtrnsDate">Date</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="date" value="01-01-2019" id="inputtrnsDate"
+                                           placeholder="yyyy-MM-dd" th:field="*{{trnsDate}}" name="trnsDate"
+                                           th:readonly="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}"/>
+
+                                    <p th:errors="*{trnsDate}" class="help-block"></p>
+                                </div>
+                            </div>
+
+
+                            <div>
+                                <input type="hidden" id="inputinvOrg" placeholder="invOrg"
+                                       name="invOrg" th:field="*{invOrg}"
+                                       class="form-control" required="required"
+                                       th:attr="data-invorgid=*{invOrg.id}"/>
+                                <input type="hidden" id="balSag"
+                                       th:field="*{invOrg.orgHierarchy.segmentLine.code}"
+                                       class="form-control"/>
+                                <input type="hidden" id="keySeg"
+                                       th:field="*{invOrg.orgHierarchy.keySegmentHeader.id}"
+                                       class="form-control"/>
+                            </div>
+
+                            <!--<div class="col-sm-8 ">-->
+                            <!-- -->
+                            <!--</div>-->
+
+                            <div>
+                                <input type="hidden" id="invOrgId"
+                                       th:field="*{invOrg.id}"
+                                       class="form-control"/>
+                            </div>
+
+                            <div th:class="${#fields.hasErrors('trnsType')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                                <label class=" col-sm-3 control-label " for="inputtrnsType">Transaction Type</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-8" id="orgTrnsType">
+                                    <input id="inputtrnsType" th:field="*{trnsType}" required="required" th:value="*{trnsType}"
+                                    th:disabled="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N }" type="hidden"/>
+                                    <input id="inputtrnsTypeCode"  class="form-control" th:field="*{trnsType.trnsCode}" required="required" th:value="*{trnsType}"
+                                    th:disabled="disable" />
+
+
+
+                                </div>
+
+
+                            </div>
+
+                            <div th:class="${#fields.hasErrors('fromSubinventory')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                                <label class=" col-sm-3 control-label " for="inputfromSubinventory">From</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-4">
+                                    <select class="form-control" name="fromSubinventory" id="inputfromSubinventory"
+                                            th:field="*{fromSubinventory}" required="required"
+                                            th:disabled="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}">
+                                        <option value="">Please select One</option>
+                                        <option th:each="sub : ${subInv}" th:text="${sub.code}" th:value="${sub.id}"
+                                                th:attr="data-locConfrom=${sub.isLocatorControl}">
+                                            module
+                                        </option>
+                                    </select>
+                                    <input type="hidden" id="locSubinvLocConfrom"
+                                           th:field="*{fromSubinventory.isLocatorControl}"
+                                           th:value="*{fromSubinventory}"/>
+                                    <script th:inline="javascript">
+                                        $("#inputfromSubinventory").change(function () {
+                                            var varSubinvLocConfrom = ($(this.options[this.selectedIndex]).attr('data-locConfrom'));
+                                            document.getElementById('locSubinvLocConfrom').value = varSubinvLocConfrom;
+                                            if (varSubinvLocConfrom == "false") {
+//                                                alert(varSubinvLocCon);
+                                                document.getElementById('fromLocator').readOnly = true;
+                                                document.getElementById("fromLocator").value = "";
+                                            } else {
+                                                document.getElementById('fromLocator').readOnly = false;
+                                            }
+                                        })
+                                    </script>
+                                    <!--<input type="hidden" id="inputSubinvLocContrl" th:field="*{fromSubinventory.isLocatorControl}" />-->
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="hidden" class="form-control" name="fromLocator" id="inputfromLocator"
+                                           th:field="*{fromSubinvLocator}" th:value="*{fromSubinvLocator}"/>
+                                    <input type="text" class="form-control" name="fromLocator" id="fromLocator"
+                                           th:field="*{fromLocator}" th:value="*{fromLocator}"
+                                           th:disabled="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}"/>
+                                    <script th:inline="javascript">
+                                        var mods = [[${mode}]];
+                                        var trns = [[*{trnsNumber}]];
+                                        if (trns != null) {
+                                            var fromSubLocCon = document.getElementById('locSubinvLocConfrom').value;
+//                                            var fromSubLocCon = ($(this.options[this.selectedIndex]).attr('data-locConfrom'));
+                                            if (fromSubLocCon == "false") {
+//                                                alert(fromSubLocCon);
+                                                document.getElementById('fromLocator').readOnly = true;
+                                                document.getElementById("fromLocator").value = "";
+                                            } else {
+                                                document.getElementById('fromLocator').readOnly = false;
+                                            }
+                                        }
+
+                                        function SearchFloctObj(objparms) {
+//                                            alert('x');
+                                            var objparmV = objparms;
+                                            $('#inputfromLocator').val(objparmV.id).trigger("change");
+                                        }
+                                        ;
+
+                                        document.getElementById('fromLocator').oninput = function () {
+                                            FromLocatorInf();
+                                        };
+
+                                        function FromLocatorInf() {
+                                            var fLoc = document.getElementById('fromLocator').value;
+                                            if (fLoc.length > 2) {
+                                                var displayfieldfrom = [['#fromLocator']];
+                                                var varFromSubinv = document.getElementById('inputfromSubinventory').value;
+                                                getLocator(varFromSubinv, displayfieldfrom, 'floc');
+                                                document.getElementById('fromLocator').focus();
+                                            }
+                                            ;
+                                        }
+
+                                        $(document).ready( function(){
+                                            var fromSubLocCon = document.getElementById('locSubinvLocConfrom').value;
+
+                                            if (fromSubLocCon == "false") {
+                                                document.getElementById('fromLocator').readOnly = true;
+                                                document.getElementById("fromLocator").value = "";
+                                            } else if(fromSubLocCon == ""){
+                                                document.getElementById('fromLocator').readOnly = true;
+                                                document.getElementById("fromLocator").value = "";
+                                            } else {
+                                                document.getElementById('fromLocator').readOnly = false;
+                                            }
+                                        })
+
+                                    </script>
+
+                                </div>
+                            </div>
+
+
+
+                            <div th:class="${#fields.hasErrors('toAccount')} ? 'form-group has-error' :'form-group  col-sm-12  required' " >
+                                <label class="col-sm-3 control-label " for="inputtoAccount">To Account</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+                                <div class="col-sm-7 " >
+
+                                    <input type="hidden" class="form-control" id="inputtoAccount"
+                                           th:field="*{toAccount}" th:value="toAccount.id" name="toAccount"/>
+                                    <input type="text" id="toAccountV" placeholder="To Account"
+                                           name="toAccountV" th:field="*{toAccountV.concatedSegment}"
+                                           class="form-control" required="required"
+                                            style="width: 385px !important;"
+                                          th:title="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}?*{toAccountV.concatedSegmentDesc}"
+                                           th:readonly="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}" />
+
+                                    <p th:errors="*{toAccount}" class="help-block"></p>
+                                    <script th:inline="javascript">
+                                        var bSeg = document.getElementById('balSag').value;
+                                       // alert(bSeg);
+                                        //                                        var keySeg = document.getElementById('keySeg').value;
+
+
+                                        var urlval = '/AYE/ACRC/SearchCodeCombByAccountType/' + bSeg+'/Expenditure';
+                                        //alert(urlval);
+                                        var displayfield = '#toAccountV';
+                                        var dbfield = '#inputtoAccount';
+                                        var getvalue = 'concatedSegment';
+                                        var templt = 'ccDesc';
+                                        autocomwithtemplate(urlval, getvalue, displayfield, dbfield, templt);
+                                    </script>
+
+
+
+                                    </div>
+
+                                <!---popup form start-->
+                                <div class="col-sm-1 " style="text-align: right;">
+
+
+                                    <!--<a data-toggle="modal" data-target="#modal-warning"-->
+                                       <!--th:attr="data-target='#modal-warning'"><span-->
+                                            <!--class="glyphicon glyphicon-search"></span></a>-->
+
+                                    <button type="button" data-toggle="modal" data-target="#modal-warning"
+                                            th:attr="data-target='#modal-warning'" th:disabled="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}">
+                                        <span class="glyphicon">&#xe164;</span>
+                                    </button>
+                                </div>
+                                    <!---popup form end-->
+
+
+                            </div>
+
+                            <div th:class="${#fields.hasErrors('remarks')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                                <label class=" col-sm-3 control-label " for="inputremarks">Remarks</label>
+
+                                <div class="col-sm-1 ">
+                                    <b>:</b>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" id="inputremarks" placeholder="Remarks"
+                                           name="remarks" th:field="*{remarks}"
+                                           class="form-control"
+                                           th:readonly="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}"/>
+
+                                    <p th:errors="*{remarks}" class="help-block"></p>
+                                </div>
+                            </div>
+
+                            <div th:class="${#fields.hasErrors('status')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                                <label class=" col-sm-3 control-label " for="inputstatus">Status</label>
+
+                                <div class="col-sm-1 "><b>:</b></div>
+
+
+                                <div class="col-sm-8">
+                                    <input type="hidden" id="inputstatus" placeholder="Status"
+                                           name="status" th:field="*{status}" th:value="*{status}"/>
+
+                                    <input type="text" id="inputstatusDesc"
+                                           th:field="${invTrnsHeader.status.displayName}"
+                                           class="form-control" readonly="readonly"/>
+                                </div>
+
+                                <p th:errors="*{status}" class="help-block"></p>
+
+
+                            </div>
+
+
+                            <div class="form-group ">
+                                <!--<label for="inputid">Name</label>-->
+                                <input type="hidden" class="form-control" id="inputcolumn" placeholder="column"
+                                       th:field="*{column.createdBy}" name="column"/>
+                                <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('column.createdBy')}"
+                                      th:errors="*{column.createdBy}">User Name Error</span>
+                            </div>
+
+                            <div class="form-group">
+                                <!--<label for="inputid">Name</label>-->
+                                <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                       th:field="*{column.creationDate}" name="columnDate"/>
+                                <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('column.creationDate')}"
+                                      th:errors="*{column.creationDate}">User Name Error</span>
+                            </div>
+
+                            <div>
+                                <button type="button" data-toggle="modal" data-target="#modal-RecordHistory" th:id="btnIdHM"
+                                        th:attr="data-target='#modal-RecordHistory'"  title="Record History" >
+                                    <span class="glyphicon glyphicon-record"></span>
+                                </button>
+                                <script th:inline="javascript">
+                                    document.getElementById('btnIdHM').onclick =
+                                            function () {
+                                                var obj = [[${invTrnsHeader.column}]];
+
+                                                histabledataset(obj);
+                                            };
+                                </script>
+                            </div>
+                            <div data-th-replace="fragments/recordHistoryModal :: recordhis-modal"></div>
+
+                            <div class="form-group  col-sm-12 Padding10px" align="right">
+                                <!--<button type="submit" name="Yo" class="btn btn-primary">YO</button>-->
+                                 <span th:if="${ADD}" >
+
+                                <button th:if="${invTrnsHeader.status==T(com.aye.web.model.Inv.common.InvStatus).N}"
+                                        type="submit" name="save" class="btn btn-primary" onclick="return multipleFuncCall(this.id)">Save
+                                </button>
+                                     </span>
+                                <a th:href="@{/InvTrnsRecv/addTrns/E/}+${pageId}+'/'+${temltId} +'/'+*{invOrg.id}"
+                                   class="btn btn-default">New</a>
+                                <a th:href="@{/InvTrnsRecv/search/E/}+${pageId}+'/'+${temltId}+'/'+*{invOrg.id}"
+                                   class="btn btn-primary">Search</a>
+                                <a th:href="@{/InvTrnsRecv/addTrns/E/}+${pageId}+'/'+${temltId}"
+                                   class="btn btn-default">Back</a>
+
+
+
+                            </div>
+
+                            <!---->
+                            <!--<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">-->
+                                <!--<div class="modal-dialog" role="document">-->
+                                    <!--<div class="modal-content">-->
+                                        <!--<div class="modal-header">-->
+                                            <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+                                            <!--<h4 class="modal-title" id="myModalLabel">Modal title</h4>-->
+                                        <!--</div>-->
+                                        <!--<div class="modal-body">-->
+
+
+
+
+
+                                        <!--</div>-->
+                                        <!--<div class="modal-footer">-->
+                                            <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
+
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--->
+
+
+
+
+
+
+
+
+
+                            <!--<form class="form-horizontal">-->
+                            <div class=" col-sm-12  dist_view" th:if="${(invTrnsHeader.id)!=null}">
+
+
+                                <div class="col-sm-12 brder accgl-col">
+                                    <div class="col-sm-1 accgl-col brderright" style="width: 20px">Id</div>
+                                    <div class="col-sm-3 accgl-col brderright" align="center">Item</div>
+                                    <div class="col-sm-2 accgl-col brderright" align="center">UOM</div>
+                                    <div class="col-sm-2 accgl-col brderright " align="center">Qty</div>
+                                    <div class="col-sm-3 accgl-col brderright" align="center">Note</div>
+                                    <div class="col-sm-1 accgl-col " align="center">Action</div>
+
+                                </div>
+                                <div class="col-sm-12 accgl-col brder "
+                                     th:each="InvTrnsDetail,rowStat : *{invTrnsDetails}">
+
+                                    <div class="col-sm-1  form-group accgl-col high_control top_marg brderright"
+                                         th:text="${rowStat.count}" style="width: 20px">1
+                                    </div>
+
+                                    <div class="col-sm-3 form-group accgl-col top_marg brderright">
+                                        <input class="td form-control " th:type="text" th:id="dis+${rowStat.count}"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].itemCode}"
+                                               height="2" required="required"
+                                               th:readonly="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}"/>
+
+                                        <input class="td form-control " th:type="hidden" th:id="id+${rowStat.count}"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].masterItem.id.id}"
+                                               value="masterItem.id.id" height="2" name="itemId" required="required"/>
+                                        <!--.id.inventoryInformations.id-->
+                                        <input class="td form-control " th:type="hidden" th:id="idorg+${rowStat.count}"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].masterItem.id.orgId.id}"
+                                               value="masterItem.id.orgId.id"
+                                               height="2"/>
+                                        <script th:inline="javascript">
+
+                                            document.getElementById([[dis +${rowStat.count}]]).oninput = function () {
+                                                myFunction()
+                                            };
+                                            function myFunction() {
+                                                var innerVar = document.getElementById([[dis +${rowStat.count}]]).value;
+
+                                                if (innerVar.length > 1) {
+
+                                                    callAutoCom(innerVar);
+                                                    document.getElementById([[dis +${rowStat.count}]]).focus();
+                                                }
+                                            }
+
+                                            function InvRcvItemObj(objparms) {
+//                                            alert('x');
+                                                var objparmV = objparms;
+
+                                                var lItemCode = [['#dis' +${rowStat.count}]];
+                                                var lItemId = [['#id' +${rowStat.count}]];
+                                                var lInvOrg = [['#idorg' +${rowStat.count}]];
+                                                var lPrimUom = [['#primUom' +${rowStat.count}]];
+                                                var lTrnsUomCode = [['#trnsUom' +${rowStat.count}]];
+                                                var lTrnsUomId = [['#trnsUomId' +${rowStat.count}]];
+
+                                               // alert('xx');
+
+                                                $(lItemCode).val(objparmV.itemCode).trigger("change");
+                                                $(lItemId).val(objparmV.id.id).trigger("change");
+//                                                $(lItemId).val(3).trigger("change");
+                                                $(lInvOrg).val(objparmV.id.inventoryInformations.id).trigger("change");
+                                                $(lPrimUom).val(objparmV.defaultUom.id).trigger("change");
+                                                $(lTrnsUomCode).val(objparmV.defaultUom.uomCode).trigger("change");
+                                                $(lTrnsUomId).val(objparmV.defaultUom.id).trigger("change");
+                                            };
+
+                                            function callAutoCom(itm) {
+                                                var morgid = document.getElementById('invOrgId').value;
+                                                var item = null;
+                                                // var morgid=($(this.options[this.selectedIndex]).attr('data-invorgid'));
+                                                var displayfieldvar = [['#dis' +${rowStat.count}]];
+                                                var dbfieldvar = [['#id' +${rowStat.count}]];
+                                                //alert(dbfieldvar);
+                                                var dbfieldvar2 = [['#idorg' +${rowStat.count}]];
+                                                var dbfieldvar3 = [['#primUom' +${rowStat.count}]];
+//                                                                                     alert(urlval);
+                                                var displayfield = displayfieldvar;
+
+
+                                                //   alert(displayfield)
+                                                var dbfield = dbfieldvar;
+                                                var dbfield2 = dbfieldvar2;
+                                                var dbfield3 = dbfieldvar3;
+                                                var getvalue = 'itemCode';
+                                                var indRcvItemLine ='InvRecvItem';
+                                                var urlval = '/AYE/ACRC/SearchOrgItemCode/' + morgid + '/' + itm;
+                                                //                                        var dbfield2 = null;
+                                                //alert(dbfield)
+
+                                                autocomwithobjectwod(urlval, getvalue, displayfield, dbfield,  indRcvItemLine);
+//                                                  //  alert(urlval) mmmm
+
+                                            }
+
+
+
+
+                                        </script>
+
+                                    </div>
+
+
+                                    <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                                        <input class="td form-control " th:type="text" required="required"
+                                               th:id="trnsUom+${rowStat.count}"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].trnsUom.uomCode}"
+                                               value="trnsUom"
+                                               height="2" th:name="ddd"
+                                               th:readonly="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}"/>
+
+                                        <input class="td form-control " th:type="hidden"
+                                               th:id="trnsUomId+${rowStat.count}"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].trnsUom.id}"
+                                               value="trnsUomId"
+                                               height="2"/>
+
+                                        <script th:inline="javascript">
+
+
+                                            function itemvalidation(iid) {
+//                                                return false;
+                                               // var iid='#'+[[id +${rowStat.count}]];{invTrnsDetails[__${rowStat.index}__].trnsQty}
+                                                var iid='#'+[[id +${rowStat.count}]]
+//                                                var iiid='#'+[[trnsUom+${rowStat.count}]];
+                                                var idd=[[dis+${rowStat.count}]];
+//                                                alert(idd);
+                                                if (checkrecvitem(iid,idd)>0)
+                                                {
+
+                                                   document.getElementById(idd).style.borderColor = "#CCC";
+
+                                                }else
+                                                {
+
+                                                    document.getElementById(idd).style.borderColor = "red";
+                                                    return false;
+                                                };
+                                            };
+
+
+
+
+
+
+
+                                            var x = [['#dis' +${rowStat.count}]];
+                                            //                                        var x=[['#trnsUomId'+${rowStat.count}]];
+                                            // alert(x);
+                                            $(x).change(function () {
+                                                var itmId = document.getElementById([['id' +${rowStat.count}]]).value;
+                                                var orgId = document.getElementById([['idorg' +${rowStat.count}]]).value;
+//                                            alert(itmId);
+                                                var urlval = '/AYE/ACRC/SearchUomByItem/' + orgId + '/' + itmId;
+//alert(urlval);
+                                                var displayfield = [['#trnsUom' +${rowStat.count}]];
+                                                var dbfield = [['#trnsUomId' +${rowStat.count}]];
+                                                var getvalue = 'toCode';
+                                                autocoTrnsUom(urlval, getvalue, displayfield, dbfield);
+
+                                            });
+
+                                        </script>
+
+
+                                    </div>
+                                    <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                                        <input class="td form-control " th:type="text" required="required"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].trnsQty}"
+                                               th:id="*{invTrnsDetails[__${rowStat.index}__].trnsQty}"
+                                               value="trnsQty"
+                                               height="2"
+                                               th:readonly="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}"/>
+
+                                        <input th:type="hidden"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].id}"
+                                               value="id"/>
+                                        <input th:type="hidden"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].invTrnsHeader}"
+                                               value="invTrnsHeader"/>
+                                        <input th:type="hidden"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].primaryQty}"
+                                               value="invTrnsHeader"/>
+                                        <input th:type="hidden"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].primUom}"
+                                               th:id="primUom+${rowStat.count}"
+                                               value="primUom"/>
+                                        <input th:type="hidden"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].uomCode}"
+                                               value="uomCode"/>
+                                        <input th:type="hidden"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].toAccount}"
+                                               value="toAccount"/>
+                                        <input th:type="hidden"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].column.createdBy}"
+                                               value="column.createdBy"/>
+                                        <input th:type="hidden"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].column.creationDate}"
+                                               value="column.creationDate"/>
+
+                                    </div>
+
+                                    <div class="col-sm-3   accgl-col top_marg brderright">
+                                        <input class="td form-control " th:type="text"
+                                               th:field="*{invTrnsDetails[__${rowStat.index}__].remarks}"
+                                               value="remarks"
+                                               height="2"
+                                               th:readonly="${invTrnsHeader.status!=T(com.aye.web.model.Inv.common.InvStatus).N}"/>
+                                    </div>
+                                    <div th:if="${invTrnsHeader.status==T(com.aye.web.model.Inv.common.InvStatus).N}"
+                                         class="col-sm-1 form-group accgl-col " align="center"
+                                         style="text-align: center ">
+                                        <button class="btn-danger" type="submit" name="removeRow"
+                                                th:value="${rowStat.index}" style="font-size: 10px; margin-top: 4px;">
+                                            Remove
+                                        </button>
+                                    </div>
+
+
+                                </div>
+
+                                <div class="col-sm-12 brder btn_padd" align="right">
+                                    <div th:if="${invTrnsHeader.status==T(com.aye.web.model.Inv.common.InvStatus).N}">
+                                        <button type="submit" th:name="addRow" class="btn btn-primary " onclick="return itemvalidation()">Add Row
+                                        </button>
+
+                                         <span th:if="${ADD}" >
+                                        <button type="submit" name="saveDetail" class="btn btn-success"
+                                                align="right" >Save Lines
+                                        </button>
+                                             </span>
+
+                                        <span th:if="${POST}" >
+                                        <button type="submit" th:name="post" class="btn btn-primary" align="right" id="btPost"
+                                                onclick="return prevDbClick(this.id)">
+                                            Post
+                                        </button>
+                                            </span>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                            <!--</form>-->
+                            <div>
+
+                                <div th:if="${(invTrnsHeader.trnsNumber)==null}">
+
+                                </div>
+
+                            </div>
+
+
+
+
+
+                        </form>
+                        <div data-th-replace="fragments/modalData :: account-modal"></div>
+
+
+
+
+
+
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="panel-footer"></div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

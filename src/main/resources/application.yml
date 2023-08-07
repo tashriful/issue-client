@@ -1,0 +1,43 @@
+
+## 52 Test Database
+
+debug: false
+welcome:
+  message: Hello to AYE
+
+server:
+  servlet:
+    context-path: /AYE
+#    session:
+#      cookie:
+#        name: issueSessionId
+#        path: /
+#        max-age: 50000
+#        http-only: true
+#        secure: true
+#      tracking-modes: cookie
+
+  port: 9090
+
+#security.basic.enabled: false
+name: dev
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/  # file:///G:/Project/Template/resources/templates/
+#    mode: LEGACYHTML5
+  template:
+    cache: false
+
+  messages:
+    always-use-message-format: false # Set whether to always apply the MessageFormat rules, parsing even messages without arguments.
+    basename: i18n/messages # Comma-separated list of basenames, each following the ResourceBundle convention.
+    cache-seconds: -1 # Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles are cached forever.
+    encoding: UTF-8 # Message bundles encoding.
+    fallback-to-system-locale: true # Set whether to fall back to the system Locale if no files for a specific Locale have been found.
+myapp:
+  base-url: http://172.20.1.225:8081/AYEIssue
+  jwt:
+    secret: issue

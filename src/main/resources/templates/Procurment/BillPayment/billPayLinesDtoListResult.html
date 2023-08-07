@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        function setCreateAddBillBtn()
+        {
+
+            var pLidC = 0;
+            var cLineId;
+            $('.nLineId').each(function () {
+                if ($(this).is(':checked'))
+                {
+                    pLidC=pLidC+1;
+                }
+            });
+
+            if (pLidC==0)
+            {
+                $('#btnRes').prop('disabled',true);
+            }else
+            {
+                $('#btnRes').prop('disabled',false);
+            }
+
+        }
+    </script>
+
+</head>
+<body>
+
+<div id="billPayLinesDtoListResult" th:fragment="billPayLinesDtoListResult" class="billPayLinesDtoListResult">
+    <div class="form-group col-sm-12">
+
+        <div th:unless="${#lists.isEmpty(billPayLinesDtoList)}">
+
+            <div>
+                <a id="btnRes" class="btn btn-success" onclick="myfunc(this)" title="Add To Line">Add</a>
+            </div>
+
+
+            <table class="table table-bordered table-hover table-striped">
+            <thead>
+            <!--<tr>-->
+            <!--<th th:text="#{results.ordTrnsTypes.id}">Id</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.trnsTypeName}">Name</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.description}">Desc.</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.startDates}">Start</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.active}">End</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.priceListHeader.name}">Price List</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.invOrg.code}">Inv.Org</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.orgHierarchy.code}">Org</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.glCategories.categoriesCode}">Gl Categories</th>-->
+            <!--</tr>-->
+            <tr>
+                <!--<th>Id</th>-->
+                <th width="1%">?</th>
+                <th>Rcv Num.</th>
+                <th>PO Num.</th>
+                <th>Name</th>
+                <th>Item Info.</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Id</th>
+
+            </tr>
+
+            </thead>
+            <tbody>
+            <tr th:each="c : ${billPayLinesDtoList.billPayLinesDtos}">
+                <!--<td th:text="${trnsType.id}">Id</td>-->
+                <td>
+                    <input class="nLineId" type="checkbox" name="c.id" th:id="${c.id}" onchange="Selectallcheckbox(this)" th:value="${c.id}"/>
+                    <!--<input type="checkbox" name="c.id[]" autocomplete="off" value="">-->
+                </td>
+
+
+                <div th:if="${billPayLinesDtoList.billType!=T(com.aye.web.model.Bill.BillType).MNUL}">
+                    <td th:text="${c.poRcvLines!=null ? c.poRcvLines.poRcvHeader.rcvNumber : '' }" th:id="rcvNumber+${c.id}" ></td>
+                    <td th:text="${c.poLines.poHeader.poNumber}"> </td>
+                    <td><div class="texthide" th:text="${c.supplierLine.name}"  th:title ="${c.supplierLine.name}"></div></td>
+                    <td><div class="texthide" th:text="${c.masterItem.itemCode}" th:title="${c.masterItem.itemCode}"></div></td>
+                    <!--<td th:text="${c.primaryQty}"  ></td>-->
+                    <td th:text="${#numbers.formatDecimal(c.primaryQty,0, 'COMMA', 2, 'POINT')}"> </td>
+                    <!--<td th:text="${c.unitPrice}"  ></td>-->
+                    <td th:text="${#numbers.formatDecimal(c.unitPrice,0, 'COMMA', 2, 'POINT')}"></td>
+                    <td th:text="${c.amount}"></td>
+                    <td th:text="${c.id}"></td>
+
+                </div>
+                <div th:if="${billPayLinesDtoList.billType==T(com.aye.web.model.Bill.BillType).MNUL}">
+                    <td th:text="${c.glHeader.documentNumber}"></td>
+                    <td ></td>
+                    <td th:text="${c.supplierLine.name}"></td>
+                    <!--<td><div class="texthide" th:text="${c.supplierLine.name}"  th:title ="${c.supplierLine.name}"></div> </td>-->
+                    <td ></td>
+                    <td ></td>
+                    <td ></td>
+                    <td th:text="*{c.amount}"></td>
+                    <td th:text="${c.id}"  ></td>
+                </div>
+
+            </tr>
+
+
+            </tbody>
+
+        </table>
+            <div>
+                <a id="btnRes" class="btn btn-success" onclick="myfunc(this)" title="Add To Line">Add</a>
+
+
+
+            </div>
+            <script>
+//                alert([[${billPayLinesDtoList.billType}]]);
+
+//                $(document).ready(function()
+//                {
+//                    setCreateAddBillBtn();
+//                });
+                var arr =[];
+                function Selectallcheckbox(element){
+//                    setCreateAddBillBtn();
+
+                    var n=arr.length;
+                    var cVals=element.value;
+                    var dVal=0;
+                    var cVal=0;
+
+
+                    if (n!=0&&n>0)
+                    {
+                        $.each( arr, function( key, value ) {
+                            if (cVals==value)
+                            {
+                                spl(key,arr);
+                                dVal=2;
+                            }else
+                            {
+                                cVal=2
+                            }
+//                            alert('dVal>'+dVal+' cVal>'+cVal)
+                        });
+
+                    }else
+                    {
+                        arr.push(element.value);
+                    }
+
+                    if (dVal==0&&cVal==2)
+                    {
+                        arr.push(element.value);
+                    }
+
+
+                }
+
+                function spl(i,a)
+                {
+                    a.splice(i,1);
+                }
+
+                function myfunc(x)
+                {
+
+                    if (arr.length==0)
+                    {
+                        alert("No Line Select! Please Select a Line First!!")
+                    }else
+                    {
+                        var lineIds= arr;
+
+                        var lmod = xMode;
+                        var lpId = xPageId;
+                        var ltId = xtempId;
+                        var invOrgId  = [[${billPaySearch.invOrg.id}]];
+
+                        var hdrId=xHdrId;
+
+                        var l_urlVal = '/AYE/BillPay/LineAdd/' + lmod + '/' + lpId + '/' + ltId + '/' + invOrgId+'/'+hdrId;
+                        var l_url = window.location.origin + l_urlVal;
+                        $.post(l_url, $.param({ lineIds: arr }, true),function (data) {
+                            return true;
+                        });
+                        $('#modal-addGrn').modal('hide');
+                        alert('Line Successfully Addedd!');
+
+                        frmSub();
+
+                    }
+
+
+                }
+
+            </script>
+
+
+
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

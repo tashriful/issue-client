@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="financialPositionBS" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="844ad145-4f84-4ca5-a854-1f6a7925391f">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="p_org_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="p_cal_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+         c.fs_group1,
+         c.fs_group2,
+         c.fs_group3,
+         c.fs_group4,
+         org.org_name,
+         org.org_address,cd.period_name,
+(CASE
+             WHEN fs_group1 != 'ASSETS'
+             THEN
+                CASE
+                   WHEN TO_NUMBER (c.fs_group4) = 12
+                   THEN
+--                      SUM (NVL (gl.base_dr_amount, 0) - NVL (base_cr_amount, 0))*-1
+                       (SUM (NVL (gl.base_dr_amount, 0) - NVL (base_cr_amount, 0))+sum(nvl(retE.amount,0)))*-1
+                   ELSE
+                      SUM (
+                         NVL (gl.base_dr_amount, 0) - NVL (base_cr_amount, 0))
+                      * -1
+                END
+             ELSE
+                SUM (NVL (gl.base_dr_amount, 0) - NVL (base_cr_amount, 0))
+          END)            amount
+    FROM gl_line_view gl,
+         code_combination_v c,
+         (SELECT org.id org_id, org.address org_address, org.name org_name,CALENDAR_HEADER_ID
+            FROM organization_hierarchy org) org,
+            (select * from calender_detail where id = $P{p_cal_id}) cd
+          ,(SELECT org_id,sum( NVL (g.base_dr_amount, 0) - NVL (base_cr_amount, 0)) amount
+            FROM gl_line_view g, code_combination_v cc,calender_detail cd
+           WHERE g.account_code_combinition_id = cc.id and G.CALANDER_DETAIL_ID=cd.id
+and g.org_id=$P{p_org_id} and cd.id=$P{p_cal_id} AND account_sub_type = 'PL' and G.ACCOUNT_DATE<=CD.TO_DATE  group by org_id) retE
+   WHERE     gl.account_code_combinition_id(+) = c.id
+   and org.CALENDAR_HEADER_ID=cd.CALENDAR_HEADER_ID
+         AND GL.ACCOUNT_DATE <= CD.TO_DATE
+--and gl.CALANDER_DETAIL_ID=cd.id
+AND retE.org_id(+) = org.org_id
+         AND gl.org_id = org.org_id
+         AND gl.org_id = $P{p_org_id}
+         AND account_sub_type = 'BS'
+having sum(nvl(gl.BASE_DR_AMOUNT,0)-nvl(BASE_CR_AMOUNT,0)) <>0
+GROUP BY
+         c.fs_group1,
+         c.fs_group2,
+         c.fs_group3,
+         c.fs_group4,
+         org.org_name,
+         org.org_address
+         ,cd.period_name
+ORDER BY
+         to_number(c.fs_group4)]]>
+	</queryString>
+	<field name="FS_GROUP1" class="java.lang.String"/>
+	<field name="FS_GROUP2" class="java.lang.String"/>
+	<field name="FS_GROUP3" class="java.lang.String"/>
+	<field name="FS_GROUP4" class="java.lang.String"/>
+	<field name="ORG_NAME" class="java.lang.String"/>
+	<field name="ORG_ADDRESS" class="java.lang.String"/>
+	<field name="PERIOD_NAME" class="java.lang.String"/>
+	<field name="AMOUNT" class="java.math.BigDecimal"/>
+	<variable name="group2Total" class="java.math.BigDecimal" resetType="Group" resetGroup="FS_GROUP2" calculation="Sum">
+		<variableExpression><![CDATA[$F{AMOUNT}]]></variableExpression>
+	</variable>
+	<variable name="group1Total" class="java.math.BigDecimal" resetType="Group" resetGroup="FS_GROUP1" calculation="Sum">
+		<variableExpression><![CDATA[$F{AMOUNT}]]></variableExpression>
+	</variable>
+	<group name="FS_GROUP1">
+		<groupExpression><![CDATA[$F{FS_GROUP1}]]></groupExpression>
+		<groupHeader>
+			<band height="15">
+				<textField>
+					<reportElement x="2" y="0" width="376" height="15" uuid="9f5fcc1b-9ac2-4d90-8933-fef0815297fb"/>
+					<textElement>
+						<font size="10" isBold="true" isUnderline="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{FS_GROUP1}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement positionType="Float" x="1" y="0" width="1" height="15" uuid="fadc0b39-d004-4cb4-8345-8a5d0b52d9cb"/>
+				</line>
+				<line>
+					<reportElement positionType="Float" x="554" y="0" width="1" height="15" uuid="e14a5377-417b-4f3a-9939-2c745fa1577c"/>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="15">
+				<textField>
+					<reportElement x="2" y="0" width="376" height="15" uuid="0f5c9dd6-8da1-4827-b5ca-97f11a9e5b40"/>
+					<textElement>
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Total "+$F{FS_GROUP1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement x="378" y="0" width="176" height="15" uuid="ab041a07-dd0f-47f8-b8d5-ca0ded1a65ae"/>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{group1Total}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="1" y="0" width="1" height="15" uuid="3f7f8a05-51b5-45fd-a53d-5f9e9c44a84d"/>
+				</line>
+				<line>
+					<reportElement x="554" y="0" width="1" height="15" uuid="ffaeb188-a470-43a0-9ff5-099b1a4d729d"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="FS_GROUP2">
+		<groupExpression><![CDATA[$F{FS_GROUP2}]]></groupExpression>
+		<groupHeader>
+			<band height="15">
+				<textField>
+					<reportElement x="2" y="0" width="376" height="15" uuid="89430ec4-4b3d-4eb8-8b0c-e27c5077981b"/>
+					<textElement>
+						<font size="9" isBold="true" isUnderline="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{FS_GROUP2}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="1" y="0" width="1" height="15" uuid="31677f0c-897e-4627-a1fa-72607aae4865"/>
+				</line>
+				<line>
+					<reportElement x="554" y="0" width="1" height="15" uuid="376e1ea8-f1ed-42f8-9e31-83a743794e77"/>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="15">
+				<textField>
+					<reportElement x="2" y="0" width="376" height="15" uuid="439cf5ee-c92c-4df9-81f8-0b910f2fffbc"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Total "+$F{FS_GROUP2}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement x="378" y="0" width="176" height="15" uuid="17e88593-9519-433b-a7f9-016b2391b460"/>
+					<textElement textAlignment="Right">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{group2Total}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="1" y="0" width="1" height="15" uuid="2e6bf56b-1f8f-46b7-ab92-aca91527ce6f"/>
+				</line>
+				<line>
+					<reportElement x="554" y="0" width="1" height="15" uuid="3c4ddfe9-b0e0-470c-a798-be2e5d203f68"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="FS_GROUP3">
+		<groupExpression><![CDATA[$F{FS_GROUP3}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="74" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="31" uuid="39e94f32-226c-44c5-8e74-82f4556c9832"/>
+				<textElement textAlignment="Center">
+					<font size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="32" width="555" height="20" uuid="08a991e9-6961-4ae2-88f3-8903db8b9aba"/>
+				<textElement textAlignment="Center">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="52" width="555" height="20" uuid="6580685c-0830-43d1-a1b4-55f6b357f76e"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA["STATEMRENT OF FINANCIAL POSITION for "+$F{PERIOD_NAME}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="73" width="554" height="1" uuid="00ecc779-dba9-4f36-b265-957eaf68b6ca"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement x="2" y="0" width="376" height="15" uuid="afd6eddc-9155-4065-b6df-868e7e3e7300"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FS_GROUP3}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;(###0.00)">
+				<reportElement x="378" y="0" width="176" height="15" uuid="907be3c5-5048-4a4e-ac0e-e3e3feab13c0"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{AMOUNT}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="0" width="1" height="15" uuid="2b0d57f6-8bbc-47bb-8b88-c5db0c173557"/>
+			</line>
+			<line>
+				<reportElement x="554" y="0" width="1" height="15" uuid="df19958f-0b73-46b0-8225-3cecc882c119"/>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="1" splitType="Stretch">
+			<line>
+				<reportElement x="1" y="0" width="554" height="1" uuid="813858a5-e3d4-40b0-ba73-7db743f8ee44"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

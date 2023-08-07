@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9d921442-e558-430f-b391-a89e898001fe">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="87"/>
+	<queryString>
+		<![CDATA[select
+USER_NAME,
+ACCESS_NUMBER      ,
+  USER_ACCESS_TEMPLATE_ID ,
+  TEMPLATE_DESC,DETAIL_NAME,MENU_HEADER_ID,
+  ICON,MODULE,MENU_NAME,PAGE
+from USER_ACCESS userAcc, AYEUSER ayUsr,
+(select uatm.ID,TEMPLATE_DESC,DETAIL_NAME,MENU_HEADER_ID
+ from USER_ACCESS_TEMPLATE uatm, USER_ACCESS_TEMPLATE_DTL uatmd
+where uatm.ID=uatmd.USER_ACCESS_TEMPLATE_ID) tmplt,
+(select mh.ID,ICON,MODULE,md.MENU_NAME,PAGE
+ from MENU_HEADER mh,MENU_DETAIL md
+where mh.ID=md.MENU_HEADER_ID) menus
+where userAcc.USER_ID=ayUsr.USER_ID
+and userAcc.USER_ACCESS_TEMPLATE_ID =tmplt.id
+and tmplt.MENU_HEADER_ID=menus.ID
+and ayUsr.USER_ID=1]]>
+	</queryString>
+	<field name="USER_NAME" class="java.lang.String"/>
+	<field name="ACCESS_NUMBER" class="java.lang.String"/>
+	<field name="USER_ACCESS_TEMPLATE_ID" class="java.math.BigDecimal"/>
+	<field name="TEMPLATE_DESC" class="java.lang.String"/>
+	<field name="DETAIL_NAME" class="java.lang.String"/>
+	<field name="MENU_HEADER_ID" class="java.math.BigDecimal"/>
+	<field name="ICON" class="java.lang.String"/>
+	<field name="MODULE" class="java.lang.String"/>
+	<field name="MENU_NAME" class="java.lang.String"/>
+	<field name="PAGE" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<textField>
+				<reportElement x="53" y="30" width="100" height="20" uuid="efb6200b-f00b-448e-8e7f-750104de9f8b"/>
+				<textFieldExpression><![CDATA[$F{USER_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="219" y="2" width="100" height="20" uuid="a359a054-fd7a-499a-bb29-35dbcbea1cf3"/>
+				<text><![CDATA[MENU_NAME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="2" width="100" height="20" uuid="8a64405b-7f46-4bb7-983b-3e1be3dbda02"/>
+				<text><![CDATA[MODULE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="143" y="2" width="100" height="20" uuid="088c6c27-97c6-49e7-902a-d67b00483904"/>
+				<text><![CDATA[PAGE]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<textField>
+				<reportElement x="206" y="0" width="100" height="20" uuid="2b54482d-68de-4da2-8115-75a50f15492e"/>
+				<textFieldExpression><![CDATA[$F{MENU_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="0" width="100" height="20" uuid="9a2abcec-04be-484f-9d1c-8bdba1d979f4"/>
+				<textFieldExpression><![CDATA[$F{MODULE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="67" y="1" width="100" height="20" uuid="e03a3f4f-49d2-4320-934e-4596b180e7d7"/>
+				<textFieldExpression><![CDATA[$F{PAGE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

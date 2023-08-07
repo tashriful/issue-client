@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="InvFin/InvFinScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+
+
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Account Interface Search</div>
+                <div class="panel-body">
+                    <form th:action="@{'/InvFin/AccInterFaceDataMain/'+${mode}+'/'+${pageId}+'/'+${temltId} }"
+                          th:object="${accInterfaceSearch}" th:method="post">
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputaccCalendarDetail">Period & Year</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <select class="form-control" id="inputaccCalendarDetail"
+                                th:field="*{accCalendarDetail}" required>
+                                    <option value="">Select</option>
+                                    <option th:each="cal : ${calendarDetailList}"
+                                    th:text="${cal.periodName}"
+                                    th:value="${cal.id}" th:attr="data-source=${cal.year}">year</option>
+                                </select>
+                                <input class="form-control" type="hidden" id="inputorgHierarchy" th:field="*{orgHierarchy}" />
+
+                                <span class="help-block" th:if="${#fields.hasErrors('accCalendarDetail')}"
+                                      th:errors="*{accCalendarDetail}">AccCalendarDetail Error</span>
+                            </div>
+                            <!--<div class="col-sm-4  ">-->
+                                <!--<input class="form-control" type="date" value="01-01-2019" id="inputcostDate"-->
+                                       <!--th:field="*{{costDate}}"-->
+                                       <!--name="fromDate"/>-->
+                                <!--<span class="help-block" th:if="${#fields.hasErrors('costDate')}"-->
+                                      <!--th:errors="*{costDate}">Date Error</span>-->
+                            <!--</div>-->
+                        </div>
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputinvCstStep"></label>
+                            <div class="col-sm-1 ">
+
+                            </div>
+                            <div class="col-sm-8 ">
+                                <select class="form-control" id="inputinvCstStep"
+                                        th:field="*{invCstStep}" >
+                                    <option value="">Select</option>
+                                    <option th:each="s : ${invCstSteps}"
+                                            th:text="${s.stapeName}"
+                                            th:value="${s.id}">s</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="text-right Padding10px" align="right">
+                            <!--<a  th:href="@{/InvItem/MasterItem/E/}+${pageId}+'/'+${temltId}"-->
+                            <!--class="btn btn-default">Cancel</a>-->
+                            <button type="submit" name="search"  class="btn btn-primary"> Find </button>
+                        </div>
+
+                        <div>
+
+                        </div>
+                    </form>
+
+                    <div class="form-group col-sm-12">
+
+                        <table class="table table-bordered table-hover table-striped" id="tblDataLine">
+                            <thead>
+                            <tr class="tablhtop">
+                                <th colspan="7" style="padding-top: 2px !important; padding-bottom: 2px !important; border-right-style:hidden !important;">TransactionsDetails </th>
+                                <th  colspan="1" style=" text-align:right; padding-top: 2px !important; padding-bottom: 2px !important;" >
+
+                                    <a onclick="exportTableToExcel('tblDataLine')" >
+                                        <i class="fa fa-file-excel-o fa_custom_excell fa-1x" aria-hidden="true" title="File Export in Excell"></i>
+                                    </a>
+
+                                </th></tr>
+
+                            <th>Name</th>
+                            <th>Dr</th>
+                            <th>Cr</th>
+                            <th>Detail</th>
+                            </thead>
+                            <tbody>
+
+                            <div th:if="!${#lists.isEmpty(accInterfaceMains)}">
+                                <tr th:each="r : ${accInterfaceMains}">
+                                    <td th:text="${r.invCstStep.stapeName}"></td>
+                                    <td th:text="${r.baseAmountDr}"></td>
+                                    <td th:text="${r.baseAmountCr}"></td>
+                                    <td>
+
+                                        <div class="btn-group" role="group" aria-label="..." name="edit">
+                                            <a th:href="@{/InvFin/AccInterFaceDataSubFirst/E/}+${pageId}+'/'+${temltId}+'/'+${r.accCalendarDetail.id}+'/'+${r.invCstStep.id}"
+                                               class="btn btn-success"><span
+                                                    class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                                        </div>
+
+                                    </td>
+
+
+                                </tr>
+                            </div>
+                            <div th:if="${#lists.isEmpty(accInterfaceMains)}">
+                                <tr>
+                                    <td>No Data exists!</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </div>
+
+
+                            </tbody>
+
+                        </table>
+
+    <!--<div th:if="${poSearchRes!=null}">-->
+                        <!--<nav if="${poSearchRes.totalPages  > 0}" class="pagination">-->
+                            <!--<ul class="pagination justify-content-center font-weight-medium">-->
+
+                                <!--<li class="page-item" th:classappend="${poSearchRes.number eq 0} ? 'disabled'">-->
+
+                                    <!--<a class="page-link svg-icon"-->
+                                       <!--aria-label="Previous"-->
+                                       <!--title="Previous Page" rel="tooltip">-->
+                            <!--<span aria-hidden="true" class="glyphicon glyphicon-chevron-left" width="20"-->
+                                  <!--height="20"></span>-->
+                                    <!--</a>-->
+                                <!--</li>-->
+
+                                <!--<li class="page-item" th:each="pageNumber : ${pageNumbers}"-->
+                                    <!--th:classappend="${pageNumber eq poSearchRes.number } ? 'active'" >-->
+                                    <!--<a th:href="@{'/procurment/poHeaderSearch/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'+ ${invOrgId}+'/'+${pageNumber+1}}"-->
+                                       <!--th:text="${pageNumber}" th:class="${pageNumber==poSearchRes.number + 1} ? active"></a>-->
+
+                                <!--</li>-->
+
+                                <!--<li class="page-item"-->
+                                    <!--th:classappend="${poSearchRes.number + 1 eq poSearchRes.totalPages} ? 'disabled'">-->
+                                    <!--<a class="page-link svg-icon"-->
+                                       <!--aria-label="Next"-->
+                                       <!--title="Next Page" rel="tooltip">-->
+                            <!--<span aria-hidden="true" class="glyphicon glyphicon-chevron-right" width="20"-->
+                                  <!--height="20"></span>-->
+                                    <!--</a>-->
+                                <!--</li>-->
+
+
+                            <!--</ul>-->
+                        <!--</nav>-->
+<!--</div>-->
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

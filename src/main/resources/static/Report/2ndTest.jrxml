@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="2ndTest" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="62ec9585-2464-47c3-abce-5dd9d9b92d6c">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="invOrg" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select * from inv_item_m
+where INV_ORG_ID=$P{invOrg}]]>
+	</queryString>
+	<field name="ITEM_ID" class="java.math.BigDecimal"/>
+	<field name="CREATED_BY" class="java.math.BigDecimal"/>
+	<field name="CREATION_DATE" class="oracle.sql.TIMESTAMP"/>
+	<field name="LAST_UPDATED_BY" class="java.math.BigDecimal"/>
+	<field name="LAST_UPDATE_DATE" class="oracle.sql.TIMESTAMP"/>
+	<field name="LAST_UPDATED_LOGIN" class="java.math.BigDecimal"/>
+	<field name="DESCRIPTION" class="java.lang.String"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="STATUS" class="java.lang.String"/>
+	<field name="INV_ORG_ID" class="java.math.BigDecimal"/>
+	<field name="COGS_ACC_ID" class="java.math.BigDecimal"/>
+	<field name="DEFAULT_UOM_ID" class="java.math.BigDecimal"/>
+	<field name="EXPENCES_ACC_ID" class="java.math.BigDecimal"/>
+	<field name="SALES_ACC_ID" class="java.math.BigDecimal"/>
+	<field name="ITEM_SERIAL" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="24" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="37" height="20" uuid="5b9b951e-0ae8-409c-88e8-9e3af8193d3d"/>
+				<text><![CDATA[ITEM_ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="222" y="0" width="37" height="20" uuid="94a778f4-40a4-48e3-b0b4-fb1b63c5711c"/>
+				<text><![CDATA[DESCRIPTION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="259" y="0" width="37" height="20" uuid="18f630ce-6a9b-438e-8d85-6b24a5fd15e2"/>
+				<text><![CDATA[ITEM_CODE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="296" y="0" width="37" height="20" uuid="6c84f9f4-8fc6-4dce-ba7c-e565b5e222c0"/>
+				<text><![CDATA[STATUS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="333" y="0" width="37" height="20" uuid="fa0205df-cf8d-4988-90ec-f1827d446305"/>
+				<text><![CDATA[INV_ORG_ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="370" y="0" width="37" height="20" uuid="07997663-6f04-4a02-a97e-00d520717678"/>
+				<text><![CDATA[COGS_ACC_ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="407" y="0" width="37" height="20" uuid="da030dc5-0f11-43f5-ba2c-122e6cc59fdc"/>
+				<text><![CDATA[DEFAULT_UOM_ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="444" y="0" width="37" height="20" uuid="02b3f775-a97a-47cc-8d65-0115c4cf4fda"/>
+				<text><![CDATA[EXPENCES_ACC_ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="481" y="0" width="37" height="20" uuid="20c255ac-42d7-4ce4-96bc-b37576517e74"/>
+				<text><![CDATA[SALES_ACC_ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="518" y="0" width="37" height="20" uuid="65802674-79df-4832-90bc-d68ee6c519f9"/>
+				<text><![CDATA[ITEM_SERIAL]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="27" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="37" height="20" uuid="c728ea30-d77e-4d0e-a6bc-6226149e697c"/>
+				<textFieldExpression><![CDATA[$F{ITEM_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="222" y="0" width="37" height="20" uuid="466379b2-fbb0-4bf4-847a-7a0f479c567d"/>
+				<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="259" y="0" width="37" height="20" uuid="f83b1fd0-2f3e-4822-925d-9686c8203e31"/>
+				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="296" y="0" width="37" height="20" uuid="17c437bd-7fed-48fb-ae19-3d93f443e2b5"/>
+				<textFieldExpression><![CDATA[$F{STATUS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="333" y="0" width="37" height="20" uuid="86e49e1e-adf3-4324-8213-266b2b1baa85"/>
+				<textFieldExpression><![CDATA[$F{INV_ORG_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="370" y="0" width="37" height="20" uuid="7cae5043-e52b-4558-8990-8e6ef84214cb"/>
+				<textFieldExpression><![CDATA[$F{COGS_ACC_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="407" y="0" width="37" height="20" uuid="4050ff7c-a5d3-40f0-863a-f95dd837be57"/>
+				<textFieldExpression><![CDATA[$F{DEFAULT_UOM_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="0" width="37" height="20" uuid="c0ae7c4a-5f77-4b64-9c49-16c04b3a3b18"/>
+				<textFieldExpression><![CDATA[$F{EXPENCES_ACC_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="481" y="0" width="37" height="20" uuid="b4db3ceb-f439-433a-81ac-fd5b036c776c"/>
+				<textFieldExpression><![CDATA[$F{SALES_ACC_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="518" y="0" width="37" height="20" uuid="50755ddd-5544-41ca-80ef-50c21aa8bab3"/>
+				<textFieldExpression><![CDATA[$F{ITEM_SERIAL}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

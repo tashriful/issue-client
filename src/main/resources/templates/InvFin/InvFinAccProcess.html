@@ -1,0 +1,172 @@
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="InvFin/InvFinScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <!--<script>-->
+
+
+    <!--</script>-->
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+
+                <div class="panel-heading">Inventory Accounting Process</div>
+                <div class="panel-body">
+
+                    <form th:action="@{'/InvFin/processAcc/'+${mode}+'/'+${pageId}+'/'+${temltId}}"
+                          th:object="${invcstGroupDto}"  th:method="post">
+
+
+                        <!--<button type="submit" name="rpt" th:value="Journal_voucher" class="btn btn-primary">Voucher</button>-->
+                        <!--color: #ed1c24;-->
+                        <span style="font-weight: bold" th:each="m :${msg}"><p
+                                th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'"
+                                th:text="${m.tag} ? ${m.tag+' '+m.msg}: ${m.msg}"></p></span>
+
+                        <!--<div class="form-group">-->
+                            <!--&lt;!&ndash;<label for="inputSegment1">Name</label>&ndash;&gt;-->
+                            <!--<input type="hidden" class="form-control" id="inputid"-->
+                                   <!--th:field="*{id}" />-->
+                            <!--<span class="help-block" th:if="${#fields.hasErrors('id')}"-->
+                                  <!--th:errors="*{id}">Name Error</span>-->
+                        <!--</div>-->
+                        <div>
+                            <input type="hidden" class="form-control" name="orgHierarchy" id="inputorgHierarchy" th:field="*{orgHierarchy}" required="required" />
+                            <input type="hidden" class="form-control" name="invCstGroupId" id="inputinvCstGroupId" th:field="*{invCstGroupId}" required="required" />
+                            <input type="hidden" class="form-control" name="name" id="inputname" th:field="*{name}" required="required" />
+                            <input type="hidden" class="form-control" name="method" id="inputmethod" th:field="*{method}" required="required" />
+                        </div>
+
+
+
+                        <div class="form-group  col-sm-12" >
+                            <div class="form-group col-sm-12">
+                                <label class="col-sm-4 control-label "> Period </label>
+                                <div class="col-sm-1 ">
+                                    <b>:</b>
+                                </div>
+                                <div class="col-sm-4">
+                                    <select class="form-control" id="inputcalendarDetail" th:field="*{calendarDetail}" name="calendarDetail" required>
+                                        <option value="">Select</option>
+                                        <option th:each="c :${calenders}" th:text="${c.periodName}" th:value="${c.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <select class="form-control" id="inputcstStatus" th:field="*{cstStatus}" name="cstStatus" required>
+                                        <option value="">Select</option>
+                                        <option th:each="c : ${T(com.aye.web.model.Common.CstStatus).values()}" th:text="${c.displayName}" th:value="${c}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="form-group  col-sm-12" >
+                            <div class="form-group col-sm-12">
+                                <label class="col-sm-4 control-label "> Schedule </label>
+                                <div class="col-sm-1 ">
+                                    <b>:</b>
+                                </div>
+                                <div class="col-sm-7">
+                                    <select class="form-control" id="inpuSchedule" th:field="*{schedule}" name="schedule" >
+                                        <option value="">Immediate</option>
+                                        <option th:each="s :${scheduleList}" th:text="${s.name}" th:value="${s.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+                        <div class="form-group  col-sm-12 text-right Padding10px">
+                            <!--<a th:href="@{/OrdTrns/OrderTrnsTypes/E/}+${pageId}+'/'+${temltId}"-->
+                            <!--class="btn btn-default">New</a>-->
+                            <a th:href="@{/Concurrent/getUserConc}+'/'+0+'/'+${temltId}"
+                               class="btn btn-default">View Requests</a>
+                                <button  type="submit" name="save" class="btn btn-primary">Save</button>
+                        </div>
+
+
+                    </form>
+
+                    <!--<div >-->
+                        <!--<div class="row">-->
+                            <!--<table class="table table-bordered table-hover table-striped">-->
+                                <!--<thead>-->
+                                <!--<tr>-->
+                                    <!--<th>Organization</th>-->
+                                    <!--<th>Name</th>-->
+                                    <!--<th>PO Prefix</th>-->
+                                    <!--<th>Purchase Acc.</th>-->
+                                    <!--<th>Edit</th>-->
+                                <!--</tr>-->
+                                <!--</thead>-->
+                                <!--<tbody>-->
+                                <!--<div th:if="!${#lists.isEmpty(trnsTypes)}">-->
+                                    <!--<tr th:each="trns : ${trnsTypes}">-->
+                                        <!--<td th:text="*{trns.orgHierarchy.name}"></td>-->
+                                        <!--<td th:text="*{trns.name}"></td>-->
+                                        <!--<td th:text="*{trns.poPrefix}"></td>-->
+                                        <!--<td th:text="(*{trns.purchasingAccountV} ? *{trns.purchasingAccountV.concatedSegment}:'')"></td>-->
+                                        <!--<td>-->
+                                            <!--<div class="btn-group" role="group" aria-label="...">-->
+                                                <!--<a th:href="@{/poTrnsType/addTrnsType/U/} + ${pageId}+'/'+${temltId}+'/'+${trns.id}"-->
+                                                   <!--class="btn btn-success"><span-->
+                                                        <!--class="glyphicon glyphicon-edit"-->
+                                                        <!--aria-hidden="true">Edit</span></a>-->
+                                            <!--</div>-->
+                                            <!--<div class="btn-group" role="group" aria-label="...">-->
+                                                <!--<a th:href="@{/poTrnsType/deleteTrnsType/U/} + ${pageId}+'/'+${temltId}+'/'+${trns.id}"-->
+                                                   <!--class="btn btn-danger"><span-->
+                                                        <!--class="glyphicon glyphicon-trash"-->
+                                                        <!--aria-hidden="true">Delete</span></a>-->
+                                            <!--</div>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+
+                                <!--</div>-->
+                                <!--</tbody>-->
+                                <!--</table>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+
+                        </div>
+
+
+
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+
+</body>
+</html>

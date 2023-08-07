@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+
+    <link th:insert="Account/AccScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+
+    <script>
+        var codecomSearchObj= new Object();
+        function selectedobj(value, ind) {
+            if (ind == 'seg1') {
+//                alert('x');
+                seg1(value);
+            }
+            else if (ind == 'seg2') {
+                seg2(value);
+            }
+            else if (ind == 'seg3') {
+                seg3(value);
+            }
+            else if (ind == 'seg4') {
+                seg4(value);
+            }
+            else if (ind == 'seg5') {
+                seg5(value);
+            }
+            else if (ind == 'seg6') {
+                seg6(value);
+            }
+            else if (ind == 'seg7') {
+                seg7(value);
+            }
+            else if (ind == 'seg8') {
+                seg8(value);
+            }
+        }
+        ;
+
+        function removeAttr() {
+            $('#inputsegment1').removeAttr('required');
+            $('#inputSegment2').removeAttr('required');
+            $('#inputsegment3').removeAttr('required');
+            $('#inputsegment4').removeAttr('required');
+            $('#inputsegment5').removeAttr('required');
+            $('#inputsegment6').removeAttr('required');
+            $('#inputsegment7').removeAttr('required');
+            $('#inputsegment8').removeAttr('required');
+        }
+    </script>
+</head>
+
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Code Combinitions</div>
+                <div class="panel-body">
+                    <form
+                            th:action="@{'/Acc/addCodeCom/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${keySegHeaderId}}"
+                            th:object="${accCodeCombinitions}" th:method="post">
+                        <span style="color: #ed1c24;font-weight: bold" th:text="${msg}" color="red"></span>
+
+                        <div class="form-group">
+                            <!--<label for="inputSegment1">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid" placeholder="id"
+                                   th:field="*{id}" name="id"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}"
+                                  th:errors="*{id}">Name Error</span>
+                        </div>
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment1}">
+
+
+                            <label class="col-sm-3 control-label " for="inputsegment1"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control fields" required="required" type="text" id="inputsegment1"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                       th:field="*{segment1}" name="segment1" th:readonly="${rOnly}"/>
+
+                                <input class="form-control " required="required" type="hidden" id="inputsegment1id"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                        />
+                                <span class="help-block" th:if="${#fields.hasErrors('segment1')}"
+                                      th:errors="*{segment1}">Name Error</span>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text"
+                                       id="inputsegment1desc"
+                                       th:field="*{segment1desc}" name="segment1desc"
+                                       style="font-size: 9px; color:#aab6aa"/>
+                            </div>
+
+
+                            <script th:inline="javascript">
+                                var seghdrId = [[${x.segmentHeader.id}]];
+
+                                function seg1(objparms) {
+                                    //                                    alert('B');
+                                    var objparmV = objparms;
+                                    $('#inputsegment1id').val(objparmV.id).trigger("change");
+                                    $('#inputsegment1desc').val(objparmV.description).trigger("change");
+                                    codecomSearchObj["segment1"]=objparmV.code;
+                                    //                                    $('#inputglCategories').val(objparmV.glCategories).trigger("change");
+                                }
+                                ;
+                                codecomSearchObj["segment1"]=$('#inputsegment1').val();
+
+                                var urlvals = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+//                                alert(urlvals);
+                                var displayfields = '#inputsegment1';
+                                var dbfields = '#inputsegment1id'
+                                var getvalues = 'code';
+                                var templates = 'description';
+                                var indcint = 'seg1';
+                                autocomwithobject(urlvals, getvalues, displayfields, dbfields, templates, indcint);
+                                //alert('dsa');
+                            </script>
+
+                        </div>
+
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment2}">
+
+                            <label class="col-sm-3 control-label " for="inputSegment2"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control fieldss" required="required" type="text" id="inputSegment2"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                       th:field="*{Segment2}" name="Segment2"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('Segment2')}"
+                                      th:errors="*{Segment2}">Name Error</span>
+
+                                <input class="form-control" required="required" type="hidden" id="inputSegment2id"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                        />
+                            </div>
+
+                            <div class="col-sm-3 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text"
+                                       id="inputSegment2desc"
+                                       th:field="*{segment2desc}" name="segment2desc"
+                                       style="font-size: 9px; color:#aab6aa"/>
+                            </div>
+
+
+                            <script th:inline="javascript">
+                                //alert('dfadfa');
+
+                                var seghdrId = [[${x.segmentHeader.id}]];
+                                function seg2(objparms) {
+                                    //                                    alert('B');
+                                    var objparmV = objparms;
+                                    $('#inputSegment2id').val(objparmV.id).trigger("change");
+                                    $('#inputSegment2desc').val(objparmV.description).trigger("change");
+                                    codecomSearchObj["segment2"]=objparmV.code;
+                                    //                                    $('#inputglCategories').val(objparmV.glCategories).trigger("change");
+                                }
+                                ;
+                                codecomSearchObj["segment2"]=$('#inputSegment2').val();
+                                var urlvals = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                                //alert(urlval);
+                                var displayfields = '#inputSegment2';
+                                var dbfields = '#inputSegment2id'
+                                var getvalues = 'code';
+                                var templates = 'description';
+                                var indcint = 'seg2';
+                                autocomwithobject(urlvals, getvalues, displayfields, dbfields, templates, indcint);
+                                //alert('dsa');
+                            </script>
+
+
+                        </div>
+
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment3}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment3"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" required="required" type="text" id="inputsegment3"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                       th:field="*{segment3}" name="segment3"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('segment3')}"
+                                      th:errors="*{segment3}">Name Error</span>
+                                <input class="form-control" required="required" type="hidden" id="inputsegment3id"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                        />
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text"
+                                       id="inputsegment3desc"
+                                       th:field="*{segment3desc}" name="segment3desc"
+                                       style="font-size: 9px; color:#aab6aa"/>
+                            </div>
+
+                            <script th:inline="javascript">
+                                //alert('dfadfa');
+                                var seghdrId = [[${x.segmentHeader.id}]];
+                                function seg3(objparms) {
+                                    //                                    alert('B');
+                                    var objparmV = objparms;
+                                    $('#inputsegment3id').val(objparmV.id).trigger("change");
+                                    $('#inputsegment3desc').val(objparmV.description).trigger("change");
+                                    codecomSearchObj["segment3"]=objparmV.code;
+                                    //                                    $('#inputglCategories').val(objparmV.glCategories).trigger("change");
+                                }
+                                ;
+                                codecomSearchObj["segment3"]=$('#inputsegment3').val();
+                                var urlvals = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                                //alert(urlval);
+                                var displayfields = '#inputsegment3';
+                                var dbfields = '#inputsegment3id'
+                                var getvalues = 'code';
+                                var templates = 'description';
+                                var indcint = 'seg3';
+                                autocomwithobject(urlvals, getvalues, displayfields, dbfields, templates, indcint);
+                                //alert('dsa');
+                            </script>
+
+
+                        </div>
+
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment4}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment4"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-5">
+                                <input class="form-control" required="required" type="text" id="inputsegment4"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                       th:field="*{segment4}" name="segment4"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('segment4')}"
+                                      th:errors="*{segment4}">Name Error</span>
+                                <input class="form-control" required="required" type="hidden" id="inputsegment4id"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                        />
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text"
+                                       id="inputsegment4desc"
+                                       th:field="*{segment4desc}" name="segment4desc"
+                                       style="font-size: 9px; color:#aab6aa"/>
+                            </div>
+
+
+                            <script th:inline="javascript">
+                                //alert('dfadfa');
+                                var seghdrId = [[${x.segmentHeader.id}]];
+                                function seg4(objparms) {
+                                    //                                    alert('B');
+                                    var objparmV = objparms;
+                                    $('#inputsegment4id').val(objparmV.id).trigger("change");
+                                    $('#inputsegment4desc').val(objparmV.description).trigger("change");
+                                    codecomSearchObj["segment4"]=objparmV.code;
+                                    //                                    $('#inputglCategories').val(objparmV.glCategories).trigger("change");
+                                }
+                                ;
+                                codecomSearchObj["segment4"]=$('#inputsegment4').val();
+                                var urlvals = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                                //alert(urlval);
+                                var displayfields = '#inputsegment4';
+                                var dbfields = '#inputsegment4id'
+                                var getvalues = 'code';
+                                var templates = 'description';
+                                var indcint = 'seg4';
+                                autocomwithobject(urlvals, getvalues, displayfields, dbfields, templates, indcint);
+                                //alert('dsa');
+                            </script>
+
+
+                        </div>
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment5}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment5"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" required="required" type="text" id="inputsegment5"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                       th:field="*{segment5}" name="segment5"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('segment5')}"
+                                      th:errors="*{segment5}">Name Error</span>
+                                <input class="form-control" required="required" type="hidden" id="inputsegment5id"
+                                       th:attr="placeholder=${x.segmenteName}"/>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text"
+                                       id="inputsegment5desc"
+                                       th:field="*{segment5desc}" name="segment5desc"
+                                       style="font-size: 9px; color:#aab6aa"/>
+                            </div>
+
+                            <script th:inline="javascript">
+                                //alert('dfadfa');
+                                var seghdrId = [[${x.segmentHeader.id}]];
+                                function seg5(objparms) {
+                                    //                                    alert('B');
+                                    var objparmV = objparms;
+                                    $('#inputsegment5id').val(objparmV.id).trigger("change");
+                                    $('#inputsegment5desc').val(objparmV.description).trigger("change");
+                                    codecomSearchObj["segment5"]=objparmV.code;
+                                    //                                    $('#inputglCategories').val(objparmV.glCategories).trigger("change");
+                                }
+                                ;
+                                codecomSearchObj["segment5"]=$('#inputsegment5').val();
+                                var urlvals = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                                //alert(urlval);
+                                var displayfields = '#inputsegment5';
+                                var dbfields = '#inputsegment5id'
+                                var getvalues = 'code';
+                                var templates = 'description';
+                                var indcint = 'seg5';
+                                autocomwithobject(urlvals, getvalues, displayfields, dbfields, templates, indcint);
+                                //alert('dsa');
+                            </script>
+
+                        </div>
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment6}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment6"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" required="required" type="text" id="inputsegment6"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                       th:field="*{segment6}" name="segment6"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('segment6')}"
+                                      th:errors="*{segment6}">Name Error</span>
+                                <input class="form-control" required="required" type="hidden" id="inputsegment6id"
+                                       th:attr="placeholder=${x.segmenteName}"/>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text"
+                                       id="inputsegment6desc"
+                                       th:field="*{segment6desc}" name="segment6desc"
+                                       style="font-size: 9px; color:#aab6aa"/>
+                            </div>
+
+                            <script th:inline="javascript">
+                                //alert('dfadfa');
+                                var seghdrId = [[${x.segmentHeader.id}]];
+                                function seg6(objparms) {
+                                    //                                    alert('B');
+                                    var objparmV = objparms;
+                                    $('#inputsegment6id').val(objparmV.id).trigger("change");
+                                    $('#inputsegment6desc').val(objparmV.description).trigger("change");
+                                    codecomSearchObj["segment6"]=objparmV.code;
+                                    //                                    $('#inputglCategories').val(objparmV.glCategories).trigger("change");
+                                }
+                                ;
+                                codecomSearchObj["segment6"]=$('#inputsegment6').val();
+                                var urlvals = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                                //alert(urlval);
+                                var displayfields = '#inputsegment6';
+                                var dbfields = '#inputsegment6id'
+                                var getvalues = 'code';
+                                var templates = 'description';
+                                var indcint = 'seg6';
+                                autocomwithobject(urlvals, getvalues, displayfields, dbfields, templates, indcint);
+                                //alert('dsa');
+                            </script>
+
+                        </div>
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment7}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment7"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" required="required" type="text" id="inputsegment7"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                       th:field="*{segment7}" name="segment7"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('segment7')}"
+                                      th:errors="*{segment7}">Name Error</span>
+                                <input class="form-control" required="required" type="hidden" id="inputsegment7id"
+                                       th:attr="placeholder=${x.segmenteName}"/>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text"
+                                       id="inputsegment7desc"
+                                       th:field="*{segment7desc}" name="segment7desc"
+                                       style="font-size: 9px; color:#aab6aa"/>
+                            </div>
+
+                            <script th:inline="javascript">
+                                //alert('dfadfa');
+                                var seghdrId = [[${x.segmentHeader.id}]];
+                                function seg7(objparms) {
+                                    //                                    alert('B');
+                                    var objparmV = objparms;
+                                    $('#inputsegment7id').val(objparmV.id).trigger("change");
+                                    $('#inputsegment7desc').val(objparmV.description).trigger("change");
+                                    codecomSearchObj["segment7"]=objparmV.code;
+                                    //                                    $('#inputglCategories').val(objparmV.glCategories).trigger("change");
+                                }
+                                ;
+                                codecomSearchObj["segment7"]=$('#inputsegment7').val();
+                                var urlvals = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                                //alert(urlval);
+                                var displayfields = '#inputsegment7';
+                                var dbfields = '#inputsegment7id'
+                                var getvalues = 'code';
+                                var templates = 'description';
+                                var indcint = 'seg7';
+                                autocomwithobject(urlvals, getvalues, displayfields, dbfields, templates, indcint);
+                                //alert('dsa');
+                            </script>
+
+                        </div>
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment8}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment8"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" required="required" type="text" id="inputsegment8"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                       th:field="*{segment8}" name="segment8"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('segment8')}"
+                                      th:errors="*{segment8}">Name Error</span>
+                                <input class="form-control" required="required" type="hidden" id="inputsegment8id"
+                                       th:attr="placeholder=${x.segmenteName}"/>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text"
+                                       id="inputsegment8desc"
+                                       th:field="*{segment8desc}" name="segment8desc"
+                                       style="font-size: 9px; color:#aab6aa"/>
+                            </div>
+
+                            <script th:inline="javascript">
+                                //alert('dfadfa');
+                                var seghdrId = [[${x.segmentHeader.id}]];
+                                function seg8(objparms) {
+                                    //                                    alert('B');
+                                    var objparmV = objparms;
+                                    $('#inputsegment8id').val(objparmV.id).trigger("change");
+                                    $('#inputsegment8desc').val(objparmV.description).trigger("change");
+                                    codecomSearchObj["segment8"]=objparmV.code;
+                                    //                                    $('#inputglCategories').val(objparmV.glCategories).trigger("change");
+                                }
+                                ;
+                                codecomSearchObj["segment8"]=$('#inputsegment8').val();
+                                var urlvals = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                                //alert(urlval);
+                                var displayfields = '#inputsegment8';
+                                var dbfields = '#inputsegment8id'
+                                var getvalues = 'code';
+                                var templates = 'description';
+                                var indcint = 'seg8';
+                                autocomwithobject(urlvals, getvalues, displayfields, dbfields, templates, indcint);
+                                //alert('dsa');
+                            </script>
+
+                        </div>
+
+
+                        <div class="form-group required col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputStartDate">Start Date</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputStartDate"
+                                       placeholder="yyyy-MM-dd" th:field="*{{startDates}}"
+                                       name="startDates"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('startDates')}"
+                                      th:errors="*{startDates}">Start Date Error</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group required col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputEndDate">End Date</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputEndDate"
+                                       placeholder="yyyy-MM-dd" th:field="*{endDates}"
+                                       name="endDates"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('endDates')}"
+                                      th:errors="*{endDates}">Start Date Error</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputkeySegmentHeader"
+                                   placeholder="keySegmentHeader"
+                                   th:field="*{keySegmentHeader}" name="keySegmentHeader"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('keySegmentHeader')}"
+                                      th:errors="*{keySegmentHeader}">User Name Error</span>
+                        </div>
+
+
+                        <!--<div class="form-group">-->
+                        <!--<label for="inputStartDate">Start Date</label>-->
+                        <!--<input type="excDate" value="01-01-2019" class="form-control" id="inputStartDate" placeholder="yyyy-MM-dd" th:field="*{{startDates}}"-->
+                        <!--name="startDates" />-->
+                        <!--<span class="help-block" th:if="${#fields.hasErrors('startDates')}"-->
+                        <!--th:errors="*{startDates}">Start Date Error</span>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                        <!--<label for="inputEndDate">End Date</label>-->
+                        <!--<input type="excDate" class="form-control" id="inputEndDate" placeholder="endDates"-->
+                        <!--th:field="*{endDates}" name="endDates"/>-->
+                        <!--<span class="help-block" th:if="${#fields.hasErrors('endDates')}" th:errors="*{endDates}">End Date Error</span>-->
+                        <!--</div>-->
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumn" placeholder="column"
+                                   th:field="*{column.createdBy}" name="column"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('column.createdBy')}"
+                                      th:errors="*{column.createdBy}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{column.creationDate}" name="columnDate"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('column.creationDate')}"
+                                      th:errors="*{column.creationDate}">User Name Error</span>
+                        </div>
+
+
+                        <div class="text-right Padding10px">
+                            <a th:href="@{/Acc/addCodeCom/}+'E/' + ${pageId}+'/'+${temltId}+'/'+${keySegHeaderId}"
+                               class="btn btn-default">Cancel</a>
+                            <button type="submit" th:name="save" class="btn btn-primary">Save</button>
+                            <button type="submit" th:name="updDesc" class="btn btn-success">Update Descriptions</button>
+                            <button type="submit" name="search" class="btn btn-primary">Last</button>
+                            <!--<button type="submit" name="search" class="btn btn-success" onclick="return removeAttr()">-->
+                            <button class="btn btn-success" onclick="return searchCodeComb()">
+                                Search
+                            </button>
+                        </div>
+                        <div id="replace_div">
+                            <script th:inline="javascript">
+
+                                $(document).ready(function () {
+                                            codecomSearchObj["keySegmentHeader"]=$('#inputkeySegmentHeader').val();
+                                            codecomSearchObj["startDate"]=$('#inputStartDate').val();
+                                            codecomSearchObj["endDate"]=$('#inputEndDate').val();
+                                            var p = [[${pageNumber}]];
+
+                                            searchCodeComb(p);
+                                        }
+                                )
+
+                                function searchCodeComb(pNums)
+                                {
+                                    removeAttr();
+                                    var pNum = pNums;//[[${pageNumber}]];
+//                                    alert(pNum);
+                                    var mod = [[${mode}]];
+                                    var pId = [[${pageId}]];
+                                    var tId = [[${temltId}]];
+                                    var ksegId = [[${keySegHeaderId}]];
+                                    var obj = codecomSearchObj;
+
+//                                            alert(obj);
+
+                                    l_urlVal = '/AYE/Acc/addCodeCom/' + mod + '/' + pId + '/' + tId + '/' + ksegId + '/' + pNum;
+                                    var l_url = window.location.origin + l_urlVal;
+//                            alert(l_url);
+
+                                    //load fragment and replace content
+                                    $('#replace_div').load(l_url,obj);
+                                }
+
+                            </script>
+                        </div>
+                    </form>
+
+                    <!--<div th:utext="${htmlTag}"></div>-->
+                    <!--<div id="replace_div">-->
+                    <!--<script th:inline="javascript">-->
+
+                    <!--$(document).ready(function()-->
+                    <!--{-->
+                    <!--var pNum=1;-->
+                    <!--var mod=[[${mode}]];-->
+                    <!--var pId=[[${pageId}]];-->
+                    <!--var tId=[[${temltId}]];-->
+                    <!--var ksegId=[[${keySegHeaderId}]];-->
+
+
+                    <!--l_urlVal='/AYE/Acc/addCodeCom/'+mod+'/'+ pId+'/'+tId+'/'+ksegId+'/'+pNum;-->
+                    <!--var l_url=window.location.origin+l_urlVal;-->
+                    <!--alert(l_url);-->
+
+                    <!--//load fragment and replace content-->
+                    <!--$('#replace_div').load(l_url);-->
+
+                    <!--}-->
+
+
+                    <!--)-->
+
+                    <!--</script>-->
+                    <!--</div>-->
+
+                    <!--<div th:if="${accCodeCombinitionses.totalPages  > 0}" class="pagination"-->
+                    <!--th:each="pageNumber : ${pageNumbers}">-->
+                    <!--<a th:href="@{'/Acc/addCodeCom/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'+-->
+                    <!--${keySegHeaderId}+'/'+${pageNumber+1}}"-->
+                    <!--th:text="${pageNumber}"-->
+                    <!--th:class="${pageNumber==accCodeCombinitionses.number + 1} ? active"></a>-->
+                    <!--</div>-->
+
+                    <!--<nav aria-label="Pagination" th:if="${accCodeCombinitionses.totalPages gt 0}">-->
+                    <!--<ul class="pagination justify-content-center font-weight-medium">-->
+                    <!--<li class="page-item" th:classappend="${accCodeCombinitionses.number eq 0} ? 'disabled'">-->
+                    <!--<a class="page-link svg-icon"-->
+                    <!--th:href="@{'/Acc/addCodeCom/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'-->
+                    <!--+${keySegHeaderId}+'/'+${accCodeCombinitionses.number lt 2 ? 1 : accCodeCombinitionses.number}}"-->
+                    <!--aria-label="Previous"-->
+                    <!--title="Previous Page" rel="tooltip">-->
+                    <!--<span aria-hidden="true" class="glyphicon glyphicon-chevron-left" width="20" height="20"></span>-->
+                    <!--</a>-->
+                    <!--</li>-->
+                    <!--<li class="page-item" th:classappend="${i eq accCodeCombinitionses.number + 1} ? 'active'"-->
+                    <!--th:each="i : ${#numbers.sequence( accCodeCombinitionses.number + 1,-->
+                    <!--accCodeCombinitionses.totalPages > 10 + accCodeCombinitionses.number ? accCodeCombinitionses.number + 10 : accCodeCombinitionses.totalPages, 1)}">-->
+                    <!--<a class="page-link"  th:href="@{'/Acc/addCodeCom/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'-->
+                    <!--+${keySegHeaderId}+'/'+${i}}"-->
+                    <!--th:text="${i}"-->
+                    <!--th:title="${'Page '+ i}"-->
+                    <!--rel="tooltip"></a>-->
+                    <!--</li>-->
+                    <!--&lt;!&ndash;<li class="page-item disabled" th:if="${accCodeCombinitionses.number + 10 lt accCodeCombinitionses.totalPages}">&ndash;&gt;-->
+                    <!--&lt;!&ndash;<a class="page-link svg-icon" href="#">&ndash;&gt;-->
+                    <!--&lt;!&ndash;<span class="more-horizontal" width="20" height="20"></span>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</a>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</li>&ndash;&gt;-->
+                    <!--<li class="page-item" th:classappend="${accCodeCombinitionses.number + 1 eq accCodeCombinitionses.totalPages} ? 'disabled'">-->
+                    <!--<a class="page-link svg-icon"-->
+                    <!--th:href="@{'/Acc/addCodeCom/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'-->
+                    <!--+${keySegHeaderId}+'/'+${accCodeCombinitionses.number + 11}}"-->
+                    <!--aria-label="Next"-->
+                    <!--title="Next Page" rel="tooltip">-->
+                    <!--<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"  width="20" height="20"></span>-->
+                    <!--</a>-->
+                    <!--</li>-->
+                    <!--</ul>-->
+                    <!--</nav>-->
+
+
+                    <!--<div th:if="${ordTrnsTypes.totalPages  > 0}" class="pagination"-->
+                    <!--th:each="pageNumber : ${pageNumbers}" >-->
+                    <!--<a th:href="@{'/OrdTrns/search/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'+${pageNumber+1}}"-->
+                    <!--th:id="idpaged+${pageNumber}" th:text="${pageNumber}"-->
+                    <!--class="${pageNumber==ordTrnsTypes.number + 1} ? active ; btn btn-default"></a>-->
+
+                    <!--<nav aria-label="Pagination" th:if="${ordTrnsTypes.totalPages gt 0}">-->
+                    <!--<ul class="pagination justify-content-center font-weight-medium">-->
+                    <!--<li class="page-item" th:classappend="${ordTrnsTypes.number eq 0} ? 'disabled'">-->
+                    <!--<a class="page-link svg-icon"-->
+                    <!--th:href="@{'/OrdTrns/search/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'-->
+                    <!--+${ordTrnsTypes.number lt  2 ? 1 : ordTrnsTypes.number}}"-->
+                    <!--aria-label="Previous"-->
+                    <!--title="Previous Page" rel="tooltip">-->
+                    <!--<span aria-hidden="true" class="glyphicon glyphicon-chevron-left" width="20"-->
+                    <!--height="20"></span>-->
+                    <!--</a>-->
+                    <!--</li>-->
+                    <!--<li class="page-item" th:classappend="${i eq ordTrnsTypes.number + 1} ? 'active'"-->
+                    <!--th:each="i : ${#numbers.sequence( ordTrnsTypes.number + 1,-->
+                    <!--ordTrnsTypes.totalPages > 10 + ordTrnsTypes.number ? ordTrnsTypes.number + 10 : ordTrnsTypes.totalPages, 1)}">-->
+                    <!--<a class="page-link"-->
+                    <!--th:href="@{'/OrdTrns/search/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'+${i}}"-->
+                    <!--th:text="${i}"-->
+                    <!--th:title="${'Page '+ i}"-->
+                    <!--rel="tooltip"></a>-->
+                    <!--</li>-->
+                    <!--<li class="page-item"-->
+                    <!--th:classappend="${ordTrnsTypes.number + 1 eq ordTrnsTypes.totalPages} ? 'disabled'">-->
+                    <!--<a class="page-link svg-icon"-->
+                    <!--th:href="@{'/OrdTrns/search/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'+${ordTrnsTypes.number + 11}}"-->
+                    <!--aria-label="Next"-->
+                    <!--title="Next Page" rel="tooltip">-->
+                    <!--<span aria-hidden="true" class="glyphicon glyphicon-chevron-right" width="20"-->
+                    <!--height="20"></span>-->
+                    <!--</a>-->
+                    <!--</li>-->
+                    <!--</ul>-->
+                    <!--</nav>-->
+
+
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

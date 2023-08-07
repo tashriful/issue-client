@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="itemMaster" language="groovy" pageWidth="1124" pageHeight="612" orientation="Landscape" columnWidth="1084" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="com.aye.ayeireportlibrery.ConvertToWordLocal" uuid="b12724dc-d2e2-4b6a-b6a6-1d4e981367ca">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="pinvorgid" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pFdate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pTdate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT item.item_id,
+       item.item_code,
+       item.description,
+       default_uom_id,
+       unit.uom_code,
+       unit.uom_name,
+       cat.family,
+       cat.class,
+       cat.type,
+       item.inv_org_id,
+       inv.name inv_org_name,
+       expences_acc,
+       sales_acc,
+       cogs_acc,
+       inv.ou_id,
+       cr.user_name created_by,
+       up.user_name last_updated_by,
+       TRUNC(item.creation_date) creation_date,
+       TRUNC(item.last_update_date) last_update_date,
+       org.name org_name,
+       org.address org_address,
+decode(item.status,'A','Active','I','Inactive','') Status
+  FROM inv_item_m item, item_category_v cat,
+       inv_informations inv,
+       (SELECT id, concated_segment expences_acc FROM code_combination_v) expences,
+       (SELECT id, concated_segment sales_acc FROM code_combination_v) sales,
+       (SELECT id, concated_segment cogs_acc FROM code_combination_v) cogs,
+       inv_units_of_measure unit,
+       organization_hierarchy org,
+       ayeuser cr,
+       ayeuser up
+ WHERE     item.inv_org_id = inv.id
+       AND item.expences_acc_id = expences.id
+       AND item.sales_acc_id = sales.id
+       AND item.cogs_acc_id = cogs.id
+       AND item.default_uom_id = unit.id
+       AND inv.ou_id = org.id
+       AND item.created_by = cr.user_id
+       AND item.last_updated_by = up.user_id(+)
+       and item.item_id = cat.item_id
+       and item.inv_org_id = cat.inv_org_id
+       AND NVL2($P{pinvorgid}, inv.id, -999) = NVL($P{pinvorgid}, -999)
+and TRUNC(item.creation_date)
+between nvl($P{pFdate},'01-JAN-1900') and nvl($P{pTdate},sysdate)
+ ORDER BY item.creation_date,item_code]]>
+	</queryString>
+	<field name="ITEM_ID" class="java.math.BigDecimal"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="DESCRIPTION" class="java.lang.String"/>
+	<field name="DEFAULT_UOM_ID" class="java.math.BigDecimal"/>
+	<field name="UOM_CODE" class="java.lang.String"/>
+	<field name="UOM_NAME" class="java.lang.String"/>
+	<field name="FAMILY" class="java.lang.String"/>
+	<field name="CLASS" class="java.lang.String"/>
+	<field name="TYPE" class="java.lang.String"/>
+	<field name="INV_ORG_ID" class="java.math.BigDecimal"/>
+	<field name="INV_ORG_NAME" class="java.lang.String"/>
+	<field name="EXPENCES_ACC" class="java.lang.String"/>
+	<field name="SALES_ACC" class="java.lang.String"/>
+	<field name="COGS_ACC" class="java.lang.String"/>
+	<field name="OU_ID" class="java.math.BigDecimal"/>
+	<field name="CREATED_BY" class="java.lang.String"/>
+	<field name="LAST_UPDATED_BY" class="java.lang.String"/>
+	<field name="CREATION_DATE" class="java.sql.Timestamp"/>
+	<field name="LAST_UPDATE_DATE" class="java.sql.Timestamp"/>
+	<field name="ORG_NAME" class="java.lang.String"/>
+	<field name="ORG_ADDRESS" class="java.lang.String"/>
+	<field name="STATUS" class="java.lang.String"/>
+	<variable name="curDate" class="java.lang.String">
+		<variableExpression><![CDATA[$P{REPORT_SCRIPTLET}.getCurrentDate()]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="112" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="32" width="1084" height="20" uuid="9e5be224-429a-437f-8860-8e92ce8ac8e8"/>
+				<textElement textAlignment="Center">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="1084" height="32" uuid="e8c9209a-5a9b-4cc9-b650-cfe1afe7528b"/>
+				<textElement textAlignment="Center">
+					<font size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="52" width="1084" height="20" uuid="27c25da1-c761-4210-918f-f64e23b6329b"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Item Master]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="32" y="92" width="152" height="20" uuid="9ae1be6a-d104-452a-afef-2f4723fbb894"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="0" y="92" width="32" height="20" uuid="46553b57-3787-41fa-b843-9be90c423cd1"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[SL #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="409" y="92" width="40" height="20" uuid="58b0dc3c-9c50-4bb8-b940-0ee0d6d54895"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Unit of Measure]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="598" y="92" width="81" height="20" uuid="81c91bac-0c8f-406c-aca2-864dcf3afeeb"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Expense Account]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="679" y="92" width="78" height="20" uuid="cfc9f29a-c588-4a73-bd62-cf5d2a6f65b6"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Sales Account]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="757" y="92" width="85" height="20" uuid="cbc198a5-5798-4a7c-828f-c0c0f53a77d9"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[COGS Account]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="842" y="92" width="61" height="20" uuid="3cfc7cc1-f371-4bf8-85e0-8c8f0e4b27b9"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Creaded By]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="903" y="92" width="61" height="20" uuid="2928fd74-66be-4e79-920d-a91590658298"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Creation Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="964" y="92" width="58" height="20" uuid="ca9c253f-b8d4-4897-a926-0f634a79bae2"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Updated By]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="1022" y="92" width="62" height="20" uuid="4015babf-5936-48fa-9e8f-151bf84d8f6a"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Update Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="184" y="92" width="189" height="20" uuid="76802fe7-a8fa-4865-a3b0-24394956ed04"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="449" y="92" width="56" height="20" uuid="a7391804-a337-42f1-9de1-d1b8539347cc"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Family]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="505" y="92" width="57" height="20" uuid="53f21544-3a07-421e-ac70-dc7fbe1da8b9"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Class]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="562" y="92" width="36" height="20" uuid="e397f701-3521-4dc3-9e0b-bc3de456c723"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Category]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1" y="72" width="1083" height="20" uuid="debd4c39-dc58-4678-8ca0-0dbc1cdbd8d3"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MMM/yyyy").format($P{pFdate})+' To '+
+new SimpleDateFormat("dd/MMM/yyyy").format($P{pTdate})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TH" positionType="Float" x="373" y="92" width="36" height="20" uuid="978d0e12-af29-466a-b343-e330b2035a41"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Status]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Prevent">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="0" y="0" width="32" height="20" uuid="72ad02b1-d3c7-4605-b36b-7e71b235bc7d"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="32" y="0" width="152" height="20" uuid="88fe98b6-4c87-477b-952c-a647a8bba5d1"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="409" y="0" width="40" height="20" uuid="8090577f-b198-4250-ac31-888612866b23"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{UOM_CODE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="598" y="0" width="81" height="20" uuid="53fc8303-e4da-41be-b39f-b0ea48d19d2e"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EXPENCES_ACC}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="679" y="0" width="78" height="20" uuid="88de8dac-9d9a-45ce-8798-9568f1d62350"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SALES_ACC}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="757" y="0" width="85" height="20" uuid="57acb1eb-d945-4257-b76d-7d9173c233ad"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COGS_ACC}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" stretchType="RelativeToTallestObject" x="184" y="0" width="189" height="20" uuid="397d6ac8-c444-449c-8084-9289731193f9"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="842" y="0" width="61" height="20" uuid="ad9ef656-a565-4c8c-a0c7-51eb323e5834"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CREATED_BY}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="903" y="0" width="61" height="20" uuid="ff63649f-14b0-4c42-965e-471d777c590b"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CREATION_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="964" y="0" width="58" height="20" uuid="dded1411-c514-4542-92b2-f15cc63b03e5"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{LAST_UPDATED_BY}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="1022" y="0" width="62" height="20" uuid="4e90505c-6ebb-49a8-9410-85254754911a"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{LAST_UPDATE_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="449" y="0" width="56" height="20" uuid="d7450481-f5a2-465c-bc9f-5c1a8c59e96c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FAMILY}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="505" y="0" width="57" height="20" uuid="2a4db34f-34d4-4b7d-9c16-ca53c39917ea"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CLASS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" positionType="Float" x="562" y="0" width="36" height="20" uuid="87e64210-3574-4af0-9098-406556d9700c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TYPE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" positionType="Float" x="373" y="0" width="36" height="20" uuid="32d0708b-d3af-41a2-97f0-4506256d4292"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{STATUS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="20">
+			<textField>
+				<reportElement x="1" y="0" width="801" height="20" forecolor="#999999" uuid="aec61abc-50d4-4676-81dd-cfbb9f5025db"/>
+				<textFieldExpression><![CDATA["Green Board Fiber Mills LTD. Print Date: "+$V{curDate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

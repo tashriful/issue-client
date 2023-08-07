@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+      layout:decorator="fragments/layout">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <!--<script src="@{//code.jquery.com/jquery-1.12.2.min.js}"></script>-->
+    <!--<script th:src="@{/js/json-path-picker.js}"></script>-->
+    <!--<script src="jquery.beautify-json.js"></script>-->
+    <!--<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>-->
+
+    <!--<link th:href="@{/css/json-path-picker.css}" rel="stylesheet"/>-->
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocompleteInv.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <!--<script th:src="@{/js/validation.js}"></script>-->
+<script th:inline="javascript">
+
+</script>
+
+
+</head>
+<body >
+
+
+
+
+<div class="modal modal-printer fade in" th:id="modal-printer"   data-th-fragment="printer-modal">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span></button>
+                <h5 class="modal-title" style="border-bottom: 1px solid">Printer</h5>
+                <div class="col-sm-11 ">
+                <div class="modal-body" th:id="modalId">
+
+                    <div class="form-group required col-sm-12 ">
+                        <label class="col-sm-3 control-label " for="inputPrinter">Printer</label>
+
+                        <div class="col-sm-1 "><b>:</b></div>
+                        <div class="col-sm-8 ">
+                            <select class="form-control" id="inputPrinter" placeholder="Printer">
+                                <option value="">Select one</option>
+                                <!--<option th:each="cur :${printers}"-->
+                                <!--th:text="${cur.printerName}">-->
+
+                                </option>
+
+                            </select>
+
+
+                        </div>
+                    </div>
+
+                    <div  class="text-right Padding10px ">
+                        <a id="modalPrint" class="btn btn-primary"> Print</a>
+                        <script>
+                            $('#modalPrint').click(function(){
+                                var lselect = document.getElementById('inputPrinter');
+                                var lselectData =lselect.options[lselect.selectedIndex].text;
+
+                                printCmd(lselectData)
+                            });
+                        </script>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+</body>
+
+
+</html>

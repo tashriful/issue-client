@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>
+
+    <script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>
+    <script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Manage Bank Details</div>
+                <div class="panel-body" >
+                    <form  action="'/Bank/bankLine/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${bankId}"
+                           th:action="@{'/Bank/bankLine/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${bankId}}"
+                           th:object="${bankLine}" th:method="post">
+                        <!--+${role.role}  +${role.role}-->
+
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid" placeholder="Id" th:field="*{id}" name="id" />
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}" th:errors="*{id}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputbankHeader" placeholder="supplierHeader" th:field="*{bankHeader}" name="bankHeader" />
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('bankHeader')}" th:errors="*{bankHeader}">User Name Error</span>
+                        </div>
+
+
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3  control-label" for="inputorgHierarchy">Organization</label>
+                            <div class="col-sm-1 ">  <b>:</b> </div>
+                            <div class="col-sm-8 ">
+                                <select class="form-control dates"  required="required"  id="inputorgHierarchy" th:field="*{orgHierarchy}" name="orgHierarchy">
+                                    <option value="">Please select One</option>
+                                    <option  th:each="org : ${orgs}"  th:text="${org.code}"
+                                             th:value="${org.id}" th:attr="data-kseghdr=${org.keySegmentHeader.id},data-seglinecode=${org.segmentLine.code}">module</option>
+
+                                </select>
+                                <input type="hidden" id="lockeySegmentHeader"
+                                       th:field="*{orgHierarchy.keySegmentHeader.id}"
+                                       th:value="*{orgHierarchy}"/>
+                                <input type="hidden" id="locsegmentLine"
+                                       th:field="*{orgHierarchy.segmentLine.code}"
+                                       th:value="*{orgHierarchy}"/>
+                                <script th:inline="javascript">
+                                    $("select").change(function() {
+                                        var kseghdr=($(this.options[this.selectedIndex]).attr('data-kseghdr'));
+                                        var seglinecode=($(this.options[this.selectedIndex]).attr('data-seglinecode'));
+                                        document.getElementById('lockeySegmentHeader').value = kseghdr;
+                                        document.getElementById('locsegmentLine').value = seglinecode;
+                                        if (kseghdr==null||kseghdr=='')
+                                        {
+                                            $("#inputaccCodeCombinitions").attr("readonly", true);
+                                        }else
+                                        {
+                                            $("#inputaccCodeCombinitions").attr("readonly", false);
+                                        }
+                                    });
+                                    $(document).ready(function(){
+                                        var locKsghdr =document.getElementById('lockeySegmentHeader').value ;
+
+                                        if (locKsghdr==null||locKsghdr=='')
+                                        {
+                                            $("#inputaccCodeCombinitions").attr("readonly", true);
+                                        }else
+                                        {
+                                            $("#inputaccCodeCombinitions").attr("readonly", false);
+                                        }
+                                    });
+                                </script>
+
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3 control-label " for="inputaccountName" >Account Name</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control " required="required"  placeholder="Account Name" type="text" id="inputaccountName"
+                                       th:field="*{accountName}" name="accountName"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('accountName')}" th:errors="*{accountName}">accountName Error</span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3 control-label " for="inputaccountNumber" >Account Number</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-8 ">
+                                <input class="form-control " required="required"  placeholder="Account Number" type="text" id="inputaccountNumber"
+                                       th:field="*{accountNumber}" name="accountNumber"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('accountNumber')}" th:errors="*{accountNumber}">accountNumber Error</span>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3 control-label " for="inputbranch" >Branch Name</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-8 ">
+                                <input class="form-control " required="required"  placeholder="Branch" type="text" id="inputbranch"
+                                       th:field="*{branch}" name="branch"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('branch')}" th:errors="*{branch}">branch Error</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3 control-label " for="inputaddress" >Address</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-8 ">
+                                <input class="form-control " required="required"  placeholder="Address" type="text" id="inputaddress"
+                                       th:field="*{address}" name="address"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">address Error</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3 control-label " for="inputbankAccountType" >Bank Account Type</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-8 ">
+                                <select class="form-control " required="required"  id="inputbankAccountType" name="bankAccountType">
+                                    <option value="">Select</option>
+                                    <option th:each="module : ${T(com.aye.web.model.BankAcctType).values()}"
+                                            th:text="${module}"
+                                            th:value="${module}">Select</option>
+                                </select>
+                                <!--<input class="form-control " required="required"  placeholder="Bank Account Type" type="text" id="inputbankAccountType"-->
+                                <!--th:field="*{bankAccountType}" name="bankAccountType"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('bankAccountType')}" th:errors="*{bankAccountType}">bankAccountType Error</span>
+                            </div>
+                        </div>
+
+                        <!--<div class="form-group">-->
+                        <!--<label for="inputsiteAddress">Site Address</label>-->
+                        <!--<input type="text" class="form-control" id="inputsiteAddress" placeholder="Site Address" th:field="*{siteAddress}" name="siteAddress" />-->
+                        <!--<span class="help-block" th:if="${#fields.hasErrors('siteAddress')}" th:errors="*{siteAddress}">Description Error</span>-->
+                        <!--</div>-->
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3 control-label " for="inputaccCodeCombinitions" >Cash Account</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input type="text" class="form-control" id="inputaccCodeCombinitions"  name="accCodeCombinitionsname"
+                                       th:text="*{accCodeCombinitionsV?.ccDesc}"
+                                       th:field="*{accCodeCombinitionsV.concatedSegment}" />
+                                <input type="hidden" class="form-control" id="inputaccCodeCombId" th:field="*{accCodeCombinitions.id}" name="accCodeCombinitions" />
+
+                                <span class="help-block" th:if="${#fields.hasErrors('accCodeCombinitions')}" th:errors="*{accCodeCombinitions}">AccCodeCombinitions Error</span>
+
+                                <script th:inline="javascript">
+                                    document.getElementById('inputaccCodeCombinitions').oninput = function(){
+
+                                        var codeCom=document.getElementById('inputaccCodeCombinitions').value;
+                                        var urlvals;
+                                        if(codeCom.length>2)
+                                        {
+                                            var orgkseghdr=document.getElementById('lockeySegmentHeader').value ;
+                                            var orgbalseg=document.getElementById('locsegmentLine').value ;
+                                            var re = /^[A-Za-z]+$/;
+                                            var source='CM'
+                                            if (codeCom.length > 1) {
+                                                if (re.test(codeCom)) {
+                                                    urlvals = '/AYE/ACRC/SearchCodeCombDescBySource/' + codeCom + '/' + orgkseghdr + '/'+orgbalseg+ '/'+source+ '/'+1;
+                                                    var displayfield='#inputaccCodeCombinitions';
+                                                    var dbfield ='#inputaccCodeCombId';
+                                                    var getvalue='ccDesc';
+                                                    var templt = 'concatedSegment';
+//                                                    alert(urlvals);
+                                                    autocomForCommon(urlvals,displayfield,dbfield,getvalue,templt);
+
+                                                } else {
+                                                    urlvals = '/AYE/ACRC/SearchCodeCombDescBySource/' + codeCom + '/' + orgkseghdr + '/'+orgbalseg+ '/'+source+ '/'+0;
+                                                    var displayfield='#inputaccCodeCombinitions';
+                                                    var dbfield ='#inputaccCodeCombId';
+                                                    var getvalue='concatedSegment';
+                                                    var templt = 'ccDesc';
+//                                                    alert(urlvals);
+                                                    autocomForCommon(urlvals,displayfield,dbfield,getvalue,templt);
+
+                                                }
+                                            }
+                                            document.getElementById('inputaccCodeCombinitions').focus();
+                                        }
+                                    }
+
+                                </script>
+
+
+
+
+                            </div>
+                        </div>
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3  " for="inputphoneNumber" >Phone Number</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control "   placeholder="phoneNumber" type="text" id="inputphoneNumber"
+                                       th:field="*{phoneNumber}" name="Phone Number"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">Supplier Name Error</span>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3  " for="inputfax" >Fax</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control "   placeholder="Fax" type="text" id="inputfax"
+                                       th:field="*{fax}" name="address"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('fax')}" th:errors="*{fax}">Fax Name Error</span>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group required col-sm-12" >
+                            <label class="col-sm-3  " for="inputemail" >E-mail</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control "   placeholder="E-Mail" type="text" id="inputemail"
+                                       th:field="*{email}" name="inputemail"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">inputemail Name Error</span>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumn" placeholder="column" th:field="*{column.createdBy}" name="column" />
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('column.createdBy')}" th:errors="*{column.createdBy}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate" th:field="*{column.creationDate}" name="columnDate" />
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('column.creationDate')}" th:errors="*{column.creationDate}">User Name Error</span>
+                        </div>
+
+
+                        <div class="text-right">
+                            <!--commonCodesAdd/{mode}/{pageId}/{temltId}-->
+                            <a th:href="@{/Bank/bankIndex/E/}+${pageId}+'/'+${temltId}" class="btn btn-default">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+
+                    </form>
+
+
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th>Org Code</th>
+                            <th>Account Name</th>
+                            <th>Account Number</th>
+                            <th>Branch Name</th>
+                            <th>Address</th>
+                            <th>Account</th>
+                            <th>Branch Name</th>
+                            <th>Phone</th>
+                            <th>Fax</th>
+                            <th>Email</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <div th:if="!${#lists.isEmpty(bankLines)}">
+                            <tr th:each="bkl : ${bankLines}">
+                                <td th:text="*{bkl.orgHierarchy.code}"></td>
+                                <td th:text="*{bkl.accountName}"></td>
+                                <td th:text="*{bkl.accountNumber}"></td>
+                                <td th:text="*{bkl.branch}"></td>
+                                <td th:text="*{bkl.address}"></td>
+                                <td th:text="*{bkl.accCodeCombinitionsV.ccDesc}"></td>
+                                <td th:text="*{bkl.phoneNumber}"></td>
+                                <td th:text="*{bkl.fax}"></td>
+                                <td th:text="*{bkl.email}"></td>
+                                <td>
+
+                                    <a th:href="@{/Bank/bankLine/U/} + ${pageId}+'/'+${temltId}+'/'+${bankId}+'/'+${bkl.id}" title="Edit Bank Details" class="btn btn-primary">
+                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+
+                                </td>
+
+                            </tr>
+                        </div>
+                        <div th:if="${#lists.isEmpty(bankLines)}">
+                            <tr>
+                                <td>No Data exists!</td>
+                            </tr>
+                        </div>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

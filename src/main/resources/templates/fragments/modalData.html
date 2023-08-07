@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+      layout:decorator="fragments/layout">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/easy-autocomplete.min.css"
+            rel="stylesheet" type="text/css"/>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/jquery.easy-autocomplete.min.js"
+            type="text/javascript"></script>
+    <link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>
+
+    <script th:src="@{/js/easyAutocomplete/autocompleteInv.js}"></script>
+    <script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>
+    <script th:src="@{/js/validation.js}"></script>
+<head>
+<script>
+
+</script>
+
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="modal modal-warning fade in" th:id="modal-warning"   data-th-fragment="account-modal">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span></button>
+                <h5 class="modal-title">Search</h5>
+
+                <div class="modal-body" th:id="modalId">
+                    <form
+                            th:object="${codeCombinationsSearch}" th:method="post">
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment1}">
+
+
+                            <label class="col-sm-3 control-label " for="inputsegment1"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control fields" required="required" type="text" id="inputsegment1"
+                                       th:attr="placeholder=${x.segmenteName}"   th:field="*{segment1}" name="segment1" />
+
+                                <input class="form-control " required="required" type="hidden" id="inputsegment1id" />
+
+                                <input type="hidden" name="modalbtn" id="inputmodalbtn"  />
+
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text" id="inputsegment1desc"
+                                       name="segment1desc" style="font-size: 9px; color:#aab6aa" />
+                            </div>
+
+
+                            <script th:inline="javascript">
+                                searchObj =[[${codeCombinationsSearch}]];
+                                function InvSearchseg1(objparms) {
+//                                                        alert('x');
+                                    var objparmV = objparms;
+                                    $('#inputsegment1').val(objparmV.code).trigger("change");
+                                    $('#inputsegment1desc').val(objparmV.description).trigger("change");
+                                    searchObj["segment1"]=objparmV.code;
+                                };
+
+
+                                document.getElementById('inputsegment1').oninput = function () {
+
+                                    var inputStr =document.getElementById('inputsegment1').value;
+                                    var seghdrId = [[${x.segmentHeader.id}]];
+                                    var seghdrDtl = [[${x.segmentHeader.detailField}]];
+                                    var displayfields='#inputsegment1';
+                                    var dbfields = '#inputsegment1id'
+                                    var getvalues='code';
+                                    var indcint = 'seg1InvR';
+                                    var re = /^[A-Za-z]+$/;
+                                    if (re.test(inputStr)) {
+                                        getvalues ='description';
+
+                                    }
+
+                                    setData(seghdrDtl,seghdrId,displayfields,dbfields,getvalues,indcint);
+                                }
+                            </script>
+
+                        </div>
+
+
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment2}">
+
+                            <label class="col-sm-3 control-label " for="inputSegment2"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control fieldss" required="required" type="text" id="inputSegment2"
+                                       th:attr="placeholder=${x.segmenteName}"   th:field="*{segment2}" />
+
+                                <input class="form-control" required="required" type="hidden" id="inputSegment2id"
+                                       th:attr="placeholder=${x.segmenteName}"/>
+                            </div>
+
+                            <div class="col-sm-5 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text"
+                                       id="inputSegment2desc"
+                                       name="segment2desc"      style="font-size: 9px; color:#aab6aa"     />
+                            </div>
+
+
+
+                            <script th:inline="javascript">
+
+//                                var mm=[[${test}]];
+//                                alert(mm);
+
+                                function InvSearchseg2(objparms) {
+//                                            alert('x');
+
+                                    var objparmV = objparms;
+                                    $('#inputSegment2').val(objparmV.code).trigger("change");
+                                    $('#inputSegment2desc').val(objparmV.description).trigger("change");
+                                    searchObj["segment2"]=objparmV.code;
+                                };
+
+
+            document.getElementById('inputSegment2').oninput = function () {
+//                alert('x');
+                var inputStr =document.getElementById('inputSegment2').value;
+                var seghdrId = [[${x.segmentHeader.id}]];
+                var seghdrDtl = [[${x.segmentHeader.detailField}]];
+                var displayfields='#inputSegment2';
+                var dbfields = '#inputSegment2id'
+                var getvalues='code';
+                var indcint = 'seg2InvR';
+                var re = /^[A-Za-z]+$/;
+                if (re.test(inputStr)) {
+                    getvalues ='description';
+                }
+//                alert(seghdrId)
+                setData(seghdrDtl,seghdrId,displayfields,dbfields,getvalues,indcint);
+            };
+                            </script>
+
+                        </div>
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment3}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment3"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control" required="required" type="text" id="inputsegment3"
+                                       th:attr="placeholder=${x.segmenteName}" th:field="*{segment3}"
+                                       name="segment3"/>
+
+                                <input class="form-control" required="required" type="hidden" id="inputsegment3id"
+                                       th:attr="placeholder=${x.segmenteName}"/>
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text" id="inputsegment3desc"
+                                       name="segment3desc"    style="font-size: 9px; color:#aab6aa"     />
+                            </div>
+
+                            <script th:inline="javascript">
+                                //alert('dfadfa');
+                                function InvSearchseg3(objparms) {
+
+                                    var objparmV = objparms;
+                                    $('#inputsegment3').val(objparmV.code).trigger("change");
+                                    $('#inputsegment3desc').val(objparmV.description).trigger("change");
+                                    searchObj["segment3"]=objparmV.code;
+                                };
+
+                                document.getElementById('inputsegment3').oninput = function () {
+
+                                    var inputStr =document.getElementById('inputsegment3').value;
+                                    var seghdrId = [[${x.segmentHeader.id}]];
+                                    var seghdrDtl = [[${x.segmentHeader.detailField}]];
+                                    var displayfields='#inputsegment3';
+                                    var dbfields = '#inputsegment3id'
+                                    var getvalues='code';
+                                    var indcint = 'seg3InvR';
+                                    var re = /^[A-Za-z]+$/;
+                                    if (re.test(inputStr)) {
+                                        getvalues ='description';
+                                    }
+                                    setData(seghdrDtl,seghdrId,displayfields,dbfields,getvalues,indcint);
+                                };
+                            </script>
+
+
+                        </div>
+
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment4}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment4"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-3">
+                                <input class="form-control" required="required" type="text" id="inputsegment4"
+                                       th:attr="placeholder=${x.segmenteName}" th:field="*{segment4}"
+                                       name="segment4"/>
+
+                                <input class="form-control" required="required" type="hidden" id="inputsegment4id"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                        />
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text" id="inputsegment4desc"
+                                       name="segment4desc"    style="font-size: 9px; color:#aab6aa"     />
+                            </div>
+
+
+                            <script th:inline="javascript">
+                                //alert('dfadfa');
+
+                                function InvSearchseg4(objparms) {
+//                                    alert(objparms.description);
+                                    var objparmV = objparms;
+                                    $('#inputsegment4').val(objparmV.code).trigger("change");
+                                    $('#inputsegment4desc').val(objparmV.description).trigger("change");
+                                    searchObj["segment4"]=objparmV.code;
+                                };
+
+                                document.getElementById('inputsegment4').oninput = function () {
+
+                                    var inputStr =document.getElementById('inputsegment4').value;
+                                    var seghdrId = [[${x.segmentHeader.id}]];
+                                    var seghdrDtl = [[${x.segmentHeader.detailField}]];
+                                    var displayfields='#inputsegment4';
+                                    var dbfields = '#inputsegment4id'
+                                    var getvalues='code';
+                                    var indcint = 'seg4InvR';
+                                    var re = /^[A-Za-z]+$/;
+                                    if (re.test(inputStr)) {
+                                        getvalues ='description';
+                                    }
+                                    setData(seghdrDtl,seghdrId,displayfields,dbfields,getvalues,indcint);
+                                };
+                            </script>
+
+
+                        </div>
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment5}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment5"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control" required="required" type="text" id="inputsegment5"
+                                       th:attr="placeholder=${x.segmenteName}" th:field="*{segment5}"
+                                       name="segment5"/>
+
+                                <input class="form-control" required="required" type="hidden" id="inputsegment5id"
+                                       th:attr="placeholder=${x.segmenteName}" />
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text" id="inputsegment5desc"
+                                       name="segment5desc"    style="font-size: 9px; color:#aab6aa"     />
+                            </div>
+                            <script th:inline="javascript">
+                                function InvSearchseg5(objparms) {
+                                    var objparmV = objparms;
+//                                    alert(objparmV.description);
+                                    $('#inputsegment5').val(objparmV.code).trigger("change");
+                                    $('#inputsegment5desc').val(objparmV.description).trigger("change");
+                                    searchObj["segment5"]=objparmV.code;
+                                };
+
+                                document.getElementById('inputsegment5').oninput = function () {
+
+                                    var inputStr =document.getElementById('inputsegment5').value;
+                                    var seghdrId = [[${x.segmentHeader.id}]];
+                                    var seghdrDtl = [[${x.segmentHeader.detailField}]];
+                                    var displayfields='#inputsegment5';
+                                    var dbfields = '#inputsegment5id'
+                                    var getvalues='code';
+                                    var indcint = 'seg5InvR';
+                                    var re = /^[A-Za-z]+$/;
+                                    if (re.test(inputStr)) {
+                                        getvalues ='description';
+
+                                    }
+                                    setData(seghdrDtl,seghdrId,displayfields,dbfields,getvalues,indcint);
+
+                                };
+                            </script>
+                            <input type="hidden" class="form-control" id="keySegmentHeaderId"
+                                   placeholder="Id" th:field="*{keySegmentHeaderId}" name="keySegmentHeaderId"/>
+
+                            <input class="form-control " required="required" type="hidden" id="inputconcatedSegment"
+                                   th:field="*{concatedSegment}"/>
+
+                            <input class="form-control " required="required" type="hidden" id="inputconcatedSegmentDesc"
+                                   th:field="*{concatedSegmentDesc}"/>
+
+                        </div>
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment6}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment6"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-3">
+                                <input class="form-control" required="required" type="text" id="inputsegment6"
+                                       th:attr="placeholder=${x.segmenteName}" th:field="*{segment6}"
+                                       name="segment6"/>
+
+                                <input class="form-control" required="required" type="hidden" id="inputsegment6id"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                        />
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text" id="inputsegment6desc"
+                                       name="segment6desc"    style="font-size: 9px; color:#aab6aa"     />
+                            </div>
+
+
+                            <script th:inline="javascript">
+
+                                function InvSearchseg6(objparms) {
+                                    var objparmV = objparms;
+
+                                    $('#inputsegment6').val(objparmV.code).trigger("change");
+                                    $('#inputsegment6desc').val(objparmV.description).trigger("change");
+                                    searchObj["segment6"]=objparmV.code;
+                                };
+
+                                document.getElementById('inputsegment6').oninput = function () {
+
+                                    var inputStr =document.getElementById('inputsegment6').value;
+                                    var seghdrId = [[${x.segmentHeader.id}]];
+                                    var seghdrDtl = [[${x.segmentHeader.detailField}]];
+                                    var displayfields='#inputsegment6';
+                                    var dbfields = '#inputsegment6id'
+                                    var getvalues='code';
+                                    var indcint = 'seg6InvR';
+                                    var re = /^[A-Za-z]+$/;
+                                    if (re.test(inputStr)) {
+                                        getvalues ='description';
+                                    }
+                                    setData(seghdrDtl,seghdrId,displayfields,dbfields,getvalues,indcint);
+                                };
+                            </script>
+
+
+                        </div>
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment7}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment7"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-3">
+                                <input class="form-control" required="required" type="text" id="inputsegment7"
+                                       th:attr="placeholder=${x.segmenteName}" th:field="*{segment7}"
+                                       name="segment7"/>
+
+                                <input class="form-control" required="required" type="hidden" id="inputsegment7id"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                        />
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text" id="inputsegment7desc"
+                                       name="segment7desc"    style="font-size: 9px; color:#aab6aa"     />
+                            </div>
+
+
+                            <script th:inline="javascript">
+
+                                function InvSearchseg7(objparms) {
+                                    var objparmV = objparms;
+                                    $('#inputsegment7').val(objparmV.code).trigger("change");
+                                    $('#inputsegment7desc').val(objparmV.description).trigger("change");
+                                    searchObj["segment7"]=objparmV.code;
+                                };
+
+                                document.getElementById('inputsegment7').oninput = function () {
+
+                                    var inputStr =document.getElementById('inputsegment7').value;
+                                    var seghdrId = [[${x.segmentHeader.id}]];
+                                    var seghdrDtl = [[${x.segmentHeader.detailField}]];
+                                    var displayfields='#inputsegment7';
+                                    var dbfields = '#inputsegment7id'
+                                    var getvalues='code';
+                                    var indcint = 'seg7InvR';
+                                    var re = /^[A-Za-z]+$/;
+                                    if (re.test(inputStr)) {
+                                        getvalues ='description';
+                                    }
+                                    setData(seghdrDtl,seghdrId,displayfields,dbfields,getvalues,indcint);
+                                };
+                            </script>
+
+
+                        </div>
+
+                        <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+                             th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment8}">
+
+                            <label class="col-sm-3 control-label " for="inputsegment8"
+                                   th:text="${x.segmenteName}">Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-3">
+                                <input class="form-control" required="required" type="text" id="inputsegment8"
+                                       th:attr="placeholder=${x.segmenteName}" th:field="*{segment8}"
+                                       name="segment8"/>
+
+                                <input class="form-control" required="required" type="hidden" id="inputsegment8id"
+                                       th:attr="placeholder=${x.segmenteName}"
+                                        />
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" readonly="readonly" required="required" type="text" id="inputsegment8desc"
+                                       name="segment8desc"    style="font-size: 9px; color:#aab6aa"     />
+                            </div>
+
+
+                            <script th:inline="javascript">
+
+                                function InvSearchseg8(objparms) {
+                                    var objparmV = objparms;
+                                    $('#inputsegment8').val(objparmV.code).trigger("change");
+                                    $('#inputsegment8desc').val(objparmV.description).trigger("change");
+                                    searchObj["segment8"]=objparmV.code;
+                                };
+
+                                document.getElementById('inputsegment8').oninput = function () {
+
+                                    var inputStr =document.getElementById('inputsegment8').value;
+                                    var seghdrId = [[${x.segmentHeader.id}]];
+                                    var seghdrDtl = [[${x.segmentHeader.detailField}]];
+                                    var displayfields='#inputsegment8';
+                                    var dbfields = '#inputsegment8id'
+                                    var getvalues='code';
+                                    var indcint = 'seg8InvR';
+                                    var re = /^[A-Za-z]+$/;
+                                    if (re.test(inputStr)) {
+                                        getvalues ='description';
+                                    }
+                                    setData(seghdrDtl,seghdrId,displayfields,dbfields,getvalues,indcint);
+                                };
+                            </script>
+
+
+                        </div>
+
+                        <div class="btn_padd" align="right">
+                            <a class="btn btn-success"
+                               th:id="btnId"  th:text="Search" th:title="HIT" rel="tooltip">
+                            </a>
+                            <script th:inline="javascript">
+
+                                document.getElementById('btnId').onclick =
+                                        function () {
+//                                                                alert('x');
+
+                                            getContent(1);
+                                        };
+                                //                                                    function getContent(btnId) {
+                                //                                                        alert(btnId);
+                                //                                                        getContent(lBtn);
+                                //                                                    }
+
+                                function getContent(btnId) {
+//                                                        var lsHeaderId=document.getElementById('sHeaderId').value;
+
+
+                                    var pNum = btnId;
+                                    //create url to request fragment
+                                    var mod = [[${mode}]];
+                                    var pId = [[${pageId}]];
+                                    var tId = [[${temltId}]];
+                                    var obj = searchObj;
+                                    var path ='GL';
+//                                                        alert('55');
+
+                                    l_urlVal = '/AYE/Acc/searchss/' + mod + '/' + pId + '/' + tId + '/' + pNum+'/'+path;
+//                                                        alert(l_url);
+                                    var l_url = window.location.origin + l_urlVal;
+                            //        alert(l_url);
+                                    //load fragment and replace content
+                                    $('#replace_div').load(l_url,obj);
+                                    searchObj=[[${codeCombinationsSearch}]];
+                                    document.getElementById('inputsegment1').value="";
+                                    document.getElementById('inputsegment1desc').value="";
+                                    document.getElementById('inputSegment2').value="";
+                                    document.getElementById('inputSegment2desc').value="";
+                                    document.getElementById('inputsegment3').value="";
+                                    document.getElementById('inputsegment3desc').value="";
+                                    document.getElementById('inputsegment4').value="";
+                                    document.getElementById('inputsegment4desc').value="";
+                                    document.getElementById('inputsegment5').value="";
+                                    document.getElementById('inputsegment5desc').value="";
+                                    document.getElementById('inputsegment6').value="";
+                                    document.getElementById('inputsegment6desc').value="";
+                                    document.getElementById('inputsegment7').value="";
+                                    document.getElementById('inputsegment7desc').value="";
+                                    document.getElementById('inputsegment8').value="";
+                                    document.getElementById('inputsegment8desc').value="";
+
+                                }
+                                ;
+                                function setData(pseghdrDtl,pseghdrId,pdisplayfields,pdbfields,pgetvalues,pindcint)
+                                {
+                                    var pUrls = [[${codcomModalLink}]];
+                                    var pUrls1;
+                                    var urlvals;
+
+                                    if (pseghdrDtl==true)
+                                    {
+                                        pUrls1=pUrls.replace('pSeg',pseghdrId);
+                                        urlvals=pUrls1;
+                                    }else
+                                    {
+                                        urlvals='/AYE/ACRC/getSegmentLineData/' + pseghdrId;
+                                    }
+
+                                    var displayfields=pdisplayfields;//'#inputsegment1';
+                                    var dbfields = pdbfields;//'#inputsegment1id'
+                                    var getvalues=pgetvalues;//'code';
+                                    //var templates='description';
+                                    var indcint = pindcint;//'seg1InvR';
+//alert(urlvals);
+                                    autocomwithobjectwod(urlvals, getvalues,displayfields, dbfields,indcint);
+                                    document.getElementById(displayfields.replace('#','')).focus();
+                                }
+                            </script>
+
+                        </div>
+
+                        <div id="replace_div">
+                            <!--<script th:inline="javascript">-->
+
+                            <!--$(document).ready(function()-->
+                            <!--{-->
+                            <!--var pNum=1;-->
+                            <!--var mod=[[${mode}]];-->
+                            <!--var pId=[[${pageId}]];-->
+                            <!--var tId=[[${temltId}]];-->
+
+                            <!--//                                        alert(pNum);-->
+                            <!--l_urlVal='/AYE/OrdTrns/search/'+mod+'/'+ pId+'/'+tId+'/'+pNum;-->
+                            <!--var l_url=window.location.origin+l_urlVal;-->
+                            <!--$('#replace_div').load(l_url);-->
+
+                            <!--}-->
+
+
+                            <!--)-->
+
+                            <!--</script>-->
+                        </div>
+
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

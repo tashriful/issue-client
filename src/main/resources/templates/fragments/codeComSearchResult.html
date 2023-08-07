@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="codeComSearchResult" th:fragment="codeComSearchResult" class="codeComSearchResult">
+    <div class="form-group col-sm-12">
+
+        <div th:unless="${#lists.isEmpty(combications)}">
+        <table class="table table-bordered table-hover table-striped">
+            <thead>
+            <!--<tr>-->
+            <!--<th th:text="#{results.ordTrnsTypes.id}">Id</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.trnsTypeName}">Name</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.description}">Desc.</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.startDates}">Start</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.active}">End</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.priceListHeader.name}">Price List</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.invOrg.code}">Inv.Org</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.orgHierarchy.code}">Org</th>-->
+            <!--<th th:text="#{results.ordTrnsTypes.glCategories.categoriesCode}">Gl Categories</th>-->
+            <!--</tr>-->
+            <tr>
+                <!--<th>Id</th>-->
+                <th width="5%">Select</th>
+                <th>Number</th>
+                <th>Desc</th>
+                <th>Source</th>
+
+            </tr>
+
+            </thead>
+            <tbody>
+            <tr th:each="c : ${combications}">
+                <!--<td th:text="${trnsType.id}">Id</td>-->
+                <td>
+                    <input type="radio" name="c.id" onclick="myfunc(this)" th:id="${c.id}" />
+
+                </td>
+                <td th:text="${c.concatedSegment}" th:id="concatedSegment+${c.id}" ></td>
+                <td th:text="${c.ccDesc}"  ></td>
+                <td th:text="${c.source}"  ></td>
+
+                <td text="${c.id}" >
+                    <!--<input type="hidden" name="source" th:id="source" text="${c.source}" />-->
+                </td>
+
+
+
+            </tr>
+
+
+            </tbody>
+
+        </table>
+            <script>
+
+                function myfunc(ele) {
+                    var p1;
+                    var p2;
+                    var values = new Array();
+                    $.each($("input[name='c.id']:checked").parents("td").siblings(), function() {
+//                        alert($(this).index());
+                        if ($(this).index()==1)
+                        {
+                            p1=$(this).text();
+                            values.push(p1);
+//                            alert(p1);
+                        }else if ($(this).index()==4)
+                        {
+                            p2=$(this).text();
+                            values.push(p2);
+
+//                            alert(p2);
+                        }else if ($(this).index()==3)
+                        {
+                            values.push($(this).text());
+//                            p2=$(this).text();
+//                            alert($(this).text());
+
+                        }
+//                        values.push($(this).text());
+//                        alert("val---"+values);
+//                        alert(this).index()text();
+                    });
+//                    alert(p1+p2);
+
+                    getcodcomfmodal(p1,p2);
+                }
+
+
+            </script>
+
+
+
+            <div>
+
+
+        </div>
+
+    </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Delivery Order" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ff889a4d-25d8-4770-b133-af72cffc6109">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ohid" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT ooh.order_header_id,
+       ooh.order_number,
+       ooh.order_date,
+       ooh.order_status,
+       ooh.customer_line_id,
+       cust.customer_name,
+       cust.address,
+       ooh.oe_trns_type_id,
+       ott.name,
+       ooh.org_id,
+       org.org_name,
+       org.org_address,
+       ooh.inv_org_id,
+       inv.id inv_org_code,
+       inv.name inv_org_name,
+       inv.address inv_org_address,
+       ooh.created_by,
+       ool.order_line_id,
+       ool.item_id,
+       ool.item_code,
+       ool.default_uom_code,
+       ool.default_uom_id,
+       ool.order_uom_code,
+       ool.order_uom_id,
+       ool.order_default_uom_qty,
+       ool.order_uom_qty,
+       ool.amount,
+       (SELECT spell_number (round(ool.order_uom_qty)) FROM DUAL) spell_qty,
+       (SELECT spell_number (round(ool.amount)) FROM DUAL) spell_amt,
+       ool.conv_rate,
+       ool.unit_list_price,
+       ool.unit_selling_price,
+--       nvl(ool.order_uom_qty,0)*nvl(ool.unit_selling_price,0) tot_amount,
+       ool.price_list_line_id
+  FROM ord_order_header ooh,
+       ord_order_line ool,
+       (SELECT ch.id customer_header_id,
+               cl.id customer_line_id,
+               ch.customer_name,
+               ch.address,
+               cl.org_id org_id
+          FROM customer_line cl, customer_header ch
+         WHERE cl.customer_header_id = ch.id AND cl.status = 'Y') cust,
+       ord_trns_type ott,
+       (SELECT bg.id bg_id,
+               bg.address bg_address,
+               bg.code bg_code,
+               bg.name bg_name,
+               bg.TYPE bg_type,
+               org.id org_id,
+               org.address org_address,
+               org.code org_code,
+               org.name org_name,
+               org.TYPE org_type,
+               org.calendar_header_id,
+               org.default_currency_id,
+               org.gl_structure_id,
+               org.parentid,
+               org.balancing_segment
+          FROM organization_hierarchy bg, organization_hierarchy org
+         WHERE org.parentid = bg.id) org,
+       inv_informations inv
+ WHERE     ooh.order_header_id = ool.order_header_id
+       AND ooh.inv_org_id = ool.inv_org_id
+       AND ooh.order_header_id = $P{ohid}
+       AND ooh.customer_line_id = cust.customer_line_id
+       AND ooh.org_id = cust.org_id
+       AND ooh.oe_trns_type_id = ott.id
+       AND ooh.inv_org_id = ott.inv_org_id
+       AND ooh.org_id = org.org_id
+       AND ooh.inv_org_id = inv.id]]>
+	</queryString>
+	<field name="ORDER_HEADER_ID" class="java.math.BigDecimal"/>
+	<field name="ORDER_NUMBER" class="java.lang.String"/>
+	<field name="ORDER_DATE" class="java.sql.Timestamp"/>
+	<field name="ORDER_STATUS" class="java.lang.String"/>
+	<field name="CUSTOMER_LINE_ID" class="java.math.BigDecimal"/>
+	<field name="CUSTOMER_NAME" class="java.lang.String"/>
+	<field name="ADDRESS" class="java.lang.String"/>
+	<field name="OE_TRNS_TYPE_ID" class="java.math.BigDecimal"/>
+	<field name="NAME" class="java.lang.String"/>
+	<field name="ORG_ID" class="java.math.BigDecimal"/>
+	<field name="ORG_NAME" class="java.lang.String"/>
+	<field name="ORG_ADDRESS" class="java.lang.String"/>
+	<field name="INV_ORG_ID" class="java.math.BigDecimal"/>
+	<field name="INV_ORG_CODE" class="java.math.BigDecimal"/>
+	<field name="INV_ORG_NAME" class="java.lang.String"/>
+	<field name="INV_ORG_ADDRESS" class="java.lang.String"/>
+	<field name="CREATED_BY" class="java.math.BigDecimal"/>
+	<field name="ORDER_LINE_ID" class="java.math.BigDecimal"/>
+	<field name="ITEM_ID" class="java.math.BigDecimal"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="DEFAULT_UOM_CODE" class="java.lang.String"/>
+	<field name="DEFAULT_UOM_ID" class="java.math.BigDecimal"/>
+	<field name="ORDER_UOM_CODE" class="java.lang.String"/>
+	<field name="ORDER_UOM_ID" class="java.math.BigDecimal"/>
+	<field name="ORDER_DEFAULT_UOM_QTY" class="java.lang.Double"/>
+	<field name="ORDER_UOM_QTY" class="java.lang.Double"/>
+	<field name="AMOUNT" class="java.lang.Double"/>
+	<field name="SPELL_QTY" class="java.lang.String"/>
+	<field name="SPELL_AMT" class="java.lang.String"/>
+	<field name="CONV_RATE" class="java.lang.Double"/>
+	<field name="UNIT_LIST_PRICE" class="java.lang.Double"/>
+	<field name="UNIT_SELLING_PRICE" class="java.lang.Double"/>
+	<field name="PRICE_LIST_LINE_ID" class="java.math.BigDecimal"/>
+	<variable name="TOTAL_AMOUNT" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{AMOUNT}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_QTY" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{ORDER_UOM_QTY}]]></variableExpression>
+	</variable>
+	<variable name="INWORD_AMOUNT" class="java.lang.String">
+		<variableExpression><![CDATA[$P{REPORT_SCRIPTLET}.convert($V{TOTAL_AMOUNT})]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="77" splitType="Stretch">
+			<rectangle radius="10">
+				<reportElement x="172" y="53" width="200" height="20" backcolor="#CCCCCC" uuid="73dfbe32-e4a6-4dcf-9159-51c0b75dea64"/>
+			</rectangle>
+			<textField>
+				<reportElement x="0" y="0" width="554" height="31" uuid="8c81ad39-c085-427b-8200-90d569a7ebb0"/>
+				<textElement textAlignment="Center">
+					<font size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="33" width="554" height="20" uuid="e7d1ad00-e1c5-46cb-b5bb-a10ae92febe9"/>
+				<textElement textAlignment="Center">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="54" width="554" height="20" uuid="436051ff-1ef9-4db3-a477-d78894261f48"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Delivery Order]]></text>
+			</staticText>
+			<line>
+				<reportElement x="5" y="75" width="546" height="1" uuid="e10e8422-5c6d-41e0-aacd-c73c892513ec"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="97" splitType="Stretch">
+			<staticText>
+				<reportElement x="5" y="50" width="84" height="20" uuid="a44c27ca-ccbe-411f-be9c-91be40b04538"/>
+				<text><![CDATA[Customer Name :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="97" y="50" width="454" height="20" uuid="b927cf80-e112-44f9-88b0-422d770670f0"/>
+				<textFieldExpression><![CDATA[$F{CUSTOMER_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="70" width="84" height="20" uuid="e3b45be0-1575-4f6a-9041-10bbddcb23b3"/>
+				<text><![CDATA[Address :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="97" y="70" width="454" height="20" uuid="c3b2c158-05ca-4134-8e17-65ac33588a5a"/>
+				<textFieldExpression><![CDATA[$F{ADDRESS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="10" width="84" height="20" uuid="ee3b46b4-2e89-43bb-8020-3b86afd45c73"/>
+				<text><![CDATA[Order Number :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="97" y="10" width="454" height="20" uuid="d24b4e8b-dff6-4339-a08f-d434b2ed6052"/>
+				<textFieldExpression><![CDATA[$F{ORDER_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="30" width="84" height="20" uuid="69fb807e-6f83-4d6a-9d9c-e701eda83a12"/>
+				<text><![CDATA[Order Date :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="97" y="30" width="454" height="20" uuid="13f124bb-5266-4850-9260-e5e59aa1abcb"/>
+				<textFieldExpression><![CDATA[$F{ORDER_DATE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="554" height="20" uuid="c275a898-b8d7-41a7-a973-c8e799534294"/>
+				<rectangle>
+					<reportElement x="0" y="0" width="554" height="20" uuid="163d7af0-eb69-4aaa-bc95-a0c78c8374ac"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="0" y="0" width="32" height="20" uuid="b4ad8952-a4a4-4b40-8a1e-5336f38a2805"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[SL#]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="33" y="0" width="193" height="20" uuid="92e355ed-49f7-4406-9059-8976c709a3af"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Item Name]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="227" y="0" width="75" height="20" uuid="8e91f3df-1bc2-43c0-b328-7900938f96ab"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[UOM]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="385" y="0" width="76" height="20" uuid="e9b77d2e-090c-4ad3-9524-0bb88785acfb"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Rate]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="461" y="0" width="93" height="20" uuid="6d1d2a18-eda0-488a-a903-535be1ef2609"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Amount]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="303" y="0" width="81" height="20" uuid="2e1edcae-1ce7-4f49-9576-da7dc7541198"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Qty]]></text>
+				</staticText>
+				<line>
+					<reportElement x="32" y="0" width="1" height="20" uuid="acdeb7bd-b54e-4bae-8c68-b5cbe3fcae10"/>
+				</line>
+				<line>
+					<reportElement x="226" y="0" width="1" height="20" uuid="855e2c23-88ca-442e-b012-91aef109b2db"/>
+				</line>
+				<line>
+					<reportElement x="302" y="0" width="1" height="20" uuid="5cc514d6-498f-4082-b1a4-bb5bea07d96a"/>
+				</line>
+				<line>
+					<reportElement x="384" y="0" width="1" height="20" uuid="282a45ca-c2aa-4536-b518-ffe89fa28f00"/>
+				</line>
+				<line>
+					<reportElement x="460" y="0" width="1" height="20" uuid="9a474d33-22e6-4b44-8575-dce40cdf01c1"/>
+				</line>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="554" height="21" uuid="88cd9446-bb17-45d1-a4e6-2cb3f7b858e9"/>
+			</rectangle>
+			<textField>
+				<reportElement x="35" y="1" width="191" height="20" uuid="c48d7aea-6d55-46ee-be8b-3d7ad2d64f14"/>
+				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="230" y="1" width="72" height="20" uuid="3c52fe32-6991-49e5-9d01-af3da506d495"/>
+				<textFieldExpression><![CDATA[$F{ORDER_UOM_CODE}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="32" y="-1" width="1" height="22" uuid="554bed34-1820-42ad-99e6-33c0a29b7579"/>
+			</line>
+			<line>
+				<reportElement x="226" y="-2" width="1" height="22" uuid="00f96b16-8f88-4516-845d-987864b56ae4"/>
+			</line>
+			<line>
+				<reportElement x="302" y="-1" width="1" height="22" uuid="bc2ecf05-e890-4ef1-9da5-a35d31c11f25"/>
+			</line>
+			<line>
+				<reportElement x="384" y="-2" width="1" height="22" uuid="4ef71dc4-85d2-4a4f-8fdf-ecaa24c0a75e"/>
+			</line>
+			<line>
+				<reportElement x="460" y="-1" width="1" height="22" uuid="026f7d17-e30d-4c32-adfa-b422fa0fa444"/>
+			</line>
+			<textField pattern="###0.00">
+				<reportElement x="302" y="0" width="79" height="20" uuid="01371221-8955-4353-89ac-169035e7e8b3"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{ORDER_UOM_QTY}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="384" y="0" width="73" height="20" uuid="666bd176-f0d2-407b-87f1-2ae496c10d56"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{UNIT_SELLING_PRICE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="461" y="0" width="90" height="20" uuid="b6efa7c9-dbac-49bf-9c21-4ee7b1dee615"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="5" y="1" width="27" height="20" uuid="7fb6ebb7-7ecd-4485-909b-b6cd206e072e"/>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="4" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="26" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement x="12" y="6" width="100" height="20" forecolor="#999999" uuid="8bc3fcbd-bd29-4e15-9157-23624848debd"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="109" splitType="Stretch">
+			<textField pattern="###0.00">
+				<reportElement x="461" y="0" width="90" height="20" uuid="bfff2814-343a-47d3-abd4-b7d5fd467e4f"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{TOTAL_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="2a492f03-c113-4402-ac84-b5d8c782691f"/>
+				<text><![CDATA[Total :]]></text>
+			</staticText>
+			<textField pattern="###0.00">
+				<reportElement x="302" y="0" width="79" height="20" uuid="a4797487-8c78-4771-9107-3810aba99f32"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{TOTAL_QTY}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="454" y="89" width="100" height="20" uuid="5aef9f89-f877-47e9-a189-dd7c783b079d"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Authorized Signature]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="89" width="100" height="20" uuid="9d3aba4c-4ebc-42d0-b378-03e27f03711c"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Prepared By]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="150" y="88" width="100" height="20" uuid="2772e9f8-2f9a-4f12-9283-29325753d0cf"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Accounts]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="89" width="100" height="1" uuid="632ac085-bfc9-4ea6-b839-ba79d98de34c"/>
+			</line>
+			<line>
+				<reportElement x="150" y="88" width="100" height="1" uuid="bfc308dc-f275-43ee-95c9-1b69ce17c39a"/>
+			</line>
+			<line>
+				<reportElement x="454" y="88" width="100" height="1" uuid="d652d38c-1aec-4cb0-8c70-008c5c7734c0"/>
+			</line>
+			<staticText>
+				<reportElement x="303" y="88" width="100" height="20" uuid="0ce7f542-161c-4b0f-944b-ead82047137c"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Finance]]></text>
+			</staticText>
+			<line>
+				<reportElement x="303" y="88" width="100" height="1" uuid="ab1248a2-22dc-4376-ad57-d1563d8ee001"/>
+			</line>
+			<textField>
+				<reportElement x="61" y="30" width="490" height="20" uuid="61c7dadf-0782-494a-8631-0548a3b6937b"/>
+				<textFieldExpression><![CDATA[new com.aye.ayeireportlibrery.ConvertToWordLocal().convert($V{TOTAL_AMOUNT}).toUpperCase()+" Taka Only"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="30" width="56" height="20" uuid="a6610b63-bf8d-4691-b853-7ceb59d4107c"/>
+				<text><![CDATA[In Word :]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

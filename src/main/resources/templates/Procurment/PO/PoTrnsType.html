@@ -1,0 +1,542 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <script>
+        function selectedobj(value, ind) {
+            if (ind == 'potrnsTYpeItem') {
+                SearchPoTrnsItemObj(value);
+            }
+            if (ind == 'HiercPo') {
+                SearchHircPoObj(value);
+            }
+        }
+        ;
+
+    </script>
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Manage Purchase Transaction Types</div>
+
+                <div class="panel-body">
+
+                    <form th:action="@{'/poTrnsType/addTrnsType/'+${mode}+'/'+${pageId}+'/'+${temltId}}"
+                          th:object="${poTrnsType}" th:method="post">
+                        <!--<button type="submit" name="rpt" th:value="Journal_voucher" class="btn btn-primary">Voucher</button>-->
+                        <!--color: #ed1c24;-->
+                        <span style="font-weight: bold" th:each="m :${msg}"><p
+                                th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'"
+                                th:text="${m.tag+' '+m.msg}"></p></span>
+
+                        <div class="form-group">
+                            <!--<label for="inputSegment1">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid"
+                                   th:field="*{id}"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}"
+                                  th:errors="*{id}">Name Error</span>
+                        </div>
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputorgHierarchy">Organization</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-4 ">
+                                <select class="form-control" name="orgHierarchy" id="inputorgHierarchy"
+                                        th:field="*{orgHierarchy}" required="required">
+                                    <option value="">Please select One</option>
+                                    <option th:each="o : ${orgs}"
+                                            th:value="${o.id}"
+                                            th:text="${o.code}"
+                                            th:attr="data-seghdr=${o.keySegmentHeader.id},data-seglinecode=${o.segmentLine.code}">
+                                    </option>
+                                </select>
+
+
+                                <input type="hidden" id="lockeySegmentHeader"
+                                       th:field="*{orgHierarchy.keySegmentHeader.id}"
+                                       th:value="*{orgHierarchy}"/>
+                                <input type="hidden" id="locsegmentLine"
+                                       th:field="*{orgHierarchy.segmentLine.code}"
+                                       th:value="*{orgHierarchy}"/>
+                                <script th:inline="javascript">
+
+                                    $("select").change(function () {
+
+                                        var seghdr = ($(this.options[this.selectedIndex]).attr('data-seghdr'));
+                                        var seglinecode = ($(this.options[this.selectedIndex]).attr('data-seglinecode'));
+                                        document.getElementById('lockeySegmentHeader').value = seghdr;
+                                        document.getElementById('locsegmentLine').value = seglinecode;
+                                        var source = 'NONE';
+                                        var sourcePrePay = 'AP';
+                                        //alert('wow'+alt);
+                                        var urlval = '/AYE/ACRC/SearchCodeCombCommon/' + seglinecode + '/' + seghdr + '/' + seglinecode + '/' + source;
+                                        var urlvalPrePay = '/AYE/ACRC/SearchCodeCombCommon/' + seglinecode + '/' +seghdr + '/' + seglinecode + '/' + sourcePrePay;
+//                                        alert(urlval);
+                                        var displayfield = '#purchasingAccountV';
+                                        var dbfield = '#inputpurchasingAccount';
+                                        var getvalue = 'concatedSegment';
+                                        var tmplt = 'ccDesc';
+                                        autocomwithtemplate(urlval, getvalue, displayfield, dbfield, tmplt);
+
+                                        var displayfield2 = '#prePayAccountV';
+                                        var dbfield2 = '#inputprePayAccount';
+//                                        alert(urlvalPrePay);
+                                        autocomwithtemplate(urlvalPrePay, getvalue, displayfield2, dbfield2, tmplt);
+
+
+                                    });
+
+                                    $(document).ready(function () {
+
+                                        var seghdr = document.getElementById('lockeySegmentHeader').value;
+                                        var seglinecode = document.getElementById('locsegmentLine').value;
+
+                                        //alert('wow'+alt);
+//                                        alert('wow' + seghdr);
+                                        if (seghdr != '') {
+                                            var source = 'NONE';
+                                            var sourcePrePay = 'AP';
+                                            var urlval = '/AYE/ACRC/SearchCodeCombCommon/' + seglinecode + '/' + seghdr + '/' + seglinecode + '/' + source;
+                                            var urlvalPrePay = '/AYE/ACRC/SearchCodeCombCommon/' + seglinecode + '/' +seghdr + '/' + seglinecode + '/' + sourcePrePay;
+                                            //alert(urlval);
+                                            var displayfield = '#purchasingAccountV';
+                                            var dbfield = '#inputpurchasingAccount';
+                                            var getvalue = 'concatedSegment';
+                                            var tmplt = 'ccDesc';
+                                            autocomwithtemplate(urlval, getvalue, displayfield, dbfield, tmplt);
+
+                                            var displayfield2 = '#prePayAccountV';
+                                            var dbfield2 = '#inputprePayAccount';
+                                            autocomwithtemplate(urlvalPrePay, getvalue, displayfield2, dbfield2, tmplt);
+                                        }
+                                    });
+
+
+                                </script>
+
+
+                            </div>
+                            <div class="col-sm-4 ">
+                                <select class="form-control" name="typeOfPo" id="inputtypeOfPo" th:field="*{typeOfPo}"
+                                        required="required">
+                                    <option value="">Please select One</option>
+                                    <option th:each="o : ${T(com.aye.web.model.TypeOfPo).values()}"
+                                            th:value="${o}"
+                                            th:text="${o}">
+                                    </option>
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+
+                            <label class="col-sm-3 control-label " for="inputtrnsTypeName">Transaction Type Name</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input class="form-control" type="text" id="inputtrnsTypeName" placeholder="Name"
+                                       th:field="*{name}" name="name" required="required"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('name')}"
+                                      th:errors="*{name}">Name Error</span>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input type="text" class="form-control" id="inputpoPrefix" placeholder="Prifix"
+                                       th:field="*{poPrefix}"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('poPrefix')}"
+                                      th:errors="*{poPrefix}">Name Error</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+
+                            <label class="col-sm-3 control-label " for="inputpurchasingAccount">Purchase Account</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input type="hidden" class="form-control" id="inputpurchasingAccount"
+                                       th:field="*{purchasingAccount}" name="purchasingAccount"/>
+                                <input class="form-control" th:type="text" required="required"
+                                       placeholder="Purchase Account"
+                                       th:field="*{purchasingAccountV.concatedSegment}" id="purchasingAccountV"/>
+
+                            <span class="help-block" th:if="${#fields.hasErrors('purchasingAccountV')}"
+                                  th:errors="*{purchasingAccountV}">expenseAccount Error</span>
+                            </div>
+                            <script th:inline="javascript">
+
+
+                                //                                var org = document.getElementById('inputorgHierarchyId').value;
+                                //
+                                //                                if (org === undefined || org == '') {
+                                //                                    org = 0;
+                                ////                                    alert(org);
+                                //                                }
+                                //                                //                                                                alert(org);
+                                //                                var urlval = '/AYE/ACRC/SearchCodeComb/' + org;
+                                //                                // alert(urlval);
+                                //                                var displayfield = '#purchasingAccountV';
+                                //                                //   alert(displayfield)
+                                //                                var dbfield = '#inputpurchasingAccount';
+                                //                                //alert(dbfield)
+                                //                                var getvalue = 'concatedSegment';
+                                //                                autocom(urlval, getvalue, displayfield, dbfield);
+
+
+                            </script>
+
+
+                        </div>
+
+                        <div class="form-group required col-sm-12">
+
+                            <label class="col-sm-3 control-label " for="inputglCategories">Gl Category</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-8 ">
+                                <select class="form-control" required="required" type="text" id="inputglCategories"
+                                        th:field="*{glCategories}" name="glCategories">
+                                    <option th:if="${#lists.size(glCategories) gt 1 }" value="">Please select One
+                                    </option>
+                                    <option th:each="catagories : ${glCategories}"
+                                            th:text="${catagories.categoriesCode}"
+                                            th:value="${catagories.id}">module
+                                    </option>
+                                </select>
+
+                                <!--<div>-->
+                                <!--<input type="hidden" id="source"-->
+                                <!--th:field="*{category.accountSource}"-->
+                                <!--class="form-control"/>-->
+                                <!--</div>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('glCategories')}"
+                                      th:errors="*{glCategories}">Category Error</span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group required col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputinvTrns">Inventory Transaction</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <select class="form-control" id="inputrcvInvTrnsType"
+                                        th:field="*{rcvInvTrnsType}">
+                                    <option value="">Select Rcv. Trns Type</option>
+                                    <option th:each="trns : ${invTrnsType}" th:text="${trns.name}"
+                                            th:value="${trns.id}">
+                                    </option>
+                                </select>
+
+                                <span class="help-block" th:if="${#fields.hasErrors('rcvInvTrnsType')}"
+                                      th:errors="*{rcvInvTrnsType}">Status Error</span>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <select class="form-control" id="inputrtvInvTrnsType"
+                                        th:field="*{rtvInvTrnsType}">
+                                    <option value="">Select RTV Trns Type</option>
+                                    <option th:each="trns : ${invTrnsType}" th:text="${trns.name}"
+                                            th:value="${trns.id}">
+                                    </option>
+
+                                </select>
+
+                                 <span class="help-block" th:if="${#fields.hasErrors('rtvInvTrnsType')}"
+                                       th:errors="*{rtvInvTrnsType}">Status Error</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+
+                            <label class="col-sm-3 control-label " for="inputpurchasingAccount">Pre Payment
+                                Account</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input type="hidden" class="form-control" id="inputprePayAccount"
+                                       th:field="*{prePayAccount}" name="prePayAccount"/>
+                                <input class="form-control" th:type="text" required="required"
+                                       placeholder="Pre Payment Account"
+                                       th:field="*{prePayAccountV.concatedSegment}" id="prePayAccountV"/>
+
+                            <span class="help-block" th:if="${#fields.hasErrors('prePayAccountV')}"
+                                  th:errors="*{prePayAccountV}">expenseAccount Error</span>
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group">
+                            <input type="hidden" id="inputmasterItemInvOrgId" placeholder="masterItemInvOrgId"
+                                   name="masterItem" th:field="*{masterItem.id.inventoryInformations.id}"
+                                   class="form-control" th:value="*{masterItem}"/>
+                            <input type="hidden" id="inputmasterItem" placeholder="masterItem" name="masterItem"
+                                   class="form-control" th:field="*{masterItem.id.id}" th:value="*{masterItem}"/>
+                        </div>
+
+
+                        <div id="itemDiv" class="form-group required col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputitemCode">Item & Primary UOM</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-8 ">
+                                <input type="text" id="inputitemCode" placeholder="itemCode" name="itemCode"
+                                       th:field="*{masterItem.itemCode}" class="form-control"/>
+
+                            </div>
+                            <script th:inline="javascript">
+                                $('#inputtypeOfPo').change(function () {
+                                            var lType = document.getElementById('inputtypeOfPo').value;
+                                            if (lType == 'SERVICE') {
+                                                document.getElementById('itemDiv').style.display = 'block';
+                                            }else
+                                            {
+                                                document.getElementById('itemDiv').style.display = 'none';
+                                            }
+
+                                        }
+                                )
+
+                                $(document).ready(function () {
+                                            var lType = document.getElementById('inputtypeOfPo').value;
+                                            if (lType == 'SERVICE') {
+                                                document.getElementById('itemDiv').style.display = 'block';
+                                            }else
+                                            {
+                                                document.getElementById('itemDiv').style.display = 'none';
+                                            }
+
+                                        }
+                                )
+
+                                function SearchPoTrnsItemObj(objparms) {
+//                                            alert('x');
+                                    var objparmV = objparms;
+                                    $('#inputmasterItem').val(objparmV.id.id).trigger("change");
+                                    $('#inputmasterItemInvOrgId').val(objparmV.id.inventoryInformations.id).trigger("change");
+
+                                }
+                                ;
+
+                                document.getElementById('inputitemCode').oninput = function () {
+                                    var lItmCode = document.getElementById('inputitemCode').value;
+                                    if (lItmCode.length > 2) {
+//                                        var  lInvOrg=document.getElementById('inputmasterItemInvOrgId').value;
+                                        var lInvOrg = [[${masterItemInvOrg.id}]];
+
+                                        var itemUrl = '/AYE/ACRC/SearchOrgItemCode/' + lInvOrg + '/' + lItmCode;
+//                                            alert(itemUrl);
+                                        autocomwithobject(itemUrl, 'itemCode', '#inputitemCode', null, 'description', 'potrnsTYpeItem');
+                                        document.getElementById('inputitemCode').focus();
+                                    }
+                                }
+                            </script>
+
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputitemCode">Hierarchy</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-2 ">
+                                <select class="form-control" name="type" id="inputenableAppHierarchy" th:field="*{enableAppHierarchy}">
+                                    <option value=""> Select </option>
+                                    <option  th:text="Yes"
+                                             th:value="1" >module</option>
+                                    <option  th:text="No"
+                                             th:value="0" >module</option>
+                                </select>
+
+                            </div>
+                            <div class="col-sm-6 ">
+                                <input type="hidden" id="inputapprovalHierarchyHeader" placeholder="Default Approval Hierarchy" name="approvalHierarchyHeader"
+                                       th:field="*{approvalHierarchyHeader}" class="form-control"/>
+                                <input type="text" id="inputapprovalHierarchyHeaderName" placeholder="Default Approval Hierarchy" name="approvalHierarchyHeaderName"
+                                       th:field="*{approvalHierarchyHeader.name}" class="form-control" readonly/>
+                                <script th:inline="javascript">
+                                    $(document).ready(function(){
+                                        if($('#inputorgHierarchy').val()=='')
+                                        {
+                                            $('#inputapprovalHierarchyHeaderName').attr('readonly',true);
+                                        }
+
+                                        if($('#inputenableAppHierarchy').val()==1)
+                                        {
+                                            $('#inputapprovalHierarchyHeaderName').removeAttr('readonly');
+                                        }
+                                    });
+
+                                    $('#inputorgHierarchy').on('change',function()
+                                    {
+
+                                        if($('#inputorgHierarchy').val()==''||$('#inputorgHierarchy').val()==null)
+                                        {
+                                            $('#inputapprovalHierarchyHeaderName').attr('readonly',true);
+
+                                        }else{
+                                            $('#inputapprovalHierarchyHeaderName').removeAttr('readonly');
+
+                                        }
+                                    });
+
+                                    $('#inputenableAppHierarchy').on('change',function()
+                                    {
+                                        if($('#inputenableAppHierarchy').val()==1)
+                                        {
+                                            $('#inputapprovalHierarchyHeaderName').removeAttr('readonly');
+                                        }else{
+                                            $('#inputapprovalHierarchyHeaderName').attr('readonly',true);
+                                        }
+                                    });
+                                    function SearchHircPoObj(objparm) {
+                                        var objparmV = objparm;
+
+                                        $('#inputapprovalHierarchyHeader').val(objparmV.id).trigger("change");
+                                        $('#inputapprovalHierarchyHeaderName').val(objparmV.name).trigger("change");
+                                    };
+                                    $('#inputapprovalHierarchyHeaderName').on('input',function(){
+                                        var lName=$('#inputapprovalHierarchyHeaderName').val();
+                                        if (lName.length>1)
+                                        {
+                                            var bgId = [[${bg.id}]];
+                                            var amId = [[${appModule.id}]];
+
+                                            var urlval = '/AYE/ACRC/SearchActiveHierarchyName/' + bgId + '/' + lName+ '/' + amId;
+                                            var displayfield = '#inputapprovalHierarchyHeaderName';
+                                            var dbfield = '#inputapprovalHierarchyHeader';
+                                            var getvalue = 'name';
+                                            var indc = 'HiercPo';
+                                            var opt = "groupValueType";
+//                                        alert(urlval);
+                                            autocomwithobject(urlval, getvalue, displayfield, dbfield, opt, indc);
+                                            $('#inputapprovalHierarchyHeaderName').focus();
+                                        }else
+                                        {
+                                            $('#inputapprovalHierarchyHeader').val('');
+                                        }
+                                    });
+
+                                </script>
+
+                            </div>
+
+                        </div>
+                        <div class="form-group ">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumn" placeholder="column"
+                                   th:field="*{commonColumn.createdBy}" name="column"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('commonColumn.createdBy')}"
+                                      th:errors="*{commonColumn.createdBy}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{commonColumn.creationDate}" name="columnDate"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('commonColumn.creationDate')}"
+                                      th:errors="*{commonColumn.creationDate}">User Name Error</span>
+                        </div>
+
+
+                        <div class="form-group  col-sm-12 text-right Padding10px">
+                            <a th:href="@{/poTrnsType/addTrnsType/E/}+${pageId}+'/'+${temltId}"
+                               class="btn btn-default">New</a>
+                            <button type="submit" name="save" class="btn btn-primary">Save</button>
+                        </div>
+
+
+                    </form>
+
+                    <div>
+                        <div class="row">
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Organization</th>
+                                    <th>Name</th>
+                                    <th>PO Prefix</th>
+                                    <th>Purchase Acc.</th>
+                                    <th>Prepayment Acc.</th>
+                                    <th>App. Hierarchy</th>
+                                    <th>Edit</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <div th:if="!${#lists.isEmpty(trnsTypes)}">
+                                    <tr th:each="trns : ${trnsTypes}">
+                                        <td th:text="*{trns.orgHierarchy.code}"></td>
+                                        <td th:text="*{trns.name}"></td>
+                                        <td th:text="*{trns.poPrefix}"></td>
+                                        <td th:text="(*{trns.purchasingAccountV} ? *{trns.purchasingAccountV.ccCode}:'')"
+                                            th:title="(*{trns.purchasingAccountV} ? *{trns.purchasingAccountV.ccDesc}:'')"></td>
+                                        <td th:text="(*{trns.prePayAccountV} ? *{trns.prePayAccountV.ccCode}:'')"
+                                            th:title="(*{trns.prePayAccountV} ? *{trns.prePayAccountV.ccDesc}:'')"></td>
+                                        <td th:text="(*{trns.approvalHierarchyHeader} ? *{trns.approvalHierarchyHeader.name}:'')"></td>
+                                        <td>
+                                            <div class="btn-group" role="group" aria-label="...">
+                                                <a th:href="@{/poTrnsType/addTrnsType/U/} + ${pageId}+'/'+${temltId}+'/'+${trns.id}"
+                                                   class="btn btn-success"><span
+                                                        class="glyphicon glyphicon-edit"
+                                                        aria-hidden="true">Edit</span></a>
+                                            </div>
+                                            <div class="btn-group" role="group" aria-label="...">
+                                                <a th:href="@{/poTrnsType/deleteTrnsType/U/} + ${pageId}+'/'+${temltId}+'/'+${trns.id}"
+                                                   class="btn btn-danger"><span
+                                                        class="glyphicon glyphicon-trash"
+                                                        aria-hidden="true">Delete</span></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                </div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+
+</body>
+</html>

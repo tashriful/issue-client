@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="trialBalance" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="03f63bd5-28a3-4768-b32c-d181f914d700">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fromDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orgId" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select acc.SEGMENT1,SEGMENT2,opening.opening,activity.dr,activity.cr,closing.cls
+ from
+(select L.ACCOUNT_CODE_COMBINITION_ID
+,sum(nvl(L.BASE_DR_AMOUNT,0))-sum(nvl(L.BASE_CR_AMOUNT,0) ) opening
+from gl_header h, gl_lines l
+where H.ID=L.GL_HEADER_ID
+and H.STATUS='P'
+and trunc(H.ACCOUNT_DATE)< $P{fromDate}
+and H.ORG_ID=$P{orgId}
+group by L.ACCOUNT_CODE_COMBINITION_ID) opening,
+(select L.ACCOUNT_CODE_COMBINITION_ID
+,sum(nvl(L.BASE_DR_AMOUNT,0)) dr,sum(nvl(L.BASE_CR_AMOUNT,0) ) cr
+from gl_header h, gl_lines l
+where H.ID=L.GL_HEADER_ID
+and H.STATUS='P'
+and trunc(H.ACCOUNT_DATE) between $P{fromDate} and $P{toDate}
+and H.ORG_ID=$P{orgId}
+group by L.ACCOUNT_CODE_COMBINITION_ID) activity,
+(select L.ACCOUNT_CODE_COMBINITION_ID
+,sum(nvl(L.BASE_DR_AMOUNT,0))- sum(nvl(L.BASE_CR_AMOUNT,0) ) cls
+from gl_header h, gl_lines l
+where H.ID=L.GL_HEADER_ID
+and H.STATUS='P'
+and trunc(H.ACCOUNT_DATE) <= $P{toDate}
+and H.ORG_ID=$P{orgId}
+group by L.ACCOUNT_CODE_COMBINITION_ID) closing,
+ACCOUNT_CODE_COMBINITIONS acc
+where acc.id=opening.ACCOUNT_CODE_COMBINITION_ID
+and acc.id=activity.ACCOUNT_CODE_COMBINITION_ID
+and acc.id=closing.ACCOUNT_CODE_COMBINITION_ID]]>
+	</queryString>
+	<field name="SEGMENT1" class="java.lang.String"/>
+	<field name="SEGMENT2" class="java.lang.String"/>
+	<field name="OPENING" class="java.math.BigDecimal"/>
+	<field name="DR" class="java.math.BigDecimal"/>
+	<field name="CR" class="java.math.BigDecimal"/>
+	<field name="CLS" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="92" height="20" uuid="6d236cf2-bc91-4ffb-ae03-c3e13e0bb9a7"/>
+				<text><![CDATA[SEGMENT1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="92" y="0" width="92" height="20" uuid="c7c500fe-5b65-407b-a17e-819398a35fa7"/>
+				<text><![CDATA[SEGMENT2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="184" y="0" width="92" height="20" uuid="e3f77172-96c6-47ec-85f2-805ab41cb06b"/>
+				<text><![CDATA[OPENING]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="276" y="0" width="92" height="20" uuid="51ca4989-3072-4a9f-a0a0-49008f1bab03"/>
+				<text><![CDATA[DR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="368" y="0" width="92" height="20" uuid="43fbc310-84b4-4742-a32d-20b57382c2b7"/>
+				<text><![CDATA[CR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="460" y="0" width="92" height="20" uuid="6dc15230-b4f6-4aac-8a07-7f57c0a5f3fb"/>
+				<text><![CDATA[CLS]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="92" height="20" uuid="7f4b8bbd-5a95-4898-aab5-3e1d0fef016e"/>
+				<textFieldExpression><![CDATA[$F{SEGMENT1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="92" y="0" width="92" height="20" uuid="283528f4-ffc7-4445-a55a-99f5c37f664e"/>
+				<textFieldExpression><![CDATA[$F{SEGMENT2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="184" y="0" width="92" height="20" uuid="7acf1dcb-8a74-4ecc-ab14-a0c39532dd74"/>
+				<textFieldExpression><![CDATA[$F{OPENING}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="276" y="0" width="92" height="20" uuid="facb2117-0fbc-4f2f-95e3-1e47fe86c488"/>
+				<textFieldExpression><![CDATA[$F{DR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="368" y="0" width="92" height="20" uuid="20760ab9-d27b-4f10-876d-f322a57f80c9"/>
+				<textFieldExpression><![CDATA[$F{CR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="460" y="0" width="92" height="20" uuid="a48cf71e-cfdc-465f-a0f3-80f5c1e35f5f"/>
+				<textFieldExpression><![CDATA[$F{CLS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

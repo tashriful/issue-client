@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+
+    <script th:inline="javascript">
+        function selectedobj(value, ind) {
+            if(ind == 'poNumberSerch')
+            {
+                SearchPoObj(value);
+            }else
+            if (ind == 'poSup') {
+                SearchSupObj(value);
+            }else
+            if(ind == 'reqNumberPoSerch')
+            {
+                SearchPoReqObj(value);
+            }
+        };
+    </script>
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">PO Search Entry - <b th:text="${poSearch.invOrg.code}"></b></div>
+                <div class="panel-body">
+                    <form action="'/procurment/search/'+${mode}+'/'+${pageId}+'/'+${temltId}"
+                          th:action="@{'/procurment/search/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId} }"
+                          th:object="${poSearch}" th:method="post">
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputpoNumber">PO Number</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control" type="text" id="inputpoNumber"
+                                       th:field="*{poNumber}" name="poNumber" />
+                                <script th:inline="javascript">
+
+                                    function SearchPoObj(objparms) {
+                                        var objparmV = objparms;
+                                        $('#inputpoHeaderId').val(objparmV.id).trigger("change");
+                                    };
+
+
+                                    document.getElementById('inputpoNumber').oninput = function () {
+
+                                        var poNum = document.getElementById('inputpoNumber').value;
+                                        if (poNum.length==0)
+                                        {
+                                            document.getElementById('inputpoHeaderId').value='';
+                                        }
+                                        if (poNum.length > 1) {
+
+                                            var  lInvOrg=document.getElementById('inputinvOrg').value;
+                                            var  lOrg=document.getElementById('inputorgHierarchy').value;
+
+                                            var poUrl = '/AYE/ACRC/SearchOrgPoNum/' +lOrg+ '/' +  lInvOrg +'/'+poNum;
+                                            autocomwithobject(poUrl, 'poNumber', '#inputpoNumber', null, 'poDate', 'poNumberSerch');
+                                            document.getElementById('inputpoNumber').focus();
+                                        }
+                                    }
+
+                                </script>
+                                <input type="hidden" th:field="*{orgHierarchy}" name="orgHierarchy" id="inputorgHierarchy" />
+                                <input type="hidden" th:field="*{poHeaderId}" name="poHeaderId" id="inputpoHeaderId" value="0" />
+                                <input type="hidden" th:field="*{invOrg}" name="invOrg" id="inputinvOrg" />
+                                <span class="help-block" th:if="${#fields.hasErrors('poNumber')}"
+                                      th:errors="*{poNumber}">Name Error</span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputpoFromDate">Po Date</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputpoFromDate"
+                                       th:field="*{{poFromDate}}"
+                                       name="fromDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('poFromDate')}"
+                                      th:errors="*{poFromDate}">Date Error</span>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputpoToDate"
+                                       th:field="*{{poToDate}}"
+                                       name="poToDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('poToDate')}"
+                                      th:errors="*{poToDate}">Date Error</span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputsupplierLine">Supplier Name</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control" type="hidden" id="inputsupplierLine"  inputsupplierLine
+                                       th:field="*{supplierLine}" name="supplierLine" th:value="0"/>
+                                <input class="form-control" type="text" id="inputsupplierLineName"
+                                       th:field="*{supName}" name="supName" />
+
+
+                                <script th:inline="javascript">
+
+                                    function SearchSupObj(objparms) {
+                                        //alert('x');
+                                        var objparmV = objparms;
+                                        $('#inputsupplierLine').val(objparmV.id).trigger("change");
+                                    };
+
+                                    if (document.getElementById('inputsupplierLineName').value.length==0)
+                                    {
+                                        document.getElementById('inputsupplierLine').value='';
+                                    }
+                                    document.getElementById('inputsupplierLineName').oninput = function () {
+                                        myFunction();
+                                    };
+                                    function myFunction() {
+                                        var innerVar = document.getElementById('inputsupplierLineName').value;
+                                        if (innerVar.length > 2) {
+                                            var displayfieldfrom = [['#inputsupplierLineName']];
+                                            var varOrg = document.getElementById('inputorgHierarchy').value;
+                                            var indcSup = 'poSup';
+                                            var poUrl = '/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + innerVar;
+                                            autocomwithobject(poUrl, 'name', displayfieldfrom, null, null,indcSup);
+                                            document.getElementById('inputsupplierLineName').focus();
+                                        }
+                                    }
+
+
+                                </script>
+
+
+                                <!--<input type="hidden" th:field="*{orgHierarchy}" name="orgHierarchy" id="inputorgHierarchy" />-->
+                                <span class="help-block" th:if="${#fields.hasErrors('supplierLine')}"
+                                      th:errors="*{supplierLine}">Name Error</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputpoReqNumber">Requisition Number</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <input class="form-control" type="text" id="inputpoReqNumber"
+                                       th:field="*{poReqNumber}" name="poReqNumber" />
+                                <script th:inline="javascript">
+
+                                    function SearchPoReqObj(objparms) {
+                                        var objparmV = objparms;
+                                        $('#inputpoReqHeaderId').val(objparmV.id).trigger("change");
+                                    };
+
+
+                                    document.getElementById('inputpoReqNumber').oninput = function () {
+
+                                        var poNum = document.getElementById('inputpoReqNumber').value;
+                                        if (poNum.length==0)
+                                        {
+                                            document.getElementById('inputpoReqHeaderId').value='';
+                                        }
+                                        if (poNum.length > 1) {
+
+                                            var  lInvOrg=document.getElementById('inputinvOrg').value;
+                                            var  lOrg=document.getElementById('inputorgHierarchy').value;
+
+                                            var poUrl = '/AYE/ACRC/SearchOrgReqNum/' +lOrg+ '/' +  lInvOrg +'/'+poNum;
+                                            autocomwithobject(poUrl, 'reqNumber', '#inputpoReqNumber', null, 'reqDate', 'reqNumberPoSerch');
+                                            document.getElementById('inputpoReqNumber').focus();
+                                        }
+                                    }
+
+                                </script>
+                                <input type="hidden" th:field="*{poReqHeaderId}" name="poReqHeaderId" id="inputpoReqHeaderId" />
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputpoStatus">Status</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <select id="inputpoStatus" th:field="*{poStatus}" name="status" class="form-control">
+                                    <option value="">Select One</option>
+                                    <option th:each=" stts : ${T(com.aye.web.model.PoStatus).values()}"
+                                            th:text="${stts.displayName}"
+                                            th:value="${stts}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="text-right Padding10px" align="right">
+                            <!--<a  th:href="@{/InvItem/MasterItem/E/}+${pageId}+'/'+${temltId}"-->
+                            <!--class="btn btn-default">Cancel</a>-->
+                            <button type="submit" name="search"  class="btn btn-primary">
+                                Find
+                            </button>
+                            <a th:href="@{/procurment/poHeader/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-default">New</a>
+
+                            <span th:if = "${poSearchRes !=null and #lists.size(poSearchRes)>0}">
+                                <a onclick="exportTableToExcel('tblDataLine')" class="btn btn-primary">Export</a>
+                            </span>
+                        </div>
+
+                        <div>
+
+                        </div>
+                    </form>
+
+                    <div class="form-group col-sm-12">
+
+                        <table class="table table-bordered table-hover table-striped " id="tblDataLine">
+                            <thead>
+
+                            <th>Number</th>
+                            <th>Supplier Name</th>
+                            <th>Currency</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Detail</th>
+                            <th>Action</th>
+                            </thead>
+                            <tbody>
+
+                            <div th:each="header : ${poSearchRes}">
+                                <tr >
+                                    <td style="font-size: 12px; color: #323232;" th:text="${header.poNumber}"></td>
+                                    <td style="font-size: 12px; color: #323232;" th:text="${header.supplierName}"></td>
+                                    <td style="font-size: 12px; color: #323232;" th:text="${header.currencyCode}"></td>
+                                    <td style="font-size: 12px; color: #323232;" th:text="${header.poDate}"></td>
+                                    <!--<td th:text="${header.poStatus}"></td>-->
+                                    <td style="font-size: 12px; color: #323232;" th:text="${header.poStatus.displayName}"></td>
+                                    <td style="font-size: 12px; color: #323232;" width="10px"><a href="#" th:id="${header.id}" th:title="${header.id}" style="font-size: 12px; color: black;">Detail</a>
+                                    <td>
+
+                                        <div class="btn-group" role="group" aria-label="..." name="edit">
+                                            <a th:href="@{/procurment/poHeader/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${header.id}"
+                                               class="btn btn-success"><span
+                                                    class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                                        </div>
+
+                                    </td>
+
+
+                                </tr>
+
+                                <!--<tr>-->
+                                    <!--<td colspan="7" >-->
+                                        <!--<div th:id="extra+${header.id}" style="display: none; " th:if="!${#lists.isEmpty(header.poLines)}">-->
+                                            <!--<div class="col-sm-12 " style="padding-bottom: 20px; padding-left: 0px;">-->
+                                                <!--<div  colspan="6" style="text-align: left ; background-color:#D5DBDB; color:#ADB2B5;" class="colps_div_hdr col-sm-4">-->
+                                                    <!--Line Informations</div>-->
+                                                <!--<div class="col-sm-12 colps_div_hdr" style="margin-top: 5px;">-->
+                                                    <!--<div class="col-sm-3 " style="border-right: 1px solid transparent; color:#93A2B2"><b>Item Code</b></div>-->
+                                                    <!--<div class="col-sm-3 " style="border-right: 1px solid transparent; color: #93A2B2;"><b>Quantity</b></div>-->
+                                                    <!--<div class="col-sm-3" style="border-right: 1px solid transparent; color: #93A2B2;"><b>Unit Price</b></div>-->
+                                                    <!--<div class="col-sm-3 " style="border-right: 1px solid transparent; color: #93A2B2;"><b>Transaction UOM</b></div>-->
+                                                <!--</div>-->
+                                                <!--<div class="col-sm-12 colps_div_hdr" th:each="l : ${header.poLines}" >-->
+
+                                                    <!--<div class="col-sm-3 " style="border-right: 1px solid transparent; margin-top: 1px;" th:text="*{l.itemCode}"></div>-->
+                                                    <!--<div class="col-sm-3 " style="border-right: 1px solid transparent; margin-top: 1px;" th:text="*{l.trnsQty}"></div>-->
+                                                    <!--<div class="col-sm-3 " style="border-right: 1px solid transparent; margin-top: 1px;" th:text="*{l.unitPrice}"></div>-->
+                                                    <!--<div class="col-sm-3 " style="border-right: 1px solid transparent; margin-top: 1px;"  th:text="*{l.trnsUomCode}"></div>-->
+                                                    <!--&lt;!&ndash;<div class="col-sm-3 " style="border-right: 1px solid transparent" th:text="*{l.rcvTrnsQty}"></div>&ndash;&gt;-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+
+                                        <!--</div>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+
+                                <!--<script th:inline="javascript">-->
+                                    <!--var a='#'+[[${header.id}]];-->
+                                    <!--//alert(a);-->
+                                    <!--$(a).click(function() {-->
+                                        <!--var dbfield = [[${header.id}]];-->
+                                        <!--var df='#extra'+[[${header.id}]];-->
+                                        <!--$(df + $(this).attr('id').substr(5)).slideToggle("slow");-->
+                                        <!--event.preventDefault();-->
+
+                                    <!--});-->
+                                <!--</script>-->
+
+                            </div>
+                            <div th:if="${#lists.isEmpty(poSearchRes)}">
+                                <tr>
+                                    <td>No Data exists!</td>
+                                </tr>
+                            </div>
+
+                            </tbody>
+
+                        </table>
+                        <div data-th-replace="fragments/pagination :: page-pagination">
+
+
+                        </div>
+    <!--<div th:if="${poSearchRes!=null}">-->
+                        <!--<nav if="${poSearchRes.totalPages  > 0}" class="pagination">-->
+                            <!--<ul class="pagination justify-content-center font-weight-medium">-->
+
+                                <!--<li class="page-item" th:classappend="${poSearchRes.number eq 0} ? 'disabled'">-->
+
+                                    <!--<a class="page-link svg-icon"-->
+                                       <!--aria-label="Previous"-->
+                                       <!--title="Previous Page" rel="tooltip">-->
+                            <!--<span aria-hidden="true" class="glyphicon glyphicon-chevron-left" width="20"-->
+                                  <!--height="20"></span>-->
+                                    <!--</a>-->
+                                <!--</li>-->
+
+                                <!--<li class="page-item" th:each="pageNumber : ${pageNumbers}"-->
+                                    <!--th:classappend="${pageNumber eq poSearchRes.number } ? 'active'" >-->
+                                    <!--<a th:href="@{'/procurment/poHeaderSearch/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'+ ${invOrgId}+'/'+${pageNumber+1}}"-->
+                                       <!--th:text="${pageNumber}" th:class="${pageNumber==poSearchRes.number + 1} ? active"></a>-->
+
+                                <!--</li>-->
+
+                                <!--<li class="page-item"-->
+                                    <!--th:classappend="${poSearchRes.number + 1 eq poSearchRes.totalPages} ? 'disabled'">-->
+                                    <!--<a class="page-link svg-icon"-->
+                                       <!--aria-label="Next"-->
+                                       <!--title="Next Page" rel="tooltip">-->
+                            <!--<span aria-hidden="true" class="glyphicon glyphicon-chevron-right" width="20"-->
+                                  <!--height="20"></span>-->
+                                    <!--</a>-->
+                                <!--</li>-->
+
+
+                            <!--</ul>-->
+                        <!--</nav>-->
+<!--</div>-->
+
+                    </div>
+                    <div class="panel-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">HRMS Common Codes</div>
+                <div class="panel-body" >
+                    <form th:action="@{'/Common/commonCodesHrms/'+${mode}+'/'+${pageId}+'/'+${temltId}}"
+                           th:object="${commonCodes}" th:method="post">
+                        <!--+${role.role}  +${role.role}-->
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid" placeholder="Id" th:field="*{id}" name="id" />
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}" th:errors="*{id}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputtypes">Types</label>
+                            <select class="form-control" id="inputtypes" placeholder="Types" th:field="*{types}" name="types" autofocus >
+                                <option value="">Select One</option>
+                                <option th:each="type : ${T(com.aye.web.model.common.CommonCodesTypes).values()}" th:value="${type}" th:text="${type}">Select One</option>
+                            </select>
+                            <!--<input type="text" class="form-control" id="inputtypes" placeholder="Types" th:field="*{types}" name="types" autofocus />-->
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('types')}" th:errors="*{types}">Sehemnt Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputcodes">Codes</label>
+                            <input type="text" class="form-control" id="inputcodes" placeholder="Codes" th:field="*{codes}" name="codes" />
+                            <span class="help-block" th:if="${#fields.hasErrors('codes')}" th:errors="*{codes}">Description Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputcodeDetail">Detail Information</label>
+                            <input type="text" class="form-control" id="inputcodeDetail" placeholder="codeDetail" th:field="*{codeDetail}" name="codeDetail" />
+                            <span class="help-block" th:if="${#fields.hasErrors('codeDetail')}" th:errors="*{codeDetail}">Description Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputActive">Active</label>
+                            <input type="text" class="form-control" id="inputActive" placeholder="active" th:field="*{active}"
+                                   th:value="${active} ? 'true' : 'false'"  name="active"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('active')}" th:errors="*{active}">Active Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumn" placeholder="column" th:field="*{column.createdBy}" name="column" />
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('column.createdBy')}" th:errors="*{column.createdBy}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate" th:field="*{column.creationDate}" name="columnDate" />
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('column.creationDate')}" th:errors="*{column.creationDate}">User Name Error</span>
+                        </div>
+
+
+                        <div class="text-right">
+                            <!--commonCodesAdd/{mode}/{pageId}/{temltId}-->
+                            <a th:href="@{/Common/commonCodesHrms/}+'E/'+${pageId}+'/'+${temltId}" class="btn btn-default">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a data-toggle="modal" data-target="#modal-warning"
+                               th:attr="data-target='#modal-warning'"><span
+                                    class="glyphicon glyphicon-search"></span></a>
+
+                        </div>
+
+                        <div class="modal modal-warning fade in" th:id="modal-warning">
+
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">Ã—</span></button>
+                                        <h5 class="modal-title">Search</h5>
+
+                                        <!--<div class="modal-body">-->
+                                            <!--<form th:action="@{'/PriceList/PriceList/U/'+${pageId}+'/'+${temltId}}"-->
+                                                  <!--th:object="${PriceListSearch}" th:method="post">-->
+                                                <!--<div>-->
+                                                    <!--<label class="col-sm-3 control-label " for="inputname">Name</label>-->
+                                                    <!--<input type="hidden" id="hId"-->
+                                                           <!--name="hId" th:field="*{id}" class="form-control"/>-->
+
+                                                    <!--<div class="col-sm-1 "><b>:</b></div>-->
+                                                    <!--<div class="col-sm-8 ">-->
+
+                                                        <!--<input type="text" id="nameId" placeholder="Name"-->
+                                                               <!--name="listName" th:field="*{listName}"-->
+                                                               <!--class="form-control" autofocus="autofocus" required="required"/>-->
+
+                                                        <!--<p th:errors="*{listName}" class="help-block"></p>-->
+                                                    <!--</div>-->
+                                                    <!--<script th:inline="javascript">-->
+                                                        <!--function SearchObj(searchObjparms) {-->
+<!--//                                                            alert('x');-->
+                                                            <!--var SobjparmV = searchObjparms;-->
+                                                            <!--$('#hId').val(SobjparmV.id).trigger("change");-->
+                                                        <!--}-->
+                                                        <!--;-->
+                                                        <!--document.getElementById('nameId').oninput = function () {-->
+                                                            <!--myFunctionModal()-->
+                                                        <!--};-->
+
+                                                        <!--function myFunctionModal() {-->
+
+                                                            <!--var innerVarModal = document.getElementById('nameId').value;-->
+
+                                                            <!--if (innerVarModal.length == 2) {-->
+                                                                <!--callAutoComModal(innerVarModal)-->
+                                                                <!--document.getElementById('nameId').focus();-->
+                                                            <!--}-->
+
+                                                        <!--}-->
+
+                                                        <!--function callAutoComModal(itmModal) {-->
+                                                            <!--var displayfieldModal = [['#nameId']];-->
+                                                            <!--//alert(displayfieldModal);-->
+                                                            <!--var modalGrpid = document.getElementById('inputgroupId').value;-->
+                                                            <!--var getvalue = 'name';-->
+                                                            <!--var getDescModal = 'description';-->
+                                                            <!--var indcModal = 'Modal';-->
+                                                            <!--var urlvalModal = '/AYE/ACRC/getPriceListByGroup/' + modalGrpid;-->
+<!--//                                                            callAutoComplite(urlvalModal, getvalue, displayfieldModal, null, getDescModal, indcModal);-->
+                                                            <!--autocomwithobject(urlvalModal, getvalue, displayfieldModal, null, getDescModal, indcModal);-->
+                                                        <!--}-->
+
+                                                    <!--</script>-->
+
+                                                <!--</div>-->
+                                                <!--<div class="btn_padd" align="right">-->
+                                                    <!--<button type="submit" name="search"-->
+                                                            <!--class="btn btn-primary" align="right">-->
+                                                        <!--Search-->
+                                                    <!--</button>-->
+                                                <!--</div>-->
+                                            <!--</form>-->
+                                        <!--</div>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+
+                    <div class="row">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Code</th>
+                            <th>Detail</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <div th:if="!${#lists.isEmpty(codeIndex)}">
+                            <tr th:each="codes : ${codeIndex}">
+                                <td th:text="*{codes.types}"></td>
+                                <td th:text="*{codes.codes}"></td>
+                                <td th:text="*{codes.codeDetail}"></td>
+                                <td th:text="*{(codes.active ? 'Active':'Inactive')}"></td>
+                                <td>
+                                    <!--<div class="btn-group" role="group" aria-label="...">-->
+                                    <!--<a th:href="@{/OM/segmentEdit/} + ${seg.id}+'/'+${pageId}"-->
+                                    <!--class="btn btn-success"><span-->
+                                    <!--class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>-->
+
+                                    <!--</div>-->
+
+                                    <div class="btn-group" role="group" aria-label="...">
+
+
+                                        <a th:href="@{/Common/commonCodesHrms/}+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${codes.id}+'/'+1" title="Edit" class="btn btn-primary"><span
+                                                class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                        </div>
+                        <div th:if="${#lists.isEmpty(codeIndex)}">
+                            <tr>
+                                <td>No Data exists!</td>
+                            </tr>
+                        </div>
+
+                        </tbody>
+
+
+                    </table>
+                    <div th:if="${codeIndex.totalPages  > 0}" class="pagination justify-content-center font-weight-medium page-item page-link svg-icon"
+                         th:each="pageNumber : ${pageNumbers}">
+                        <a th:href="@{'/Common/commonCodesHrms/'+${mode}+'/'+ ${pageId}+'/'+${temltId}+'/'+
+                                ${pageNumber+1}}"
+                           th:text="${pageNumber}"
+                           th:class="${pageNumber==codeIndex.number + 1} ? active"></a>
+                    </div>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

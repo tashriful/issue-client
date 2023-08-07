@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="fragments/layout">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}">
+
+    <title>Ticket</title>
+
+    <script th:src="@{/webjars/jquery/2.2.4/jquery.min.js}"></script>
+    <!-- Bootstrap -->
+    <script th:src="@{/webjars/bootstrap/3.4.1/js/bootstrap.min.js}"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script th:src="@{/js/jqueryAutoComplete/jquery-1.11.2.min.js}"></script>
+    <script th:src="@{/js/jqueryAutoComplete/jquery.easy-autocomplete.min.js}"></script>
+    <script th:src="@{/js/jqueryAutoComplete/autocompleteEmployee.js}"></script>
+    <script th:src="@{/js/ticket/assignedUpdateTicket.js}"></script>
+
+
+</head>
+<body>
+
+
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div style="margin: auto;width: 70%" class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Update Ticket</h3>
+                    <div th:if="${message != null}"
+                         style="width: 100%;margin:0 auto;margin-top: 10px;margin-bottom: 10px"
+                         class="alert alert-info align-content-center" role="alert">
+                        <span th:if="${message != null}" th:text="${message}"></span>
+                    </div>
+                    <div id="errorMessage"
+                         style="width: 100%;margin:0 auto;margin-top: 20px;margin-bottom: 5px;display: none"
+                         class="alert alert-info"></div>
+                </div>
+                <div class="panel-body">
+                    <form th:object="${ticket}" th:action="@{/ticket/assignedTicket/update}" method="post">
+
+                        <div th:if="${ticket}">
+                            <input type="hidden" name="id" th:if="${ticket}" th:value="${ticket.id}"/>
+                        </div>
+
+
+                        <div class=" col-sm-12">
+                            <div class="form-group">
+                                <label for="summary">Summary:</label>
+                                <input type="text" class="form-control" th:field="*{summary}" id="summary"
+                                       placeholder="Enter Summary..."
+                                       name="summary" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-group required">
+                                <label for="description">Description:</label>
+                                <textarea class="form-control" th:field="*{description}" id="description"
+                                          placeholder="Enter Description..."
+                                          name="description" readonly></textarea>
+                            </div>
+                        </div>
+
+
+                        <!--                        <input type="hidden" name="createdById" th:value="${userId}" id="createdById"/>-->
+
+                        <div class="col-sm-4">
+                            <div class="form-group required">
+                                <label for="department">Department:</label>
+                                <input class="form-control" id="department" th:value="*{departmentName}"
+                                       placeholder="Enter Department Name..."
+                                       required readonly>
+                                <input type="hidden" name="departmentId" th:value="*{departmentId}" id="departmentId"/>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="team">Team:</label>
+                                <input type="text" class="form-control" id="team" th:value="*{teamName}"
+                                       placeholder="Enter Team..."
+                                       name="team" readonly>
+                                <input type="hidden" id="teamId" th:value="*{teamId}" name="teamId">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12" th:if="${deptHead == true}" id="employeeList">
+                            <!--                            <label for="assignedToUser">Assigned to:</label>-->
+                        </div>
+                        <br><br>
+
+                        <div th:if="${deptHead == false}" class="col-sm-4">
+                            <div class="form-group required">
+                                <label for="status">Assigned To :</label>
+                                <input type="text" class="form-control" id="assignedToName" th:value="*{assignedToName}"
+                                       placeholder="Enter assigned To..."
+                                       name="assignedToName" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group required">
+                                <label for="status">Assigned By :</label>
+                                <input type="text" class="form-control" id="assignedByName" th:value="*{assignedByName}"
+                                       placeholder="Enter Team..."
+                                       name="assignedByName" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group required">
+                                <label for="ticketType">Ticket Type:</label>
+                                <input type="text" class="form-control" name="ticketType" th:value="*{ticketType}"
+                                       id="ticketType" readonly>
+
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group required">
+                                <label for="priority">Priority:</label>
+                                <input type="text" class="form-control" name="priority" th:value="*{priority}"
+                                       id="priority" readonly>
+                                </input>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group required">
+                                <label for="status">status:</label>
+                                <select class="form-control" th:field="*{status}" name="status" id="status">
+                                    <option value="">Select Status</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="start">Start</option>
+                                    <option value="end">End</option>
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group required">
+                                <label for="targetResolutionDate">Target Resolution Date:</label>
+                                <input type="date" class="form-control" th:field="*{targetResolutionDate}"
+                                       id="targetResolutionDate"
+                                       placeholder="Enter Target Resolution Date..."
+                                       name="targetResolutionDate" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group required">
+                                <label for="actualResolutionDate">Actual Resolution Date:</label>
+                                <input type="date" class="form-control" th:field="*{actualResolutionDate}"
+                                       id="actualResolutionDate"
+                                       placeholder="Enter Actual Resolution Date/ Finished Date..."
+                                       name="actualResolutionDate">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-group required">
+                                <label for="resolutionSummary">Resolution Summary:</label>
+                                <textarea class="form-control" th:field="*{resolutionSummary}"
+                                          id="resolutionSummary"
+                                          placeholder="Enter Resolution Summary..."
+                                          name="resolutionSummary"></textarea>
+                            </div>
+                        </div>
+
+                        <!--                        <div class="col-sm-12">-->
+                        <!--                            <div class="form-group required">-->
+                        <!--                                <label for="file">Attachment:</label>-->
+                        <!--                                <input type="file" id="file" name="file" />-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+
+
+                        <div class="col-sm-12 text-right">
+                            <button type="submit" value="submit" class="btn btn-primary">Update</button>
+                        </div>
+
+                    </form>
+
+                    <div class="form-group col-sm-12" style="margin-top: 5%">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Summary</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Department</th>
+                                <th scope="col">Assigned To</th>
+                                <th scope="col">Target Date</th>
+                                <th scope="col">Team</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="t, rowStat  : ${tickets}">
+                                <th scope="row" th:text="${rowStat.index+1}"></th>
+                                <td th:text="${t.summary}"></td>
+                                <td th:text="${t.description}"></td>
+                                <td th:text="${t.departmentName}"></td>
+                                <td th:text="${t.assignedToName}"></td>
+                                <td th:text="${t.targetResolutionDate}"></td>
+                                <td th:text="${t.departmentName}"></td>
+                                <td>
+                                    <a th:href="@{'/ticket/view/' + ${t.id}}"><i class="fa fa-edit"></i>View</a> ||
+                                    <a th:href="@{'/ticket/edit/' + ${t.id}}"><i class="fa fa-edit"></i>Edit</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+
+    </script>
+
+
+</div>
+
+
+<!-- jQuery -->
+
+</body>
+</html>

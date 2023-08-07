@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+
+<div id="top-navigation-notifications" class="main_menu_side hidden-print main_menu"
+     data-th-fragment="top-navigation-notifications"  >
+
+
+    <script th:inline="javascript">
+        var l_isNotificationServiceActive=[[${session.NOTIFICATION_ACTIVE}]];
+          $(document).ready(function(){
+              if(l_isNotificationServiceActive=="true")
+              {
+//                  alert("inside");
+                  onloadCall([[${session.userId}]]);
+                  lOptrns = [[${openAppTrns}]];
+                  startConnect([[${session.userId}]]);
+
+              }
+          })
+    </script>
+
+</div>
+</html>

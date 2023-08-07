@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Account/AccScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <script>
+
+        function selectedobj(value, ind, pId) {
+            if (ind == 'codecombination') {
+                //alert('m');
+
+                sourcedobj(value, pId);
+            }
+            else if (ind == 'source') {
+                //alert('O');
+                sourcedobjSource(value, pId);
+                // alert('O'+value);
+            } else if (ind == 'subAccSource') {
+                //alert('O');
+                sourcedobjSubAccSource(value, pId);
+                // alert('O'+value);
+            } else if (ind == 'subAccSourceDataSet') {
+                //alert('O');
+                sourcedobjSubAccSourceNone(value, pId);
+                // alert('O'+value);
+            } else
+            if(ind=='seg1AccGl')
+            {
+                AccGlSearchseg1(value);
+            }
+            else if(ind=='seg2AccGl')
+            {
+                AccGlSearchseg2(value);
+            }
+            else if(ind=='seg3AccGl')
+            {
+                AccGlSearchseg3(value);
+            }
+            else if(ind=='seg4AccGl')
+            {
+                AccGlSearchseg4(value);
+            }
+            else if(ind=='seg5AccGl')
+            {
+                AccGlSearchseg5(value);
+            }
+            else if(ind=='seg6AccGl')
+            {
+                AccGlSearchseg6(value);
+            }
+            else if(ind=='seg7AccGl')
+            {
+                AccGlSearchseg7(value);
+            }
+            else if(ind=='seg8AccGl')
+            {
+                AccGlSearchseg8(value);
+            }
+
+
+
+        }
+        ;
+
+        function getmodatbtnid(xx){
+
+
+
+            //alert('bbbbcc'+xx);
+            //cv(xx);
+            var yy=xx;
+            document.getElementById('uu').value=yy ;
+
+        };
+
+        function sourcedobj(objparms, ppId) {
+            var lpId=ppId;
+            var objparmV = objparms;
+            var dbfield = '#id' + lpId;
+            var dbfield1 = '#idl' +lpId;
+            var dbsAsNtVal = '#sAsNtVal' +lpId;
+            var idVal =objparmV.id;
+//            alert(lpId);
+//            alert(document.getElementById('id' + lpId).value);
+//            document.getElementById('id' + lpId).value=idVal;
+            $(dbfield).val(idVal).trigger("change");
+            $(dbfield1).val(objparmV.source).trigger("change");
+            $(dbsAsNtVal).val(objparmV.sourceTypeNoneTypeVal).trigger("change");
+//alert(document.getElementById('id' + lpId).value);
+
+        };
+
+        function validate(pAccDesc, pl_accId, pId) {
+            var lSource = document.getElementById('source').value;
+            var keySegId = [[${orgHierarchy.keySegmentHeader.id}]];
+            var urlvals;
+            var getvalues;
+//            alert('xx');
+            var re = /^[A-Za-z]+$/;
+            if (pAccDesc.length > 1) {
+
+                if (re.test(pAccDesc)) {
+                    urlvals = '/AYE/ACRC/SearchCodeCombDescBySource/' + pAccDesc + '/' + keySegId + '/'+lSource+ '/'+1;
+                    getvalues = 'ccDesc';
+                    ltemplate ='concatedSegment';
+                    // alert(urlvals);
+                    //  alert(getvalues);
+                    AutoComAcc(urlvals, getvalues, ltemplate, pId);
+                } else {
+                    urlvals = '/AYE/ACRC/SearchCodeCombDescBySource/' + pAccDesc + '/' + keySegId + '/'+lSource+ '/'+0;
+                    getvalues = 'concatedSegment';
+                    ltemplate ='ccDesc';
+                    AutoComAcc(urlvals, getvalues, ltemplate, pId);
+                }
+            }
+        };
+
+        function AutoComAcc(pUrl, pgetvalues, ptemplates, indId) {
+            var indIdV = indId;
+            var urlvals = pUrl;
+            var displayfields = '#val' + indIdV;
+            var dbfield = '#id' + indIdV;
+            var getvalues = pgetvalues;
+            var templates = ptemplates;
+            var indc = 'codecombination';
+            autocomwithobject(urlvals, getvalues, displayfields, dbfield, templates, indc,indIdV);
+        };
+
+        function sourcedobjSource(objparms, pId) {
+            var objparmV = objparms;
+            var dbfield = '#id2' + pId;
+            $(dbfield).val(objparmV.id).trigger("change");
+        }
+        ;
+
+
+        function sourcedobjSubAccSource(objparms, pId) {
+
+            var objparmV = objparms;
+            var subAccSourceId = '#sAsid' + pId;
+            var dbfield2 = '#sAs' + pId;
+
+            $(subAccSourceId).val(objparmV.id).trigger("change");
+            $(dbfield2).val(objparmV.accCodeCombinitions.accountSource).trigger("change");
+        }
+        ;
+
+        function sourcedobjSubAccSourceNone(objparms, pId) {
+            var objparmV = objparms;
+            var subAccSourceId = '#sAsid' + pId;
+            var dataSetId = '#dataSet' + pId;
+            $(subAccSourceId).val(objparmV.id).trigger("change");
+            $(dataSetId).val(objparmV.dataSet.id).trigger("change");
+
+        };
+
+        function getcodcomfmodal(pcode,pid,pSource,pSrtNonValT){
+
+            var iv=document.getElementById('uu').value
+            var sId = 'idl' +iv;
+
+            document.getElementById('val' +iv).value=pcode;
+            document.getElementById('id' +iv).value=pid;
+            document.getElementById('idl' +iv).value=pSource;
+            document.getElementById('sAsNtVal'+iv).value = pSrtNonValT;
+
+            var sourceDiv = iv + 'div2';
+            var subAccDiv = iv + 'div3';
+//                                            alert(pSource );
+            if (pSource == 'NONE') {
+                document.getElementById(sourceDiv).style.display = 'none';
+                document.getElementById('id2'+iv).value = '';
+                document.getElementById('val2'+iv).value = '';
+                document.getElementById(subAccDiv).style.display = 'none';
+                document.getElementById('sAsName'+iv).value = '';
+                document.getElementById('sAsid'+iv).value = '';
+                document.getElementById('sAs'+iv).value = '';
+                document.getElementById('dataSet'+iv).value = '';
+            }else if (pSource == 'SUBACC') {
+                document.getElementById(sourceDiv).style.display = 'none';
+                document.getElementById('id2'+iv).value = '';
+                document.getElementById('val2'+iv).value = '';
+                document.getElementById(subAccDiv).style.display = 'block';
+                document.getElementById('sAsName'+iv).value = '';
+                document.getElementById('sAsid'+iv).value = '';
+                document.getElementById('sAs'+iv).value = '';
+//                                                document.getElementById('sAsNtVal'+iv).value = '';
+                document.getElementById('dataSet'+iv).value = '';
+            }
+            else {
+                document.getElementById(sourceDiv).style.display = 'block';
+                document.getElementById('sAsName'+iv).value = '';
+                document.getElementById('sAsid'+iv).value = '';
+                document.getElementById('sAs'+iv).value = '';
+                document.getElementById('dataSet'+iv).value = '';
+            }
+
+            $('#modal-warning').modal('hide');
+
+
+        };
+
+
+        function getSource(psId) {
+            var lpsId=psId;
+            var gval2 = document.getElementById('val2' +lpsId).value;
+            if (gval2.length > 1) {
+                sourceAutocom(gval2, lpsId);
+                document.getElementById('val2' +lpsId).focus();
+            }
+        }
+
+        function getSubaccSource(psId) {
+
+            var lpsId=psId;
+            var gval2 = document.getElementById('sAsName' +lpsId).value;
+
+            if (gval2.length > 1) {
+                // alert('YY'+lpsId);
+                sourceAutocom(gval2, lpsId);
+                document.getElementById('sAsName' +lpsId).focus();
+            }
+        }
+
+        function sourceAutocom(val2, psId) {
+            var psIdv=psId;
+            var orgId = [[${orgHierarchy.id}]];
+            var tmplDtId = [[${temltId}]];
+            var src = document.getElementById('idl' +psIdv).value;
+            var vAccId = document.getElementById('id' +psIdv).value;
+
+            if (src=='SUBACC')
+            {
+                var vSrtNonValT = document.getElementById('sAsNtVal' +psIdv).value;
+                var urlval = '/AYE/ACRC/SearchSubAccSource/' + vAccId+ '/' + orgId + '/' + val2+'/'+tmplDtId;
+                var displayfields = '#sAsName' + psIdv;
+                var dbfields = '#sAsid' + psIdv;
+                var getvalues = 'name';
+                var indc = 'subAccSource';
+
+                var templates = 'siteAddress';
+                if(vSrtNonValT=='DATASET')
+                {
+
+                    getvalues = 'value';
+                    indc ='subAccSourceDataSet'
+                    templates ='';
+                }
+                //alert(templates);
+
+                autocomwithobject(urlval, getvalues, displayfields, dbfields, templates, indc,psIdv);
+            }else
+            {
+                var urlval = '/AYE/ACRC/SearchSource/'+ vAccId+ '/' +  src + '/' + orgId + '/' + val2;
+                var displayfields = '#val2' + psIdv;
+                var dbfields = '#id2' + psIdv;
+                var getvalues = 'name';
+                var templates = 'siteAddress';
+
+                if(src=='CM')
+                {
+//                                                    alert(src);
+//                                                    getvalues = 'accountName';
+                    templates = 'accountNumber';
+
+                }
+//                                                alert(urlval);
+                var indc = 'source';
+
+
+                autocomwithobject(urlval, getvalues, displayfields, dbfields, templates, indc,psIdv);
+            }
+        };
+
+
+
+    </script>
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="form-group col-sm-12  jepg_cust_head">
+                    <div class="form-group col-sm-5 " style="padding-left: 0; color: #172D44">Journal Entry</div>
+                    <div class="form-group col-sm-7 text-right Padding10px" style=" font-size: 12px;" align="right">
+                        <form th:action="@{'/AccGL/AddGlHeader/'+${mode}+'/'+${pageId}+'/'+${temltId}}"
+                              th:method="post" th:target="_blank"
+                              th:if="${glHeader.status!=T(com.aye.web.model.common.GlStatus).N}">
+                            <button target="_blank" type="submit" name="rpt"
+                                    th:value="'Journal_voucher :'+${glHeader.id}" class="btn btn-primary"
+                                    align="center">
+                                <span class="glyphicon glyphicon-print"></span> Print
+
+                            </button>
+                            <!--<a   th:href="@{/AccGL/AddGlHeader/U/}+${pageId}+'/'+${temltId}"  target="_blank" type="submit" name="rpt" th:value="'Journal_voucher :'+${glHeader.id}" class="btn btn-primary" align="center">Print Voucher</a>-->
+                        </form>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!--<form th:action="@{'/AccGL/AddGlHeader/'+${mode}+'/'+${pageId}+'/'+${temltId}}"-->
+                    <!--th:method="post" th:target="_blank"-->
+                    <!--th:if="${glHeader.status!=T(com.aye.web.model.common.GlStatus).N}">-->
+                    <!--<button target="_blank" type="submit" name="rpt" th:value="'Journal_voucher :'+${glHeader.id}" class="btn btn-primary" align="center">Print Voucher</button>-->
+                    <!--&lt;!&ndash;<a   th:href="@{/AccGL/AddGlHeader/U/}+${pageId}+'/'+${temltId}"  target="_blank" type="submit" name="rpt" th:value="'Journal_voucher :'+${glHeader.id}" class="btn btn-primary" align="center">Print Voucher</a>&ndash;&gt;-->
+                    <!--</form>-->
+                    <form action="'/AccGL/AddGlHeader/'+${mode}+'/'+${pageId}+'/'+${temltId}"
+                          th:action="@{'/AccGL/AddGlHeader/'+${mode}+'/'+${pageId}+'/'+${temltId}}"
+                          th:object="${glHeader}" th:method="post">
+                        <!--<button type="submit" name="rpt" th:value="Journal_voucher" class="btn btn-primary">Voucher</button>-->
+
+                        <!--<span style="color: #ed1c24;font-weight: bold" th:each="m :${msg}"><p-->
+                        <!--th:text="${m.tag+' '+m.msg}"></p></span>-->
+
+                        <span style="font-weight: bold" th:each="m :${msg}">
+                            <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                                <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                                <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+                            </p></span>
+                        <div class="form-group">
+                            <!--<label for="inputSegment1">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid" placeholder="id"
+                                   th:field="*{id}" name="id"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}"
+                                  th:errors="*{id}">Name Error</span>
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <div class="col-sm-1 ">
+                                </div>
+
+
+                            <label class="col-sm-2 control-label " for="inputdocumentNumber">Document Number</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input class="form-control" type="text" id="inputdocumentNumber"
+                                       th:field="*{documentNumber}" name="documentNumber" readonly="readonly"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('documentNumber')}"
+                                      th:errors="*{documentNumber}">Name Error</span>
+                            </div>
+
+                            <div class="col-sm-3 ">
+                                <input class="form-control" type="hidden" id="inputstatus"
+                                       th:value="*{status}" th:field="*{status}" name="status"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('status')}"
+                                      th:errors="*{status}">Status Error</span>
+                            </div>
+
+                            <div class="col-sm-3 ">
+                                <input class="form-control" type="text" id="inputstatusDesc"
+                                       th:field="${glHeader.status.displayName}" readonly="readonly"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('status')}"
+                                      th:errors="*{status}">Status Error</span>
+                            </div>
+
+                            <div class="col-sm-1 ">
+                            </div>
+
+                        </div>
+
+                        <div class="form-group required col-sm-12">
+                            <div class="col-sm-1 ">
+                            </div>
+
+                            <label class="col-sm-2 control-label " for="inputcategory">Category</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-7 ">
+                                <select class="form-control" required="required" type="text" id="inputcategory"
+                                        th:field="*{category}" name="category"
+                                        th:disabled="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}">
+                                    <option th:if="${#lists.size(glCategories) gt 1 }" value="">Please select One
+                                    </option>
+                                    <option th:each="catagories : ${glCategories}"
+                                            th:text="${catagories.categoriesCode}"
+                                            th:value="${catagories.id}"
+                                            th:attr="data-source=${catagories.accountSource}">module
+                                    </option>
+                                </select>
+
+                                <div>
+                                    <input type="hidden" id="source"
+                                           th:field="*{category.accountSource}"
+                                           class="form-control"/>
+                                </div>
+                                <span class="help-block" th:if="${#fields.hasErrors('category')}"
+                                      th:errors="*{category}">Category Error</span>
+                            </div>
+                            <script th:inline="javascript">
+                                $("#inputcategory").change(function () {
+                                    var varSource = ($(this.options[this.selectedIndex]).attr('data-source'));
+                                    $("#source").val(varSource);
+//                                    alert(varSource);
+                                });
+                            </script>
+
+                            <div class="col-sm-1 ">
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group required col-sm-12">
+                            <div class="col-sm-1 ">
+                            </div>
+                            <label class="col-sm-2 control-label " for="inputcurrency">Currency</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-7 ">
+                                <select class="form-control" name="currency" id="inputcurrency"
+                                        th:disabled="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}">
+                                    <!--<option value="">Please select One</option>-->
+                                    <option th:each="cur : ${currency}" th:value="${cur.id}" th:text="${cur.code}"
+                                            th:field="*{currency}"
+                                            >
+                                    </option>
+                                </select>
+
+                                <span class="help-block" th:if="${#fields.hasErrors('currency')}"
+                                      th:errors="*{currency}">Currency Error</span>
+                            </div>
+                            <div class="col-sm-1 ">
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group required col-sm-12">
+                            <div class="col-sm-1 ">
+                            </div>
+                            <label class="col-sm-2 control-label " for="inputcalendarDetail">Calendar</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputdate"
+                                       th:field="*{{date}}"
+                                       name="date"
+                                       th:readonly="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}"/>
+                                <input type="hidden" id="modelAttr" name="modelAttr" th:value="${temltId}"/>
+
+
+                                <script>
+
+                                    $("#inputdate").change(function () {
+                                        var date = $('#inputdate').val();
+                                        $("#inputperiodName").val(moment(date).format('MMM-YY'));
+                                    });
+
+                                    $("#inputdate").ready(function () {
+                                        var date = $('#inputdate').val();
+                                        if (date != "") {
+                                            $("#inputperiodName").val(moment(date).format('MMM-YY'));
+                                        }
+                                    });
+
+                                </script>
+
+
+
+
+                                <span class="help-block" th:if="${#fields.hasErrors('date')}"
+                                      th:errors="*{date}">Date Error</span>
+                            </div>
+
+                            <div class="col-sm-3  ">
+                                <input class="form-control" type="text" name="periodName" id="inputperiodName"
+                                       th:field="*{periodName}" readonly="readonly"/>
+                                <!--<input class="form-control" type="text" name="calendarDetail" id="inputcalendarDetail"-->
+                                <!--th:field="*{calendarDetail}"/>-->
+                                <!--  <select class="form-control" name="calendarDetail" id="inputcalendarDetail"
+                                  th:field="*{calendarDetail}">
+                                  <option value="">Please select One</option>
+                                  <option th:each="caldt : ${calendarHeader.calendarDetails}" th:text="${caldt.periodName}"
+                                  th:value="${caldt.id}">module
+                                  </option>
+                                  </select>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('periodName')}"
+                                      th:errors="*{periodName}">CalendarDetail Error</span>
+                            </div>
+
+
+                            <!--th:each="cal : ${calendarHeader.calendarDetails}"-->
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="hidden" name="calendarDetail" id="inputcalendarDetail"
+                                       th:field="*{calendarDetail}"/>
+
+                                <span class="help-block" th:if="${#fields.hasErrors('calendarDetail')}"
+                                      th:errors="*{calendarDetail}">CalendarDetail Error</span>
+                            </div>
+                            <div class="col-sm-1 ">
+                            </div>
+                        </div>
+
+
+                        <div>
+
+                            <div>
+                                <input type="hidden" name="appModule" id="appModule"
+                                       th:value="${module.id}"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('appModule')}"
+                                      th:errors="*{appModule}">appModule Error</span>
+                            </div>
+                        </div>
+
+                        <div>
+
+                            <div>
+                                <input type="hidden" name="orgHierarchy" id="orgHierarchy"
+                                       th:value="${orgHierarchy.id}"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('orgHierarchy')}"
+                                      th:errors="*{orgHierarchy}">appModule Error</span>
+                            </div>
+                        </div>
+
+                        <!--<div class="form-group required col-sm-12">-->
+                        <!--<label class="col-sm-3 control-label " for="inputstatus">Status</label>-->
+
+                        <!--<div class="col-sm-1 ">-->
+                        <!--<b>:</b>-->
+                        <!--</div>-->
+                        <!--<div class="col-sm-8 ">-->
+                        <!--<input class="form-control" required="required" type="text" id="inputstatus"-->
+                        <!--th:field="*{status}" name="status" readonly="readonly"/>-->
+                        <!--<span class="help-block" th:if="${#fields.hasErrors('status')}"-->
+                        <!--th:errors="*{status}">Status Error</span>-->
+                        <!--</div>-->
+                        <!--</div>-->
+
+                        <div class="form-group col-sm-12">
+                            <div class="col-sm-1 ">
+                            </div>
+                            <label class="col-sm-2 control-label " for="inputdescription">Description</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-7 ">
+                                <input class="form-control" type="text" id="inputdescription"
+                                       th:field="*{description}" name="description"
+                                       th:readonly="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}"/>
+
+                                <span class="help-block" th:if="${#fields.hasErrors('description')}"
+                                      th:errors="*{description}">description Error</span>
+                            </div>
+                            <div class="col-sm-1 ">
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            <div class="col-sm-1 ">
+                            </div>
+                            <label class="col-sm-2 control-label " for="inputreferenceNo">Reference No</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-7 ">
+                                <input class="form-control" type="text" id="inputreferenceNo"
+                                       th:field="*{referenceNo}" name="referenceNo"
+                                       th:readonly="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}"/>
+
+                                <input type="hidden"  id="uu" />
+
+                                <span class="help-block" th:if="${#fields.hasErrors('referenceNo')}"
+                                      th:errors="*{referenceNo}">referenceNo Error</span>
+                            </div>
+                            <div class="col-sm-1 ">
+                            </div>
+                        </div>
+
+
+                        <div class="form-group ">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumn" placeholder="column"
+                                   th:field="*{column.createdBy}" name="column"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('column.createdBy')}"
+                                      th:errors="*{column.createdBy}">User Name Error</span>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{column.creationDate}" name="columnDate"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                                <span class="help-block" th:if="${#fields.hasErrors('column.creationDate')}"
+                                      th:errors="*{column.creationDate}">User Name Error</span>
+                        </div>
+
+
+                        <div>
+                            <!--<input th:type="text"  th:attr="${x}" />-->
+                        </div>
+
+
+                        <div class="form-group  col-sm-12 text-right Padding10px" style="padding-right: 92px !important;" >
+                            <button type="submit" name="top" class="btn btn-primary">
+                                Top
+                            </button>
+
+                            <a th:href="@{/AccGL/AddGlHeader/E/}+${pageId}+'/'+${temltId}"
+                               class="btn btn-default">New</a>
+                            <button type="submit" name="save" class="btn btn-primary"
+                                    th:if="${(glHeader.status == T(com.aye.web.model.common.GlStatus).N)} and ${ADD} ">
+                                Save
+                            </button>
+
+                            <a th:href="@{/AccGL/searchGlHeader/E/}+${pageId}+'/'+${temltId}+'/'+${orgHierarchy.id}"
+                               class="btn btn-default">Search</a>
+                            <button type="submit" name="last" class="btn btn-primary">Last</button>
+                            <button type="submit" th:value="${pid}+1" name="Next" class="btn btn-primary">Next</button>
+                            <button type="submit" th:value="${pid}-1" name="Privious" class="btn btn-primary">Privious</button>
+
+                        </div>
+
+
+                        <!--<form th:action="@{'/AccGL/AddLine/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${glHeader.id}}"-->
+                        <!--th:object="${glHeader}" action="post">-->
+                        <form class="form-horizontal">
+                            <div class=" col-sm-12  dist_view"
+                                 th:if="${(glHeader.documentNumber)!=null}">
+
+
+                                <div class="col-sm-12 brder accgl-col">
+                                    <div class="col-sm-1 accgl-col brderright" style="width: 20px">Id</div>
+                                    <div class="col-sm-3 accgl-col brderright" align="center">Combinations</div>
+                                    <div class="col-sm-2 accgl-col brderright" align="center">DR</div>
+                                    <div class="col-sm-2 accgl-col brderright " align="center">CR</div>
+                                    <div class="col-sm-3 accgl-col brderright" align="center">Note</div>
+                                    <div class="col-sm-1 accgl-col " align="center">Action</div>
+
+                                </div>
+                                <div class="col-sm-12 accgl-col brder " th:each="GlLines,rowStat  : *{glLinesList}">
+
+                                    <div class="col-sm-1  accgl-col high_control top_marg brderright"
+                                         th:text="${rowStat.count}" style="width: 20px">1
+                                    </div>
+
+                                    <div class="col-sm-2   accgl-col top_marg brderrightaccgl">
+
+
+                                        <input class="td form-control " th:type="text" required="required" style="width: 125% !important;"
+                                               th:field="*{glLinesList[__${rowStat.index}__].accCodeCombinitionsV.concatedSegment}"
+                                               th:id="val+${rowStat.index}"
+                                               th:title="(*{glLinesList[__${rowStat.index}__].accCodeCombinitionsV} ?
+                                                *{glLinesList[__${rowStat.index}__].accCodeCombinitionsV.concatedSegmentDesc}:'')"
+                                               height="2"
+                                               th:readonly="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}"/>
+
+                                        <input type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].accCodeCombinitions}"
+                                               th:value="accCodeCombinitions.id" required="required"
+                                               th:id="id+${rowStat.index}"/>
+                                        <input type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].accCodeCombinitions.accountSource}"
+                                               th:value="accCodeCombinitions" required="required"
+                                               th:id="idl+${rowStat.index}"/>
+
+                                        <!--<input type="hidden"-->
+                                               <!--th:field="*{glLinesList[__${rowStat.index}__].accCodeCombinitions.sourceTypeNoneTypeVal}"-->
+                                               <!--th:value="accCodeCombinitions" required="required"-->
+                                               <!--th:id="srtNonValT+${rowStat.index}"/>-->
+                                        <input type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].sourceTypeNoneTypeVal}"
+                                               th:value="sourceTypeNoneTypeVal"
+                                               th:id="sAsNtVal+${rowStat.index}"/>
+
+
+                                        <input class="form-control " th:type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].id}"
+                                               th:value="id"/>
+                                        <input th:type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].glHeader}"
+                                               th:value="glHeader.id"/>
+                                        <input th:type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].source}"
+                                               th:value="source"/>
+                                        <input th:type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].accountType}"
+                                               th:value="accountType"/>
+
+                                        <input th:type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].excgangeRate}"
+                                               th:value="excgangeRate"/>
+                                        <input th:type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].excDate}"
+                                               th:value="excDate"/>
+                                        <input th:type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].column.createdBy}"
+                                               th:value="excDate"/>
+                                        <input th:type="hidden"
+                                               th:field="*{glLinesList[__${rowStat.index}__].column.creationDate}"
+                                               th:value="excDate"/>
+
+
+
+                                    </div>
+
+                                    <div  class="col-sm-1   accgl-col top_marg brderright" style="text-align: right;" >
+
+
+                                        <!--<a data-toggle="modal" data-target="#modal-warning"-->
+                                        <!--th:attr="data-target='#modal-warning'"><span-->
+                                        <!--class="glyphicon glyphicon-search"></span></a>-->
+
+                                        <button th:disabled="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}" type="button" data-toggle="modal" th:id="${rowStat.index}" data-target="#modal-warning"
+                                                th:attr="data-target='#modal-warning'" class="clickMe" data-id="source" >
+                                            <span class="glyphicon">&#xe164;</span>
+                                        </button>
+
+                                        <script th:inline="javascript">
+                                            var mb = '#'+[[${rowStat.index}]];
+                                            $(mb).click(function(){
+                                                var lSource1 = document.getElementById('source').value;
+                                                var btnidmodal=(this.id);
+//                                                alert(lSource1);
+//                                                var my_id_value = $(this).data('id');
+                                                $(".modal-body #inputaccountSource").val(lSource1);
+
+                                               // alert(btnidmodal);
+                                                 getmodatbtnid(btnidmodal);
+                                            });
+                                        </script>
+                                    </div>
+
+                                    <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                                        <input class="form-control combatdr " th:type="text" align="right_col" id="amtdr"
+                                               th:field="*{glLinesList[__${rowStat.index}__].drAmount}"
+                                               th:readonly="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}"/>
+                                    </div>
+
+
+                                    <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                                        <input class="form-control combatcr" th:type="text"  id="amtcr"
+                                               th:field="*{glLinesList[__${rowStat.index}__].crAmount}"
+                                               th:readonly="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}"/>
+                                    </div>
+                                    <div class="col-sm-3 form-group accgl-col top_marg brderright">
+                                        <input class="form-control" th:type="text"
+                                               th:field="*{glLinesList[__${rowStat.index}__].description}"
+                                               th:readonly="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}"/>
+                                    </div>
+                                    <div class="col-sm-1 form-group accgl-col " align="center"
+                                         style="text-align: center ">
+                                        <button class="btn-danger" type="submit" name="removeRow"
+                                                th:value="${rowStat.index}" style="font-size: 10px; margin-top: 4px;"
+                                                th:if="${(glHeader.status == T(com.aye.web.model.common.GlStatus).N)}">
+                                            Remove
+
+                                        </button>
+                                    </div>
+
+
+                                    <div th:id="${rowStat.index}+'div2'" class="col-sm-12 accgl-col"
+                                         style="padding-top: 0px;"> <!---2ndLine-->
+
+                                        <div class="col-sm-1  accgl-col high_control top_marg brderright "
+                                             th:text="${rowStat.index}" style="width: 18px; color: transparent; "></div>
+
+                                        <div class="col-sm-3   accgl-col top_marg brderright brderright2nddiv">
+
+
+                                            <input class="td form-control " th:type="text"
+                                                   th:field="*{glLinesList[__${rowStat.index}__].sourceName}"
+                                                   th:id="val2+${rowStat.index}"
+                                                   height="2"
+                                                   th:readonly="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}"/>
+
+                                            <input type="hidden"
+                                                   th:field="*{glLinesList[__${rowStat.index}__].sourceId}"
+                                                   th:value="sourceId"
+                                                   th:id="id2+${rowStat.index}"/>
+
+
+                                        </div>
+                                        <div class="col-sm-7 form-group accgl-col top_marg brderright brderright2nddiv brderright2nddiv2px">
+                                            <input class="form-control " th:type="text" align="right_col"/>
+                                        </div>
+
+                                    </div>
+                                    <div th:id="${rowStat.index}+'div3'" class="col-sm-12 accgl-col"
+                                         style="padding-top: 0px;"> <!---2ndLine-->
+
+                                        <div class="col-sm-1  accgl-col high_control top_marg brderright "
+                                             th:text="${rowStat.index}" style="width: 18px; color: transparent; "></div>
+
+                                        <div class="col-sm-3   accgl-col top_marg brderright brderright2nddiv">
+
+
+                                            <input class="td form-control " th:type="text"
+                                                   th:field="*{glLinesList[__${rowStat.index}__].subAccSourceName}"
+                                                   th:id="sAsName+${rowStat.index}"
+                                                   height="2"
+                                                   th:readonly="${(glHeader.status == T(com.aye.web.model.common.GlStatus).P)}"/>
+
+                                            <input type="hidden"
+                                                   th:field="*{glLinesList[__${rowStat.index}__].subAccSourceId}"
+                                                   th:value="subAccSourceId"
+                                                   th:id="sAsid+${rowStat.index}"/>
+
+                                            <input type="hidden"
+                                                   th:field="*{glLinesList[__${rowStat.index}__].subAccSource}"
+                                                   th:value="subAccSource"
+                                                   th:id="sAs+${rowStat.index}"/>
+
+
+                                            <input type="hidden"
+                                                   th:field="*{glLinesList[__${rowStat.index}__].dataSet}"
+                                                   th:value="dataSet"
+                                                   th:id="dataSet+${rowStat.index}"/>
+
+
+                                        </div>
+                                        <div class="col-sm-7 form-group accgl-col top_marg brderright brderright2nddiv brderright2nddiv2px">
+                                            <input class="form-control " th:type="text" align="right_col"/>
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <script th:inline="javascript">
+
+
+
+                                        document.getElementById('val' +[[${rowStat.index}]]).oninput = function () {
+                                            var lId=[[${rowStat.index}]];
+                                            var l_accId = 'val' +lId;
+                                            // alert(lId);
+                                            validate(document.getElementById(l_accId).value, l_accId, lId);
+                                            document.getElementById(l_accId).focus();
+                                        };
+
+
+
+                                    </script>
+
+                                    <script th:inline="javascript">
+                                        var vmode = [[${mode}]];
+
+
+                                        if (vmode == 'U' || vmode == 'E') {
+                                            var varSource = document.getElementById('idl' + [[${rowStat.index}]]).value;
+                                            var varSourceViv = [[${rowStat.index}]] + 'div2';
+                                            var varSubAccViv = [[${rowStat.index}]] + 'div3';
+//                                            alert(varSource);
+
+                                            if (varSource == 'NONE') {
+
+                                                document.getElementById(varSourceViv).style.display = 'none';
+                                                document.getElementById(varSubAccViv ).style.display = 'none';
+//
+                                            }else    if (varSource == 'SUBACC') {
+                                                document.getElementById(varSourceViv).style.display = 'none';
+                                                document.getElementById(varSubAccViv ).style.display = 'block';
+
+                                            }else
+                                            {
+//                                                "sAsName+${rowStat.index}""sAsid+${rowStat.index}""sAs+${rowStat.index}""dataSet+${rowStat.index}"
+                                                document.getElementById('sAsName'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById('sAsid'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById('sAs'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById('dataSet'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById(varSourceViv).style.display = 'block';
+                                                document.getElementById(varSourceViv).style.display = 'block';
+                                                document.getElementById(varSubAccViv ).style.display = 'none';
+                                            }
+
+                                        }
+
+
+                                        var displayfield = '#val' + [[${rowStat.index}]];
+                                        var test = document.getElementById('val' + [[${rowStat.index}]]).value
+                                        var sourcetypefield = '#idl' + [[${rowStat.index}]];
+
+                                         if (test == '') {
+                                            var sourceDiv = [[${rowStat.index}]] + 'div2';
+                                            var subAccDiv = [[${rowStat.index}]] + 'div3';
+                                            document.getElementById(sourceDiv).style.display = 'none';
+                                            document.getElementById(subAccDiv).style.display = 'none';
+                                        }
+                                        $(displayfield).change(function () {
+
+                                            var varSource = document.getElementById('idl' + [[${rowStat.index}]]).value;
+                                            var svdf = [[${rowStat.index}]] + 'div2';
+                                            var svdf1 = [[${rowStat.index}]] + 'div3';
+                                            if (varSource == 'NONE') {
+                                                document.getElementById(svdf).style.display = 'none';
+                                                document.getElementById(svdf1).style.display = 'none';
+                                                document.getElementById('sAsName'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById('sAsid'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById('sAs'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById('dataSet'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById('id2'+[[${rowStat.index}]]).value = '';
+                                                document.getElementById('val2'+[[${rowStat.index}]]).value = '';
+
+
+                                            }if (varSource == 'SUBACC') {
+                                                document.getElementById('id2'+[[${rowStat.index}]]).value = '';
+                                                document.getElementById('val2'+[[${rowStat.index}]]).value = '';
+                                                document.getElementById(svdf).style.display = 'none';
+                                                document.getElementById(svdf1).style.display = 'block'
+                                            }
+                                            else {
+                                                document.getElementById('sAsName'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById('sAsid'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById('sAs'+[[${rowStat.index}]]).value= '';
+                                                document.getElementById('dataSet'+[[${rowStat.index}]]).value= '';
+
+                                                document.getElementById(svdf).style.display = 'block';
+                                                document.getElementById(svdf1).style.display = 'none';
+                                            }
+
+                                        })
+
+                                            document.getElementById([['sAsName' +${rowStat.index}]]).oninput = function () {
+                                                var psId=[[${rowStat.index}]];
+
+                                                getSubaccSource(psId);
+                                            };
+
+                                            document.getElementById([['val2' +${rowStat.index}]]).oninput = function () {
+                                                var psId=[[${rowStat.index}]];
+
+                                                getSource(psId);
+                                            };
+
+
+
+                                    </script>
+
+
+                                </div>
+                                <div class="col-sm-12 accgl-col brder ">
+                                    <div class="col-sm-1 accgl-col " style="width: 20px"></div>
+                                    <div class="col-sm-3 accgl-col brderright"><b>Total</b></div>
+                                    <div class="col-sm-2 accgl-col brderright total-combatdr" style="padding-left: 10px !important;"></div>
+                                    <div class="col-sm-2 accgl-col brderright total-combatcr"></div>
+                                    <div class="col-sm-3 accgl-col isBalanced"></div>
+                                    <div class="col-sm-1 accgl-col " align="center"></div>
+                                </div>
+
+                                <div class="col-sm-12 brder btn_padd" align="right"
+                                     th:if="${(glHeader.status == T(com.aye.web.model.common.GlStatus).N)}">
+                                    <button type="submit" th:name="addRow" class="btn btn-primary ">Add Row
+                                    </button>
+                                    <button type="submit" name="saveDetail" class="btn btn-success"
+                                            align="right">Save Lines
+                                    </button>
+                                    <button type="submit" th:name="post" class="btn btn-primary" align="right"
+                                            th:if="${POST}">
+                                        Post
+                                    </button>
+
+
+                                </div>
+
+                                <!--mmm-->
+                                <script>
+                                    var totDr=0;
+                                    var totCr=0;
+                                    $(document).ready(function () {
+                                        var sumdr = 0;
+                                        var amtdr
+                                        $('.combatdr').each(function () {
+                                            //alert('ddd')
+                                            document.getElementById('amtdr').val
+                                            //amt = isNaN(parseFloat(this.value))
+                                            amtdr = parseFloat(this.value);
+                                            if (isNaN(parseFloat(amtdr)))
+                                            {
+                                                amtdr=0;
+                                            }
+
+                                            sumdr=sumdr+amtdr;
+                                           // sum=900;
+                                            //alert(amtdr);
+                                            totDr =sumdr;
+
+                                        });
+
+//alert(sum);
+                                        totDr = sumdr;
+                                        $('.total-combatdr').html('<b>'+sumdr+'</b>');
+                                    });
+
+                                    $(document).ready(function () {
+                                        var sumcr = 0;
+                                        var amtcr
+                                        $('.combatcr').each(function () {
+                                            //alert('ddd')
+                                            document.getElementById('amtcr').val
+                                            //amt = isNaN(parseFloat(this.value))
+                                            amtcr = parseFloat(this.value);
+                                            if (isNaN(parseFloat(amtcr)))
+                                            {
+                                                amtcr=0;
+                                            }
+                                            sumcr=sumcr+amtcr;
+
+
+                                        });
+
+//alert(sumcr+'asd');
+                                        totCr = sumcr;
+                                        $('.total-combatcr').html('<b>'+sumcr+'</b>');
+
+                                    });
+                                    $(document).ready(function () {
+                                        var res =totDr-totCr;
+//                                        alert(res);
+//                                        alert(totDr+'Res '+totCr);
+
+                                        if (res !=0)
+                                        {   $('.isBalanced').html('<b>'+"Not Balanced"+'</b>');
+                                            $('.isBalanced').css({ 'color': 'red'});
+                                        }else
+                                        {
+                                            $('.isBalanced').html('<b>'+"  Balanced"+'</b>');
+                                            $('.isBalanced').css({ 'color': 'green'});
+                                        }
+
+                                    });
+                                </script>
+
+
+
+                            </div>
+
+
+                        </form>
+                        <div>
+
+                            <div th:if="${(glHeader.documentNumber)==null}">
+                                <!--<span th:text="nop"></span>-->
+
+                            </div>
+
+                        </div>
+
+
+                    </form>
+
+                    <div data-th-replace="fragments/accModalData :: account-modal"></div>
+
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="fragments/js :: body"></th:block> /*/-->
+<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>
+</body>
+</html>

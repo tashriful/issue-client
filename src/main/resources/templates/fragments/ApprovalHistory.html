@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<div id="approvalHistory"
+     data-th-fragment="approvalHistory">
+    <span > <B><p class="text-center" style="color:#0d0202">Approval History </p></B></span>
+    <table class="table table-bordered table-hover table-striped">
+        <thead>
+        <tr>
+            <th>SL</th>
+            <th>From</th>
+            <th>Date</th>
+            <th>To</th>
+            <th>Action</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <div th:if="!${#lists.isEmpty(approvalTransactions)}">
+            <tr th:each="l,iter    : ${approvalTransactions}">
+
+                <td th:text="*{iter.index+1}"></td>
+                <td th:text="*{l.fromUser.firstName+ ' '+l.fromUser.lastName}"></td>
+                <td th:text="${#dates.format( l.date,'dd-MM-yyyy HH:mm')}"></td>
+                <td th:text="*{l.toUser.firstName+ ' '+l.toUser.lastName}"></td>
+                <td th:text="*{l.notificationAction.displayName}"></td>
+                <td th:text="*{l.status.detailName}"></td>
+
+            </tr>
+        </div>
+        <div th:if="${#lists.isEmpty(approvalTransactions)}">
+            <tr>
+                <td>No Data exists!</td>
+            </tr>
+        </div>
+
+        </tbody>
+
+    </table>
+</div>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Login</title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/login.css}" />
+
+<link th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"
+	rel="stylesheet"/>
+<!-- Font Awesome -->
+<link th:href="@{/webjars/font-awesome/css/font-awesome.min.css}"
+	rel="stylesheet"/>
+	<script >
+//		function f1() {
+//				var p = 'xxxx';
+//				var cmpname=  document.myApplet.MethodForJavaScript();
+////			var cmpname= new Packages.com.aye.web.controller.MethodForJavaScript();
+//				alert('1')
+////			var empObj = new com.aye.web.controller.MainController();
+////			var ename = empObj.encodePassN(p);
+////			alert(ename);
+//
+//		};
+	</script>
+</head>
+<body>
+	<div class="container">
+		<div class="row main">
+			<div class="panel-heading">
+				<div class="panel-title text-center">
+					<span class="title">Change Password</span>
+
+				</div>
+			</div>
+			<div class=" main-login main-center">
+				<form th:action="@{/changePass}" method="POST" class="form-signin" th:object="${passWord}" >
+				<span style="font-weight: bold" th:each="m :${msg}">
+            	<p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+				<span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+				<span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+				</p></span>
+					<div class="form-group">
+						<label for="inputnewPass" class="cols-sm-2 control-label">New Password</label>
+
+						<div class="cols-sm-10">
+							<div class="input-group">
+								<span class="input-group-addon"><i
+										class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+								<input type="password" class="form-control" id="inputnewPass" th:field="*{newPass}" name="newPass" required/>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="inputnewPass" class="cols-sm-2 control-label">Confirmed Password</label>
+
+						<div class="cols-sm-10">
+							<div class="input-group">
+								<span class="input-group-addon"><i
+										class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+								<input type="password" class="form-control" id="inputrepPass" th:field="*{repPass}" name="repPass" required/>
+								<input type="hidden" class="form-control" id="inputOldPass" th:field="*{oldPass}" name="oldPass"/>
+								<input type="hidden" class="form-control" id="inputUser" th:field="*{user}" name="user"/>
+							</div>
+						</div>
+						<script th:inline="javascript">
+							document.getElementById('inputrepPass').onchange= function(){
+
+								var pNew=document.getElementById('inputnewPass').value;
+								var pRep=document.getElementById('inputrepPass').value;
+
+								if (pNew!=pRep)
+								{
+									document.getElementById('inputrepPass').focus();
+									document.getElementById('inputrepPass').select();
+									document.getElementById('subBtn').disabled = true	;
+								}
+
+							}
+						</script>
+					</div>
+
+
+					<div class="form-group " id="subBtn">
+						<button  class="btn btn-lg btn-primary btn-block" name="Submit" type="Submit" th:text="Change"></button>
+					</div>
+
+				</form>
+				<!--<div class="login-register">
+					<form th:action="@{/registration}" method="get">
+						<button class="btn btn-md btn-warning btn-block" type="Submit">Registration</button>
+					</form>
+					<form th:action="@{/changePassword}" method="get">
+						<button class="btn btn-md btn-warning btn-block" type="Submit">Reset
+							Password</button>
+					</form>
+				</div>-->
+			</div>
+		</div>
+	</div>
+	<!-- jQuery -->
+	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+	<!-- Bootstrap -->
+	<script th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</body>
+</html>

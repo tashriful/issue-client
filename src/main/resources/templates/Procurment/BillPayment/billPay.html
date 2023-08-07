@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <script th:inline="javascript">
+        var xMode;
+        var xPageId;
+        var xtempId ;
+        var xHdrId ;
+
+        var billPaySearchObj;
+        function selectedobj(value, ind) {
+            if (ind == 'billPayment') {
+                billpayBankObj(value);
+            }else if(ind == 'poNumberBillPayAddLine')
+            {
+
+                SearchBillPayPoAddLineObj(value);
+            }else if(ind == 'billPayRcvaddLine')
+            {
+
+                SearchBillPayRcvAddLineObj(value);
+            }else if(ind == 'billPaySupAddLine')
+            {
+
+                SearchBillPaySupAddLineObj(value);
+            }else if(ind == 'billPayApAddDocument')
+            {
+
+                SearchBilPayAddApInv(value);
+            }
+        } ;
+
+        function getBillPaySupInf(pSup, pdisplay, pindc) {
+            var varOrg = document.getElementById('inputorgHierarchy').value;
+            var displayfieldfrom = pdisplay;
+            var urlval = '/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + pSup;
+            var displayfield = pdisplay;
+            var getvalue = 'name';
+            var getDesc = 'siteAddress';
+            var indc = pindc;//'segment2desc';
+
+            autocomwithobject('/AYE/ACRC/SearchOrgSupplier/' + varOrg + '/' + pSup,
+                    getvalue, displayfield, null, getDesc, indc);
+        };
+
+
+        function getBillPayAddApDocument(pSup, pdisplay, pindc) {
+            var varOrg = document.getElementById('inputorgHierarchy').value;
+            var varBillType = document.getElementById('inputbillType').value;
+
+            var displayfieldfrom = pdisplay;
+//            var urlval = '/AYE/ACRC/SearchOrganizationGlApDocument/' + varOrg ;
+            var urlval = '/AYE/ACRC/SearchOrganizationGlApDocument/' + varOrg +'/'+varBillType ;
+//            alert(urlval)
+            var displayfield = pdisplay;
+            var getvalue = 'documentNumber';
+            var getDesc = 'null';
+            var indc = pindc;//'segment2desc';
+
+            autocomwithobject(urlval,
+                    getvalue, displayfield, null, getDesc, indc);
+        }
+        ;
+
+        function frmSub()
+        {
+//            $("#billpayForm").submit();
+            location.reload();
+        }
+        function chkAddNewLineEmpty(p)
+        {
+//            alert('xx');
+
+            var c =0;
+            if ($.trim($('#inputpoRcvHeader').val()) == '')
+            {
+                c++;
+            }
+            if ($.trim($('#inputpoNumber').val()) == '')
+            {
+                c++;
+            }
+            if ($.trim($('#inputsupplierLineBm').val()) == '')
+            {
+                c++;
+            }
+
+            if ($.trim($('#inputglHeaderMod').val()) == '')
+            {
+                c++;
+            }
+
+            if(c==4){
+                alert('Atleast select One Parameter befor submit');
+                document.getElementById('inputsupplierLineNameBm').style.borderColor = "red";
+                document.getElementById('inputrcvNumber').style.borderColor = "red";
+                document.getElementById('inputpoNumber').style.borderColor = "red";
+                document.getElementById('inputglHeaderDocument').style.borderColor = "red";
+                return false;
+            }
+
+
+        };
+
+        function BillBtnActivity(pbill)
+        {
+            if (pbill!=0)
+            {
+                $("#btDelH").hide();
+
+            }else{
+                $("#partPayBtn").hide();
+                $("#btpost").hide();
+            }
+        }
+
+//        $(document).ready(function(){
+//            if(callMe())
+//            {
+//
+//                alert("OK");
+//            }else
+//            {
+//
+//                alert("Not OK");
+//            }
+//        })
+
+    </script>
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <!--<div class="container">-->
+            <div class="col-sm-8">
+                <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <!--<div class="panel-heading">Payment Entry</div>-->
+
+                <div class="form-group col-sm-12  jepg_cust_head">
+                    <div class="form-group col-sm-5 " style="padding-left: 0; color: #172D44">Payment Entry</div>
+                    <div th:if="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}"
+                         class="form-group col-sm-7 text-right Padding10px" style=" font-size: 12px;" align="right">
+                        <form th:action="@{'/AccPay/addGlPayment/'+${mode}+'/'+${pageId}+'/'+${temltId}}"
+                              th:method="post" th:target="_blank">
+                            <button target="_blank" type="submit" name="rpt" th:value="'PaymentVoucher :'+${billsPayHeader.glHeader.id}" class="btn btn-primary" align="center">
+                                <span class="glyphicon glyphicon-print"></span> Print
+                            </button>
+                            <!--<a   th:href="@{/AccGL/AddGlHeader/U/}+${pageId}+'/'+${temltId}"  target="_blank" type="submit" name="rpt" th:value="'Journal_voucher :'+${glHeader.id}" class="btn btn-primary" align="center">Print Voucher</a>-->
+                        </form>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <form th:action="@{'/BillPay/billPay/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId} }" id="billpayForm"
+                          th:object="${billsPayHeader}" th:method="post">
+
+                        <span style="font-weight: bold" th:each="m :${msg}">
+                            <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                                <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                                <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+                            </p>
+                        </span>
+
+                        <div class="submit-progress hidden">
+                            <label th:style="'color:#4aa509;'">Please wait while Processing...</label>
+                        </div>
+
+
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-3 control-label " for="inputpayNumber">Number</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input class="form-control" type="text" id="inputpayNumber"
+                                       th:field="*{payNumber}" name="payNumber" readonly="readonly" />
+                                <input class="form-control" type="hidden" id="inputid"
+                                       th:field="*{id}" name="id" />
+                            </div>
+                            <div class="col-sm-4 " >
+                                <input type="hidden" id="inputStatus" placeholder="glStatus"
+                                       name="glStatus" th:field="*{glStatus}" class="form-control" />
+                                <input type="text" id="inputStatusDisplayName" placeholder="glStatus"
+                                       name="glStatus" th:field="*{glStatus.displayName}" class="form-control" readonly="readonly"/>
+
+                            </div>
+
+                        </div>
+
+                        <div th:class="${#fields.hasErrors('currency')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " for="inputcurrency">Payment Type & Currency</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div th:classappend="${colsm3}">
+                                <select id="inputglCategories"
+                                        name="glCategories" th:field="*{glCategories}" class="form-control" required="required"
+                                        th:disabled="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}">
+                                    <div th:if="${#lists.size(glCategoriesList) &gt; 1}">
+                                    <option value="">Select One</option>
+                                    </div>
+                                    <option th:each="t : ${glCategoriesList}"
+                                            th:text="${t.categoriesCode}"
+                                            th:value="${t.id}"
+                                            th:attr="data-isPrePay=${t.isPrePayment}"></option>
+                                </select>
+                            </div>
+                            <div th:classappend="${colsm1}">
+                                <select id="inputprePayFrom" name="prePayFrom" th:field="*{prePayFrom}" class="form-control"
+                                        th:disabled="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}">
+                                    <option th:each="t : ${T(com.aye.web.model.Bill.BillsPayHeader.PrePayFrom).values()}"
+                                            th:text="${t}"
+                                            th:value="${t}"></option>
+                                </select>
+                            </div>
+
+                            <div th:classappend="${colsm2}" id="inputcurrencyEnt">
+                                <select class="form-control" id="inputcurrency" placeholder="currency"
+                                        th:field="*{currency}" name="currency"
+                                        th:disabled="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}">
+                                    <!--<option value="">Select one</option>-->
+                                    <option th:each="cur :${currency}"
+                                            th:text="${cur.code}"
+                                            th:value="${cur.id}"
+                                            th:attr="data-defExec=${cur.defaultExcgangeRate}"></option>
+                                </select>
+                                <input type="hidden" id="inputcurrencyCode" th:field="*{currencyCode}"/>
+
+                                <script th:inline="javascript">
+                                    $(document).ready(function(){
+                                        xMode=[[${mode}]];
+                                        xPageId=[[${pageId}]];
+                                        xtempId =[[${temltId}]];
+                                        if([[${billsPayHeader.id}]]!=null)
+                                        {
+                                            xHdrId=[[${billsPayHeader.id}]];
+                                        }
+                                    })
+                                    var ldefCur = [[${defCurr}]];
+                                    $("#inputcurrency").change(function () {
+                                        var locCurVal = ldefCur.code;
+                                        var varDefexecRate = ($(this.options[this.selectedIndex]).attr('data-defExec'));
+                                        var varSelectdexec = ($(this.options[this.selectedIndex]).text());
+                                        document.getElementById('inputcurrencyCode').value = varSelectdexec;
+//                                        document.getElementById('inputcurrencyLoc').value = varSelectdexec;
+                                        document.getElementById('inputexchRate').value = varDefexecRate;
+//                                        document.getElementById('inputcurrency2nd').value= varSelectdexec;
+                                        if (varSelectdexec == locCurVal) {
+                                            document.getElementById('inputexchRateDiv').style.display = 'none';
+                                            document.getElementById('inputexchdateDiv').style.display = 'none';
+                                        } else {
+                                            document.getElementById('inputexchRateDiv').style.display = 'block';
+                                            document.getElementById('inputexchdateDiv').style.display = 'block';
+                                        }
+                                    });
+                                </script>
+                            </div>
+                        </div>
+
+
+                        <div id="inputexchRateDiv"
+                             th:class="${#fields.hasErrors('exchRate')} ? 'form-group has-error' :'form-group required col-sm-12 ' ">
+                            <label class="col-sm-3 control-label " >Exch Rate & Date</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-3 ">
+                                <input type="text" id="inputexchRate" placeholder="exchRate"
+                                       name="exchRate" th:field="*{exchRate}" class="form-control"
+                                       th:readonly="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}"/>
+
+                                <p th:errors="*{exchRate}" class="help-block"></p>
+
+                                <script th:inline="javascript">
+                                    $(document).ready(function () {
+                                        var localExec = document.getElementById('inputcurrency').value;
+                                        var localExecSel = document.getElementById('inputcurrency');
+                                        var localExecSelVal =localExecSel.options[localExecSel.selectedIndex].text;
+//                                        document.getElementById('inputcurrency2nd').value= localExecSelVal;
+                                        var locCurIdVal = ldefCur.id;
+                                        var locCusrRate = ldefCur.defaultExcgangeRate;
+
+                                        var lSize=[[${#lists.size(billsPayHeader.billsPayLines)}]]; ;
+
+
+                                        if (localExec == locCurIdVal) {
+
+                                            document.getElementById('inputexchRateDiv').style.display = 'none';
+                                            document.getElementById('inputexchRate').value = locCusrRate;
+                                        } else {
+                                            document.getElementById('inputexchRateDiv').style.display = 'block';
+                                        }
+                                    })
+
+                                </script>
+
+
+
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input type="date" id="inputexchDate" placeholder="exchDate"
+                                       name="exchRate" th:field="*{exchDate}" class="form-control" />
+                                <script th:inline="javascript">
+                                    var trns = [[*{payNumber}]];
+                                    var ldefCur2 = [[${defCurr}]];
+                                    if (trns != null) {
+                                        var varLCurCode = document.getElementById('inputcurrencyCode').value;
+                                        if (varLCurCode == ldefCur2) {
+                                            document.getElementById('inputexchRateDiv').style.display = 'none';
+                                            document.getElementById('inputexchdateDiv').style.display = 'none';
+                                        } else {
+                                            document.getElementById('inputexchRateDiv').style.display = 'block';
+                                            document.getElementById('inputexchdateDiv').style.display = 'block';
+                                        }
+                                    }
+
+                                </script>
+
+                                <p th:errors="*{exchDate}" class="help-block"></p>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12 required">
+                            <label class="col-sm-3 control-label " for="inputDate">Date</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" th:id="inputdate" required="required"
+                                       th:field="*{{date}}"
+                                       name="Date" th:readonly="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('date')}"
+                                      th:errors="*{date}">Date Error</span>
+                                <script>
+
+                                    $("#inputdate").change(function () {
+                                        var date = $('#inputdate').val();
+                                        $("#inputaccDate").val(date);
+                                        $("#inputperiodName").val(moment(date).format('MMM-YY'));
+                                    });
+
+
+                                </script>
+                            </div>
+
+                            <div class="col-sm-4  ">
+                                <input class="form-control" type="date" value="01-01-2019" id="inputaccDate"
+                                       th:field="*{{accDate}}"
+                                       name="accDate" th:readonly="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('accDate')}"
+                                      th:errors="*{accDate}">Date Error</span>
+                            </div>
+                            <script>
+                                $("#inputaccDate").change(function () {
+                                    var date = $('#inputaccDate').val();
+
+                                    $("#inputperiodName").val(moment(date).format('MMM-YY'));
+                                });
+                            </script>
+
+                        </div>
+
+                        <div class="form-group col-sm-12 required">
+                            <label class="col-sm-3 control-label " for="inputperiodName">Period & Voucher</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input class="form-control" type="text" id="inputperiodName" required="required"
+                                       th:field="*{periodName}" name="periodName"
+                                       th:readonly="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}"/>
+                                <input type="hidden" th:field="*{orgHierarchy}"  id="inputorgHierarchy" />
+                                <input type="hidden" th:field="*{calendarDetail}"  id="inputcalendarDetail" />
+                                <script>
+                                    $(document).ready(function () {
+                                        var date = $('#inputaccDate').val();
+                                        $("#inputperiodName").val(moment(date).format('MMM-YY'));
+
+                                    });
+                                </script>
+
+                                <span class="help-block" th:if="${#fields.hasErrors('periodName')}"
+                                      th:errors="*{periodName}">Name Error</span>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <input class="form-control" type="text" id="inputglHeaderdocumentNumber"
+                                       th:field="*{glHeader.documentNumber}" name="documentNumber" readonly="readonly"/>
+                                <input class="form-control" type="hidden" id="inputglHeader"
+                                       th:field="*{glHeader}" name="glHeader" placeholder="Document Number"/>
+                              <input type="hidden" id="inputbillType" th:field="*{billType}" />
+                            </div>
+                            <div class="col-sm-1 " >
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-GlHeader" th:onclick="|getGlDetail('${billsPayHeader.glHeader.id}');|"
+                                        th:attr="data-target='#modal-GlHeader'" title="Detail Journal" th:disabled="${(billsPayHeader.glStatus!= T(com.aye.web.model.common.GlStatus).P)}">
+                                    <span class="glyphicon glyphicon-record"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12 required">
+                            <label class="col-sm-3 control-label " for="inputpaymentMode">Type And Reference</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <select class="form-control" name="paymentMode" required="required"  id="inputpaymentMode"
+                                        th:field="*{paymentMode}" th:disabled="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}">
+                                    <option value="">Select</option>
+                                    <option th:each="t : ${T(com.aye.web.model.Bill.PayMode).values()}"
+                                            th:text="${t}"
+                                            th:value="${t}"></option>
+                                </select>
+                                <span class="help-block" th:if="${#fields.hasErrors('paymentMode')}"
+                                      th:errors="*{paymentMode}">referenceNo Error</span>
+                            </div>
+                            <div class="col-sm-5 ">
+                                <input class="form-control" type="text" id="inputrefNumber"
+                                       th:field="*{refNumber}" name="referenceNo" th:readonly="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}"/>
+
+                                <span class="help-block" th:if="${#fields.hasErrors('refNumber')}"
+                                      th:errors="*{refNumber}">referenceNo Error</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-12 required">
+                            <label class="col-sm-3 control-label " for="inputbankLine">Bank & Amount</label>
+
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input class="form-control" type="text" id="inputbankLine" th:text="${billsPayHeader.bankLine ne null ? billsPayHeader.bankLine.accountName : ''}"
+                                       th:field="*{bankLine.name}"  th:readonly="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).P)}"/>
+
+                                <input type="hidden" th:field="*{bankLine.id}" th:name="bankLineId"
+                                       id="bankLineId"/>
+
+                                <input type="hidden" th:field="*{bankLine}" th:id="bankLineOb"/>
+
+                                <script th:inline="javascript">
+                                    function billpayBankObj(objparm) {
+                                        var objparmV = objparm;
+
+                                        $('#bankLineId').val(objparmV.id).trigger("change");
+                                        $('#inputbankLine').val(objparmV.accountName).trigger("change");
+//                                        alert(accountName);
+//                                        $('#bankLineId').val(objparmV.accCodeCombinitions.id).trigger("change");
+                                    }
+                                    ;
+
+                                    document.getElementById('inputbankLine').oninput = function () {
+
+                                        myFunctionBank();
+                                    };
+
+                                    function myFunctionBank() {
+                                        var myFuncVar = document.getElementById('inputbankLine').value;
+
+                                        if (myFuncVar.length > 2) {
+//                                            alert("pp");
+                                            callAutoComHeader(myFuncVar);
+                                            document.getElementById('inputbankLine').focus();
+                                        }
+
+                                    }
+
+                                    function callAutoComHeader(itmHeader) {
+
+                                        var org = [[${orgHierarchy.id}]];
+
+                                        var urlval = '/AYE/ACRC/SearchSource/CM/' + org + '/' + itmHeader;
+//                                        alert(urlval);
+                                        var displayfield = '#inputbankLine';
+                                        var dbfield = '#bankLineId';
+                                        var getvalue = 'name';
+                                        var indc = 'billPayment';
+                                        var opt = "accountNumber";
+                                        autocomwithobject(urlval, getvalue, displayfield, dbfield, opt, indc);
+                                        document.getElementById('inputbankLine').focus;
+                                    }
+
+
+
+                                </script>
+
+                            </div>
+                            <div class="col-sm-4 ">
+                                <input class="form-control" type="text" id="inputpayAmount" required="required"
+                                       th:field="*{payAmount}" readonly="readonly"/>
+                            </div>
+                            <script th:inline="javascript">
+                                $('#inputpayAmount').on('input',function(){
+                                    if(!$.isNumeric($('#inputpayAmount').val()))
+                                    {
+                                        document.getElementById('inputpayAmount').style.borderColor = "red";
+                                    }else
+                                    {
+                                        document.getElementById('inputpayAmount').style.borderColor = "#CCD0D7";
+                                    }
+                                });
+                                $("#inputglCategories").change(function () {
+
+
+                                    var varisPrePay = ($(this.options[this.selectedIndex]).attr('data-isPrePay'));
+
+                                    if (varisPrePay=="true")
+                                    {
+                                        document.getElementById('inputpayAmount').readOnly=false;
+                                        $('#partPayBtn').hide();
+//                                        document.getElementById("partPayBtn").style.visibility = "hidden";
+                                    }else
+                                    {
+                                        document.getElementById('inputpayAmount').readOnly=true;
+//                                        document.getElementById("partPayBtn").style.visibility = "hidden"
+                                    }
+                                });
+                                $(document).ready(function(){
+                                    var locGlcat =document.getElementById('inputglCategories');
+                                    var docStatus = document.getElementById('inputStatus').value;
+                                    var locGlcatval=locGlcat.options[locGlcat.selectedIndex].getAttribute('data-isPrePay');
+//                                    alert(docStatus+'x'+locGlcatval);
+                                    if (locGlcatval=="true" & docStatus=="N")
+                                    {
+
+                                        document.getElementById('inputpayAmount').readOnly=false;
+
+                                        $('#partPayBtn').hide();
+//                                        document.getElementById('partPayBtn').style.visibility = "hidden";
+//                                        alert('x');
+                                    }else
+                                    {
+                                        document.getElementById('inputpayAmount').readOnly=true;
+                                    }
+                                });
+
+
+                            </script>
+                        </div>
+
+
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="inputcolumncreatedBy" placeholder="columncreatedBy"
+                                   th:field="*{column.createdBy}" name="columncreatedBy"/>
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{column.creationDate}" name="columnDate"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('column.creationDate')}"
+                                  th:errors="*{column.creationDate}">User Name Error</span>
+                        </div>
+
+                        <div class="col-sm-2 text-left" th:if="${billsPayHeader.id!=null}">
+
+                            <button type="button" data-toggle="modal" data-target="#modal-RecordHistory" th:id="btnIdHM"
+                                    th:attr="data-target='#modal-RecordHistory'"  title="Record History" >
+                                <span class="glyphicon glyphicon-record"></span>
+                            </button>
+                            <script th:inline="javascript">
+                                document.getElementById('btnIdHM').onclick =
+                                        function () {
+                                            var obj = [[${billsPayHeader.column}]];
+
+                                            histabledataset(obj);
+                                        };
+
+                            </script>
+
+                        </div>
+                        <div data-th-replace="fragments/recordHistoryModal :: recordhis-modal"></div>
+
+
+                        <div class="text-right Padding10px">
+                            <!--and addlineBtn==false -->
+                            <!--<div >-->
+                              <span th:id="btUndo" th:if= "${(billsPayHeader.glStatus!= T(com.aye.web.model.common.GlStatus).N)}">
+                                  <button type="submit" name="unDo"  class="btn btn-danger" id="btUndo" onclick="return prevDbClick(this.id)">Undo</button>
+                              </span>
+                              <span th:id="btDelH" th:if= "${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).N)}">
+                                  <button type="submit" name="delete"  class="btn btn-danger" id="btDelH" onclick="return prevDbClick(this.id)">Delete</button>
+                              </span>
+                              <span th:id="partPayBtn" th:if= "${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).N)
+                              and billsPayHeader.id!=null} and ${addlineBtn!=false}">
+                                 <a th:href="@{/BillPay/billPayLine/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${billsPayHeader.id}"
+                                    class="btn btn-success">Partial Pay.</a>
+                              </span>
+                            <!--</div>-->
+
+                            <a th:href="@{/BillPay/search/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                               class="btn btn-success">Search</a>
+                            <span th:if= "${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).N) and (billsPayHeader.id !=null)}">
+                                <a th:href="@{/BillPay/diductionHeader/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${billsPayHeader.id}"
+                                   class="btn btn-default">Adjustment</a>
+</span>
+
+                                <span th:if="${(ADD)} and ${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).N)}">
+                                <button type="submit" name="create"  class="btn btn-primary" onclick="return checkemptyfieldBIll(this.id)">Save</button>
+                                </span>
+
+
+                            <span th:if= "${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).N) and (billsPayHeader.id !=null)} and ${POST} ">
+                                <button type="submit" name="Post" id="btpost" class="btn btn-primary" onclick="return prevDbClick(this.id)">Post</button>
+                            </span>
+
+                            <span th:if="${ADD}">
+
+                                <a th:href="@{/BillPay/billEntry/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}"
+                                   class="btn btn-success">New</a>
+                            </span>
+                            <!--th:if="${addlineBtn}"-->
+                            <span th:if="${addlineBtn==true and (billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).N)}">
+                            <button type="button" data-toggle="modal" data-target="#modal-addGrn" th:id="addGrnId"
+                                    th:attr="data-target='#modal-addGrn'"  title="Add New Line" >
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                            </span>
+                            <script th:inline="javascript">
+                                $(document).ready(function(){
+                                    var lDetailRec=[[${#lists.size(billsPayHeader.billsPayLines)}]];
+                                    BillBtnActivity(lDetailRec);
+
+                                })
+                            </script>
+
+                            <!--</span>-->
+
+                        </div>
+
+                        <div class=" col-sm-13 table-responsive dist_view marginbtm10px">
+                            <!--th:if="!${#lists.isEmpty(billsPayLines)}"-->
+
+                            <div class="col-sm-12 brder accgl-col">
+                                <div class="col-sm-1 accgl-col brderright" style="width: 20px">Sl</div>
+
+                                <div class="col-sm-2 accgl-col brderright" align="center">Number
+                                    <!--<div th:if="${(billsPayLines.poRcvLines != null)}">GRN Number</div>-->
+                                    <!--<div th:if="${(billPaySearch.poRcvLines == null)}">PO Number</div>-->
+                                </div>
+                                <div class="col-sm-2 accgl-col brderright" align="center">Name</div>
+                                <div class="col-sm-3 accgl-col brderright" align="center">Item Info.</div>
+                                <div class="col-sm-1 accgl-col brderright" align="center">Rate</div>
+                                <div class="col-sm-2 accgl-col brderright " align="center">Amount</div>
+                                <!--<div class="col-sm-3 accgl-col brderright" align="center">Note</div>-->
+                                <div class="col-sm-1 accgl-col" align="center">Action</div>
+
+                            </div>
+                            <div class="col-sm-12 accgl-col brder "
+                                 th:each="line, rowStat : ${billsPayHeader.billsPayLines}">
+
+                                <div class="col-sm-1  form-group accgl-col high_control top_marg brderright"
+                                     th:text="${rowStat.count}" style="width: 20px">1
+                                </div>
+                                <div class="col-sm-2 form-group accgl-col top_marg brderright">
+
+                                        <div th:if="${(billsPayHeader.billType == T(com.aye.web.model.Bill.BillType).GRN)}">
+                                        <input type="text" class="td form-control "
+                                               th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].poRcvHeader.rcvNumber}"
+                                               readonly="readonly"/>
+                                    </div>
+                                    <div th:if="${(billsPayHeader.billType == T(com.aye.web.model.Bill.BillType).PRE_PAY)}">
+                                        <input type="text" class="td form-control "
+                                               th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].poHeader.poNumber}"
+                                               readonly="readonly"/>
+                                    </div>
+                                    <div th:if="${(billsPayHeader.billType== T(com.aye.web.model.Bill.BillType).MNUL)}">
+                                        <input type="text" class="td form-control "
+                                               th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].glHeader.documentNumber}"
+                                               readonly="readonly"/>
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-2 form-group accgl-col top_marg brderright">
+                                    <input type="text" class="td form-control "
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].supplierLine.name}"
+                                           readonly="readonly"/>
+                                    <input type="hidden"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].supplierLine}"
+                                           readonly="readonly"/>
+                                </div>
+
+
+                                <div>
+                                    <div th:if="${(billsPayHeader.billType != T(com.aye.web.model.Bill.BillType).MNUL)}">
+                                        <div class="col-sm-3 form-group accgl-col top_marg brderright">
+                                            <input type="text" class="td form-control "
+                                                   th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].masterItem.itemCode}"
+                                                   readonly="readonly"/>
+
+                                        </div>
+
+                                            <input type="hidden" class="td form-control " style="text-align: end"
+                                                   th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].primaryQty}"
+                                                   readonly="readonly"/>
+
+
+                                      </div>
+                                    <div th:if="${(billsPayHeader.billType == T(com.aye.web.model.Bill.BillType).MNUL)}">
+                                        <div class="col-sm-3 form-group accgl-col top_marg brderright">
+                                        <input type="text" class="td form-control "
+                                               th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].glLines.description}"
+                                               readonly="readonly"/>
+                                            </div>
+
+                                    </div>
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].id}"/>
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].poRcvLines}"/>
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].poRcvHeader}"/>
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].poLines}"/>
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].poHeader}"/>
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].masterItem.id.id}"/>
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].masterItem.id.inventoryInformations.id}"/>
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].column.createdBy}"/>
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].column.creationDate}"/>
+                                </div>
+
+
+
+                                <div >
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].rcvPrimUom}"/>
+
+                                    <!--<input type="hidden" name="id" th:field="${orderLineList.orderLines[__${rowStat.index}__].orderUomCode}"/>-->
+
+                                    <input type="hidden" name="id"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].currency}"/>
+
+
+                                    <input type="hidden" name="glHeaderid"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].glHeader}"/>
+
+
+                                    <input type="hidden" name="glLinesid"
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].glLines}"/>
+
+
+                                    <input type="hidden" class="td form-control "
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].rcvPrimUomCode}"
+                                           readonly="readonly"/>
+                                    <input type="hidden" class="td form-control "
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].billsPayHeader}"
+                                           readonly="readonly"/>
+                                    <!--<input type="hidden"-->
+                                    <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].orderUom}"/>-->
+                                    <!--<input type="hidden" name="id"-->
+                                    <!--th:field="${orderLineList.orderLineDtos[__${rowStat.index}__].defaultUomCode}"/>-->
+                                </div>
+
+
+                                <div class="col-sm-1 form-group accgl-col top_marg brderright">
+                                    <input type="text" name="amount" readonly="readonly"  class="td form-control "
+                                           th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].unitPrice}"/>
+                                </div>
+
+                                <div class="col-sm-2 form-group accgl-col top_marg brderright ">
+                                    <input th:type="text" name="amount" readonly="readonly"  class="td form-control lineAmount"
+                                          id="lineAmountId" th:field="${billsPayHeader.billsPayLines[__${rowStat.index}__].amount}"/>
+                                </div>
+
+                                <div class="col-sm-1 form-group accgl-col " style="width: 10% !important;" th:if="${(billsPayHeader.glStatus== T(com.aye.web.model.common.GlStatus).N) and (billsPayHeader.id !=null) }">
+                                        <div class="btn-group" role="group" aria-label="..." >
+                                            <!--th:if="${addlineBtn==true}"-->
+                                            <span id="deleteId+${billsPayHeader.billsPayLines[__${rowStat.index}__].id}" >
+                                            <a th:href="@{/BillPay/billPayLinesDelete/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+
+                                            ${billsPayHeader.billsPayLines[__${rowStat.index}__].billsPayHeader.id}+'/'
+                                            +${billsPayHeader.billsPayLines[__${rowStat.index}__].id}"  class="btn btn-danger" onclick="return prevDbClick(this.id)">
+                                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                            </a>
+                                            </span>
+                                            <!--th:if="${addlineBtn==false}"-->
+                                            <!--<span th:if="${addlineBtn==false}">-->
+                                                <!--<a disabled class="btn btn-danger ">-->
+                                                    <!--<span class="glyphicon glyphicon-trash" aria-hidden="true" title="Diduction Entry Exists"></span>-->
+                                                <!--</a>-->
+                                            <!--</span>-->
+                                            <!--<div class="btn-group" role="group" aria-label="...">-->
+                                                <a th:href="@{/BillPay/diduction/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+
+                                    ${billsPayHeader.billsPayLines[__${rowStat.index}__].id}"  class="btn btn-success"><span
+                                                        class="glyphicon glyphicon-plus" aria-hidden="true" title="Diduction At Line Level"></span></a>
+                                            <!--</div>-->
+                                        </div>
+
+
+
+
+
+
+                                </div>
+                            </div>
+                            <div class="col-sm-12 accgl-col brder ">
+                                <div class="col-sm-1 accgl-col " style="width: 20px"></div>
+                                <div class="col-sm-8 accgl-col brderright"><b>Total Line Amount</b></div>
+                                <!--<div class="col-sm-2 accgl-col brderright total-combatdr" style="padding-left: 10px !important;"></div>-->
+                                <div class="col-sm-3 accgl-col  total-totLineAmount"></div>
+                                <!--<div class="col-sm-3 accgl-col isBalanced"></div>-->
+                                <!--<div class="col-sm-1 accgl-col " align="center"></div>-->
+                            </div>
+                        </div>
+
+                        <script>
+                            var varTotLineAmd;
+
+                            $(document).ready(function () {
+//                                alert('x');
+                                var sumdr = 0;
+                                var amtdr =0;
+                                $('.lineAmount').each(function () {
+                                    amtdr = parseFloat(this.value);
+//                                amtdr = parseFloat(document.getElementById('lineAmountId').value);
+                                    if (isNaN(parseFloat(amtdr)))
+                                    {
+                                        amtdr=0;
+                                    }
+
+                                    sumdr=sumdr+amtdr;
+
+                                    varTotLineAmd =sumdr;
+
+                                });
+
+
+                                varTotLineAmd= sumdr;
+
+                                $('.total-totLineAmount').html('<b>'+varTotLineAmd+'</b>');
+                            });
+
+                        </script>
+
+                    </form>
+
+                </div>
+
+                </div>
+            </div>
+            <div data-th-replace="fragments/GlModal :: GlHeader-modal"></div>
+            <div th:if="${addlineBtn==true}">
+                <div  data-th-replace="Procurment/BillPayment/addNewBillLineModal :: addBillLine-modal"></div>
+
+            </div>
+
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading">Adjustment Entry</div>
+                    <div class="panel-body"  th:if="!${#lists.isEmpty(billsPayDiductionses)}">
+                        <div class="form-group col-sm-12">
+                            <table class="table table-bordered table-hover table-striped">
+
+                                <thead>
+                                <th>Id</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <div th:if="*{billsPayHeader.glStatus!=T(com.aye.web.model.common.GlStatus).N}">
+                                    <th>Voucher</th>
+                                </div>
+                                <div th:if="*{billsPayHeader.glStatus==T(com.aye.web.model.common.GlStatus).N}">
+                                    <th>Edit</th>
+                                </div>
+                                <div th:if="*{billsPayHeader.glStatus!=T(com.aye.web.model.common.GlStatus).N}">
+                                    <th>V</th>
+                                </div>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="lines : ${billsPayDiductionses}">
+                                        <td th:text="${lines.id}"></td>
+                                        <td th:text="${lines.payDiducTypes.code}"></td>
+                                        <!--<td th:text="${lines.payDiducTypes.diductionIndicator.valForAcc}"></td>-->
+                                        <td class="diducAmt" th:text="${lines.amount *lines.payDiducTypes.diductionIndicator.valForAcc}"></td>
+                                        <!--<div th:if="*{lines.glHeader.glStatus!=T(com.aye.web.model.common.GlStatus).N}">-->
+                                        <div th:if="*{lines.glHeader!=null}">
+                                            <td th:text="${lines.glHeader.documentNumber}"></td>
+                                        </div>
+                                        <!--<div th:if="*{lines.billsPayHeader.glStatus==T(com.aye.web.model.common.GlStatus).N}">-->
+                                        <div th:if="*{lines.glHeader==null}">
+                                            <td>
+                                                <div class="btn-group" role="group" aria-label="..." name="edit" >
+                                                    <a th:href="@{/BillPay/diduction/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${lines.billsPayLines.id}+'/'+${lines.id}"
+                                                       class="btn btn-success"><span
+                                                            class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                                                </div>
+                                            </td>
+
+                                        </div>
+                                        <div th:if="*{lines.glHeader!=null}">
+                                            <td>
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-GlHeader" th:onclick="|getGlDetail('${lines.glHeader.id}');|"
+                                                        th:attr="data-target='#modal-GlHeader'" title="Detail Journal">
+                                                    <span class="glyphicon glyphicon-record"></span>
+                                                </button>
+                                            </td>
+
+                                        </div>
+                                    <tr>
+                                        <td colspan="2" >Total</td>
+                                        <td class="total-diduc"></td>
+                                        <td colspan="1"></td>
+                                    </tr>
+                                    </tr>
+
+
+                                </tbody>
+
+                            </table>
+
+                            <script>
+                                $(document).ready(function () {
+                                    var sum = 0;
+                                    $('tr').find('.diducAmt').each(function () {
+                                        var combat = $(this).text();
+                                        if (!isNaN(combat) && combat.length !== 0) {
+                                            sum += parseFloat(combat);
+
+                                        }
+                                    });
+//alert(sum);
+                                    $('.total-diduc').html(sum.toFixed(2));
+                                });
+                            </script>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            <div class="panel-footer">
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

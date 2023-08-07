@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+      layout:decorator="fragments/layout">
+
+<head>
+
+    <link th:insert="ReportTmplt/ReportScriptLink"/>
+
+    <!--<link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>-->
+
+    <!--<script th:src="@{/js/easyAutocomplete/autocomplete.js}"></script>-->
+    <!--<script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>-->
+    <!--<style>-->
+        <!--.easy-autocomplete input{-->
+            <!--width: 100%;-->
+        <!--}-->
+    <!--</style>-->
+    <script>
+        var searchObjExec;
+        function getExeccodcomfmodal(pcode,pid,pSource,pSrtNonValT) {
+
+            var iv = document.getElementById('execModalbtnId').value
+            var dvalue='value'+iv;
+            var dId='id'+iv;
+//            alert(dvalue+" "+dId);
+            document.getElementById(dvalue).value = pcode;
+            document.getElementById(dId).value = pid;
+//            document.getElementById('idl' + iv).value = pSource;
+//            document.getElementById('sAsNtVal' + iv).value = pSrtNonValT;
+            $('#modal-warning').modal('hide');
+        }
+        function selectedobj(value, ind) {
+            if (ind == 'Reportexecutabl') {
+                //alert('m');
+
+                SearchExecObjRpt(value);
+            } else    if(ind=='seg1AccGlM')
+            {
+                ExecAccGlSearchseg1(value);
+            }
+            else if(ind=='seg2AccGlM')
+            {
+                ExecAccGlSearchseg2(value);
+            }
+            else if(ind=='seg3AccGlM')
+            {
+                ExecAccGlSearchseg3(value);
+            }
+            else if(ind=='seg4AccGlM')
+            {
+                ExecAccGlSearchseg4(value);
+            }
+            else if(ind=='seg5AccGlM')
+            {
+                ExecAccGlSearchseg5(value);
+            }
+            else if(ind=='seg6AccGlM')
+            {
+                ExecAccGlSearchseg6(value);
+            }
+            else if(ind=='seg7AccGlM')
+            {
+                ExecAccGlSearchseg7(value);
+            }
+            else if(ind=='seg8AccGlM')
+            {
+                ExecAccGlSearchseg8(value);
+            }
+        }
+
+        function getExecmodatbtnid(xx){
+//            alert(xx);
+            var yy=xx;
+
+            document.getElementById('execModalbtnId').value=yy ;
+        };
+
+    </script>
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row  col-sm-12" >
+        <div class="col-sm-1  " >
+        </div>
+        <div class="col-sm-10 " >
+            <div class="panel panel-default bottom_padding100px" >
+                <!-- Default panel contents -->
+                <div class="panel-heading">Report Parameters</div>
+                <div class="panel-body">
+
+                    <form th:action="@{'/Report/export/'+${reqGrpHdr}+'/'+${temltId}}"
+                          th:object="${executableParamList}" th:method="post">
+                        <!--<form action="/Report//Test" // th:target="_blank"-->
+                        <!--th:action="@{/Report/Test}"  th:object="${reportParamList}" th:method="post">-->
+                        <!--th:object="reportParam" th:object="${reportParamList}"-->
+
+                        <!--<form action="/executable/export/UserRespRpt" th:action="@{/executable/export/UserRespRpt}"-->
+                        <!--th:method="post">-->
+
+                        <!--<p th:text="${reportParamList.getId()}"></p>-->
+                        <div class="form-group required col-sm-12">
+                            <label class=" col-sm-4 control-label " for="inputexecutables">Name</label>
+
+                            <div class="col-sm-1 "><b>:</b></div>
+                            <div class="col-sm-7">
+                            <input type="text" id="inputexecutables" placeholder="Name"
+                                   name="executables" th:field="*{executables.name}" class="form-control" required = "required" autofocus/>
+                            <input type="hidden" id="inputexecutablesid"
+                                   name="executables" th:field="*{executables}" class="form-control"/>
+                                <input type="hidden"  id="execModalbtnId" />
+                            <script th:inline="javascript">
+                                function setFromConc(objFromConc)
+                                {
+
+                                    var ltemltId = [[${temltId}]];
+                                    $('#inputexecutablesid').val(objFromConc.id).trigger("change");
+                                    $('#inputexecutables').val(objFromConc.Name).trigger("change");
+                                    l_urlVal = '/AYE/Report/execParamsFromConc/' + objFromConc.id+'/'+ltemltId+'/'+objFromConc.concId;
+                                    var l_url = window.location.origin + l_urlVal;
+
+
+                                    $('#replace_div').load(l_url);
+                                    $( "#submitBtnId").removeAttr('disabled');
+
+                                    $('#modal-warningRm').modal('hide');
+                                };
+
+                                function SearchExecObjRpt(objparms)
+                                {
+                                    var objparmV = objparms;
+                                    $('#inputexecutablesid').val(objparmV.id).trigger("change");
+//                                    $('#inputexecutablesOb').val(objparmV).trigger("change");
+//                                            document.getElementById('inputexecutablesid').value=objparmV;
+//                                    document.getElementById('execParams').style.display="none";
+                                    var ltemltId = [[${temltId}]];
+//                                    alert(accDtl);
+                                    l_urlVal = '/AYE/Report/execParams/' + objparmV.id+'/'+ltemltId;
+                                    var l_url = window.location.origin + l_urlVal;
+//                                                        alert(l_url);
+
+                                    $('#replace_div').load(l_url);
+                                    $( "#submitBtnId").removeAttr('disabled');
+                                }
+                                document.getElementById('inputexecutables').oninput = function () {
+                                    if($('#inputexecutables').val().length>1)
+                                    {
+                                        myFunctionExecut($('#inputexecutables').val());
+                                    }
+                                    document.getElementById('inputexecutables').focus();
+                                };
+                                function myFunctionExecut(v)
+                                {
+
+                                    var exeNameVal = document.getElementById('inputexecutables').value;
+                                    var varReqGrpHdr = [[${reqGrpHdr}]];
+                                    var displayfieldExec = [['#inputexecutables']];
+
+                                    var getvalue = 'name';
+                                    var getDesc = '';
+                                    var indc = 'Reportexecutabl';
+                                        var urlvalCust = '/AYE/ACRC/getExecutablesByReqGrpHdr/' + varReqGrpHdr+'/'+v;
+//                                        alert(urlvalCust)
+
+                                    autocomwithobject(urlvalCust, getvalue, displayfieldExec, null, getDesc, indc);
+
+                                }
+                            </script>
+
+                            </div>
+
+                        </div>
+                        <div id="replace_div"></div>
+
+
+                        <!--<div class="form-group  col-sm-12" >-->
+                            <div class="form-group col-sm-12">
+                            <label class="col-sm-4 control-label "> Schedule & Printer</label>
+                            <div class="col-sm-1 ">
+                                <b>:</b>
+                            </div>
+                            <div class="col-sm-7">
+                                <select class="form-control" id="inpuSchedule"
+                                        th:field="*{schedule}" name="schedule" >
+                                    <option value="">Immediate</option>
+                                    <option th:each="s :${scheduleList}"
+                                            th:text="${s.name}"
+                                            th:value="${s.id}">
+                                    </option>
+                                </select>
+                            </div>
+                                </div>
+                                <div class="form-group col-sm-12">
+                                <label class="col-sm-4 control-label "> </label>
+                                <div class="col-sm-1 ">
+                                    <b></b>
+                                </div>
+                            <div class="col-sm-7">
+                                <select class="form-control" id="inpuPrinterName"
+                                        th:field="*{printerName}" name="printerName" >
+                                    <option value="">No Printer</option>
+                                    <option th:each="s :${printer}"
+                                            th:text="${s.printerName}"
+                                            th:value="${s.printerName}">
+                                    </option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group  col-sm-12 text-right  Padding10px " style="padding-right: 30px;">
+                            <a data-toggle="modal" data-target="#modal-warningRm"
+                               th:attr="data-target='#modal-warningRm'" th:id="btnId"><span
+                                    class="btn btn-primary">Copy</span></a>
+                            <!--<a th:href="@{/Concurrent/getUserConc}+'/'+${rtpName}+'/'+${rptType}+'/'+${pageId}+'/'+${temltId}"-->
+                               <!--class="btn btn-default">View Requests</a>-->
+                            <a th:href="@{/Concurrent/getUserConc}+'/'+${reqGrpHdr}+'/'+${temltId}"
+                               class="btn btn-default">View Requests</a>
+                            <!--<button type="submit" class="btn btn-primary">Save</button>-->
+                            <!--<button type="submit" th:name="submt" class="btn btn-primary " >Add Row-->
+                            <!--</button>-->
+
+                            <button id="submitBtnId" disabled="disabled" type="submit" name="save" class="btn btn-primary" onclick="return checkemptyfield()">Submit</button>
+                            <!--<a th:href="@{/Concurrent/getUserConc}" class="btn btn-default">Find</a>-->
+                            <script th:inline="javascript">
+                                document.getElementById('btnId').onclick =
+                                        function () {
+//                                                                alert('x');
+
+                                            getContent(1);
+                                        };
+                                function getContent(btnId) {
+                                    var rptGrpHdr = [[${reqGrpHdr}]];
+                                    var tId = [[${temltId}]];
+                                    //                                alert(lBhId);
+
+                                    var l_urlVal = '/AYE/Concurrent/getUserConcRes/'+rptGrpHdr+'/'+tId ;
+                                    var l_url = window.location.origin + l_urlVal;
+//                                                                        alert(l_url);
+                                    //load fragment and replace content
+                                    $('#replace_userConcDiv').load(l_url);
+                                };
+
+                            </script>
+                        </div>
+
+                        <div class="modal modal-warningRm fade in" th:id="modal-warningRm" >
+
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">×</span></button>
+                                        <h5 class="modal-title">Request</h5>
+                                        <div class="modal-body">
+                                            <div class=" col-sm-12 table-responsive dist_view">
+                                                <div id="replace_userConcDiv">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="col-sm-2  " >
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script src="../static/js/app.js" th:src="@{/js/app.js}"></script>-->
+
+</body>
+</html>

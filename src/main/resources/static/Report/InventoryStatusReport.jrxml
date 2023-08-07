@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InventoryStatusReport" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="com.aye.ayeireportlibrery.ConvertToWordLocal" uuid="3b6d27c7-33d7-4c31-b655-c7e18fffd487">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="pinvorg" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pfdate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ptdate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pitemid" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="psubinvid" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select iteminf.org_id,
+       iteminf.name,
+       iteminf.address,
+       iteminf.inv_org_id,
+       iteminf.invorg_name,
+       iteminf.item_id,
+       iteminf.item_code,
+       iteminf.uom_code uom,
+       iteminf.subinv_code,
+       NVL(opening.qty,0)qty,
+       NVL(mtl.receive_qty,0)receive_qty,
+       NVL(mtl.issue_qty,0)issue_qty,
+         nvl (opening.qty, 0)
+       + nvl (mtl.receive_qty, 0)
+       + nvl (mtl.issue_qty, 0)
+          closing
+  from (  select inv_org_id,
+                 item_id,
+                 subinv_id,
+                 uom,
+                 primary_uom_id,
+                    sum(receive_qty) as receive_qty,
+                 sum(issue_qty) as issue_qty
+            from (select    m.inv_org_id,
+                 item_id,
+                 m.subinv_id,
+                 m.primary_uom_code uom,
+                 m.primary_uom_id,    case
+                    when nvl (m.primary_qty, 0) > 0
+                    then nvl (m.primary_qty, 0)
+                    else
+                       0
+                 end
+                    as receive_qty,
+                 case
+                    when nvl (m.primary_qty, 0) < 0
+                    then
+                       nvl (m.primary_qty, 0)
+                    else
+                       0
+                 end as issue_qty
+                 from  inv_material_trns m
+        where m.inv_org_id = $P{pinvorg}
+                 and trunc (m.trns_date) between $P{pfdate} and $P{ptdate} )
+        group by inv_org_id,
+                 item_id,
+                subinv_id,
+                 uom,
+                 primary_uom_id ) mtl,
+       (select org.id org_id,
+               org.name,
+               inv.address,
+               inv.id inv_org_id,
+               inv.name invorg_name,
+               itm.item_id,
+               itm.item_code,
+               itm.DEFAULT_UOM_id uom_id,
+               uom.uom_code,
+               subinv.id subinv_id,
+               subinv.code subinv_code
+          from inv_item_m itm,
+               inv_informations inv,
+               organization_hierarchy org,
+               inv_subinventory subinv,
+               INV_UNITS_OF_MEASURE uom
+         where     itm.inv_org_id = inv.id
+               and inv.id = subinv.inv_org_id
+               and inv.ou_id = org.id
+               and ITM.DEFAULT_UOM_ID = uom.id) iteminf,
+       (  select m.inv_org_id,
+                 m.item_id,
+                 m.subinv_id,
+                 m.primary_uom_id,
+                 sum (m.primary_qty) qty
+            from inv_material_trns m
+        where m.inv_org_id = $P{pinvorg} and trunc (m.trns_date) < $P{pfdate}
+        group by m.inv_org_id,
+                 m.item_id,
+                 m.subinv_id,
+                 m.primary_uom_id) opening
+ where     mtl.item_id(+) = iteminf.item_id
+       and mtl.inv_org_id(+) = iteminf.inv_org_id
+       and mtl.subinv_id(+) = iteminf.subinv_id
+       and opening.inv_org_id(+) = iteminf.inv_org_id
+       and opening.item_id(+) = iteminf.item_id
+       and opening.subinv_id(+) = iteminf.subinv_id
+       and nvl2 ($P{pitemid}, iteminf.item_id, -999) = nvl ($P{pitemid}, -999)
+       and nvl2 ($P{psubinvid}, iteminf.subinv_id, -999) = nvl ($P{psubinvid}, -999)
+       and  nvl (opening.qty, 0)
+          + nvl (mtl.receive_qty, 0)
+          - nvl (mtl.issue_qty, 0) > 0
+order by iteminf.subinv_code, iteminf.item_code]]>
+	</queryString>
+	<field name="ORG_ID" class="java.math.BigDecimal"/>
+	<field name="NAME" class="java.lang.String"/>
+	<field name="ADDRESS" class="java.lang.String"/>
+	<field name="INV_ORG_ID" class="java.math.BigDecimal"/>
+	<field name="INVORG_NAME" class="java.lang.String"/>
+	<field name="ITEM_ID" class="java.math.BigDecimal"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="UOM" class="java.lang.String"/>
+	<field name="SUBINV_CODE" class="java.lang.String"/>
+	<field name="QTY" class="java.math.BigDecimal"/>
+	<field name="RECEIVE_QTY" class="java.math.BigDecimal"/>
+	<field name="ISSUE_QTY" class="java.math.BigDecimal"/>
+	<field name="CLOSING" class="java.math.BigDecimal"/>
+	<variable name="curDate" class="java.lang.String">
+		<variableExpression><![CDATA[$P{REPORT_SCRIPTLET}.getCurrentDate()]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<variable name="totalRcv" class="java.lang.String" calculation="Sum">
+		<variableExpression><![CDATA[$F{RECEIVE_QTY}]]></variableExpression>
+	</variable>
+	<variable name="totalIssue" class="java.lang.String" calculation="Sum">
+		<variableExpression><![CDATA[$F{ISSUE_QTY}]]></variableExpression>
+	</variable>
+	<variable name="variable1" class="java.lang.Integer" resetType="Group" resetGroup="subinv" calculation="Count">
+		<variableExpression><![CDATA[$F{ITEM_ID}]]></variableExpression>
+	</variable>
+	<group name="subinv">
+		<groupExpression><![CDATA[$F{SUBINV_CODE}]]></groupExpression>
+		<groupHeader>
+			<band height="40">
+				<textField>
+					<reportElement positionType="Float" x="0" y="0" width="802" height="20" uuid="f317df40-f320-421f-87ca-c956ae583f16"/>
+					<textElement>
+						<font size="10" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Sub Inventory :"+$F{SUBINV_CODE}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="table_TH" x="44" y="20" width="204" height="20" uuid="bd699cf0-2ae0-4146-981b-4167d62039ac"/>
+					<textElement textAlignment="Center">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Item Name]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table_TH" x="248" y="20" width="78" height="20" uuid="0b8ef83b-a06b-4fd3-b458-4926c02cc2b1"/>
+					<textElement textAlignment="Center">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[UOM]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table_TH" x="326" y="20" width="74" height="20" uuid="0b9319db-8279-4f12-88a0-35d9cdb23aab"/>
+					<textElement textAlignment="Center">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Opening]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table_TH" x="400" y="20" width="100" height="20" uuid="3d81fb90-a85e-4d7f-bf5f-8f85b260dd49"/>
+					<textElement textAlignment="Center">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Receive Qty]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table_TH" x="500" y="20" width="100" height="20" uuid="0799fea6-d595-4048-abff-be26ca2b7d38"/>
+					<textElement textAlignment="Center">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Issue Qty]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table_TH" x="600" y="20" width="99" height="20" uuid="0337ea3e-d2c6-4104-8224-7a396153a202"/>
+					<textElement textAlignment="Center">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Closing]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table_TH" x="0" y="20" width="44" height="20" uuid="08616f73-cdb6-4fb9-bc6b-a0725fa15b5d"/>
+					<textElement textAlignment="Center">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[#SL]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="111" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="699" height="31" uuid="38c90d29-5b17-485f-bcba-61e218faf572"/>
+				<textElement textAlignment="Center">
+					<font size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="31" width="699" height="20" uuid="92808e04-1a81-4c6b-aae3-36caaf12dc51"/>
+				<textElement textAlignment="Center">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="51" width="698" height="20" uuid="1bc99b93-3735-4293-9061-3f09b9e025f4"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Inventory Status Report (Summary)
+]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="71" width="699" height="20" uuid="5761d223-07ef-448b-bf80-2a817aa16dca"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("MM/dd/yyyy").format($P{pfdate})+' To '+
+new SimpleDateFormat("MM/dd/yyyy").format($P{ptdate})]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement style="table_TD" positionType="Float" x="0" y="0" width="44" height="20" uuid="ca0988a9-61aa-416c-bad3-d943196d25de"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{variable1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" positionType="Float" x="44" y="0" width="204" height="20" uuid="d9f3c49b-e239-4de5-9cfd-4cfb0f9dbbaa"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" positionType="Float" x="248" y="0" width="78" height="20" uuid="84095e98-68d5-4611-948c-c3600322b29b"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{UOM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" positionType="Float" x="326" y="0" width="74" height="20" uuid="cfa49933-b4f5-4391-af1c-7614df74a18a"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" positionType="Float" x="400" y="0" width="100" height="20" uuid="8b651ce2-13d8-4ab7-bae7-0169a786c683"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RECEIVE_QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" positionType="Float" x="500" y="0" width="100" height="20" uuid="1315bb5c-949b-4c7f-8c51-3642a747a068"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ISSUE_QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" positionType="Float" x="600" y="0" width="99" height="20" uuid="a5dd59f6-59d7-4305-99f6-5a3ad614bbfe"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CLOSING}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<lastPageFooter>
+		<band height="20">
+			<textField>
+				<reportElement x="0" y="0" width="699" height="20" forecolor="#999999" uuid="4ee7b1ef-2686-4a64-9686-7073f1eecd68"/>
+				<textFieldExpression><![CDATA["Green Board Fibar Mils Ltd. Print Date: "+$V{curDate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

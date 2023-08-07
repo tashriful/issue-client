@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+</head>
+<body>
+<div  id="InvClassificationFregment" class="InvClassificationFregment " th:fragment="InvClassificationFregment">
+
+    <div class="form-group col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+         th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment1}">
+
+
+        <label class="col-sm-3 control-label " for="inputsegment1"
+               th:text="${x.segmenteName}">Name</label>
+
+        <div class="col-sm-1 ">
+            <b>:</b>
+        </div>
+        <div class="col-sm-8">
+            <input class="form-control fields" type="text" id="inputsegment1"
+                   th:attr="placeholder=${x.segmenteName}"
+                   th:field="${search.codeCombinationsSearch.segment1}" name="segment1"/>
+
+            <input class="form-control " type="hidden" id="inputsegment1id"
+                   th:attr="placeholder=${x.segmenteName}" />
+
+
+            <script th:inline="javascript">
+
+
+                var seghdrId = [[${x.segmentHeader.id}]];
+                var urlval = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                var displayfield = '#inputsegment1';
+                var dbfield = '#inputsegment1id'
+                var getvalue = 'code';
+                autocom(urlval, getvalue, displayfield, dbfield);
+
+            </script>
+
+
+        </div>
+
+
+    </div>
+
+
+    <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+         th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment2}">
+
+        <label class="col-sm-3 control-label " for="inputSegment2"
+               th:text="${x.segmenteName}">Name</label>
+
+        <div class="col-sm-1 ">
+            <b>:</b>
+        </div>
+        <div class="col-sm-8 ">
+            <input class="form-control fieldss"  type="text" id="inputSegment2"
+                   th:attr="placeholder=${x.segmenteName}"
+                   th:field="${search.codeCombinationsSearch.segment2}" name="Segment2"/>
+
+            <input class="form-control" type="hidden" id="inputSegment2id"
+                   th:attr="placeholder=${x.segmenteName}" />
+
+            <script th:inline="javascript">
+
+
+                var seghdrId = [[${x.segmentHeader.id}]];
+                var urlval = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                var displayfield = '#inputSegment2';
+                var dbfield = '#inputSegment2id'
+                var getvalue = 'code';
+                autocom(urlval, getvalue, displayfield, dbfield);
+
+
+            </script>
+
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+         th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment3}">
+
+        <label class="col-sm-3 control-label " for="inputsegment3"
+               th:text="${x.segmenteName}">Name</label>
+
+        <div class="col-sm-1 ">
+            <b>:</b>
+        </div>
+        <div class="col-sm-8 ">
+            <input class="form-control"  type="text" id="inputsegment3"
+                   th:attr="placeholder=${x.segmenteName}"
+                   th:field="${search.codeCombinationsSearch.segment3}" name="segment3"/>
+
+            <input class="form-control"  type="hidden" id="inputsegment3id"
+                   th:attr="placeholder=${x.segmenteName}" />
+
+            <script th:inline="javascript">
+
+
+                var seghdrId = [[${x.segmentHeader.id}]];
+                var urlval = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                var displayfield = '#inputsegment3';
+                var dbfield = '#inputsegment3id'
+                var getvalue = 'code';
+                autocom(urlval, getvalue, displayfield, dbfield);
+
+
+            </script>
+        </div>
+    </div>
+
+
+    <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+         th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment4}">
+
+        <label class="col-sm-3 control-label " for="inputsegment4"
+               th:text="${x.segmenteName}">Name</label>
+
+        <div class="col-sm-1 ">
+            <b>:</b>
+        </div>
+        <div class="col-sm-8  ">
+            <input class="form-control"  type="text" id="inputsegment4"
+                   th:attr="placeholder=${x.segmenteName}"
+                   th:field="${search.codeCombinationsSearch.segment4}" name="segment4"/>
+
+            <input class="form-control"  type="hidden" id="inputsegment4id"
+                   th:attr="placeholder=${x.segmenteName}" />
+
+            <script th:inline="javascript">
+
+
+                var seghdrId = [[${x.segmentHeader.id}]];
+                var urlval = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                var displayfield = '#inputsegment4';
+                var dbfield = '#inputsegment4id'
+                var getvalue = 'code';
+                autocom(urlval, getvalue, displayfield, dbfield);
+
+
+            </script>
+        </div>
+    </div>
+
+    <div class="form-group required col-sm-12" th:each="x :${keySegmentLineList.keySegmentLines}"
+         th:if="${x.segmenteColumn == T(com.aye.web.model.common.SegmentColumn).Segment5}">
+
+        <label class="col-sm-3 control-label " for="inputsegment5"
+               th:text="${x.segmenteName}">Name</label>
+
+        <div class="col-sm-1 ">
+            <b>:</b>
+        </div>
+        <div class="col-sm-8 ">
+            <input class="form-control"  type="text" id="inputsegment5"
+                   th:attr="placeholder=${x.segmenteName}"
+                   th:field="${search.codeCombinationsSearch.segment5}" name="segment5"/>
+                              <input class="form-control"  type="text" id="inputsegment5id"
+                   th:attr="placeholder=${x.segmenteName}" />
+
+            <script th:inline="javascript">
+
+
+                var seghdrId = [[${x.segmentHeader.id}]];
+                var urlval = '/AYE/ACRC/getSegmentLineData/' + seghdrId;
+                var displayfield = '#inputsegment5';
+                var dbfield = '#inputsegment5id'
+                var getvalue = 'code';
+                autocom(urlval, getvalue, displayfield, dbfield);
+
+            </script>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="form-group">
+        <!--<label for="inputid">Name</label>-->
+        <input type="hidden" class="form-control" id="inputkeySegmentHeader"
+               placeholder="keySegmentHeader"
+               th:field="${search.codeCombinationsSearch.keySegmentHeaderId}" name="keySegmentHeader"/>
+    </div>
+</div>
+</body>
+</html>

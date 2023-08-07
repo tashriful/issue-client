@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorator="fragments/layout">
+<head>
+    <link th:insert="Procurment/PO/PoScriptLink"/>
+
+</head>
+<body>
+<div class="right_col" role="main" data-layout-fragment="content">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <!--<div class="container">-->
+            <div class="panel panel-default">
+                <!--<div class="form-group col-sm-5 " style="padding-left: 0; color: #172D44;font-weight: bold ">Diduction</div>-->
+                <div class="panel-heading">Diduction</div>
+                <div class="panel-body">
+
+
+
+                    <form th:id="diductionsForm" th:action="@{'/BillPay/diduction/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${fromId}}"
+                          th:object="${diductions}" th:method="post">
+                 <span style="font-weight: bold" th:each="m :${msg}">
+                    <p th:style="${m.tag} ? 'color:#ed1c24;':'color:#4aa509;'">
+                        <span th:if="${m.tag==null}" th:text="${m.msg}"> </span>
+                        <span th:unless="${m.tag==null}" th:text="${m.tag+' '+m.msg}"></span>
+                    </p>
+                 </span>
+                        <div id="ipvMsg" class="text-left form-group">
+                <span style="font-weight: bold " >
+                    <p th:style="'color:#4aa509;padding-left: 0'" >
+                        <span> All Diduction Amount will change on this Amount!</span>
+
+                    </p>
+                 </span>
+                        </div>
+                        <div id="diducErr" class="text-left form-group">
+                <span style="font-weight: bold " >
+                    <p th:style="'color:#fb4922;padding-left: 0'" >
+                        <span> Total Diduction Amount is Greater Then Payment Amount!</span>
+
+                    </p>
+                 </span>
+                        </div>
+                        <div class="form-group">
+                            <!--<label for="inputid">Name</label>-->
+                            <input type="hidden" class="form-control" id="inputid" placeholder="Id" th:field="*{id}"
+                                   name="id"/>
+                            <input type="hidden" class="form-control" id="inputbillsPayLines" th:field="*{billsPayLines}"/>
+                            <input type="hidden" class="form-control" id="inputbillsPayHeader" th:field="*{billsPayHeader}"/>
+                            <input type="hidden" class="form-control" id="inputglHeader" th:field="*{glHeader}"/>
+                            <input type="hidden" class="form-control" id="inputcalendarDetail" th:field="*{calendarDetail}"/>
+                            <input type="hidden" class="form-control" id="inputorgHierarchy" th:field="*{orgHierarchy}"/>
+                            <input type="hidden" class="form-control" id="inputbillAdjFrom" th:field="*{billAdjFrom}"/>
+                            <!--<input type="text" class="form-control" id="inputinvtrnsName" placeholder="Inv Trns Name" th:field="*{transactionName}" name="transactionName"/>-->
+                            <span class="help-block" th:if="${#fields.hasErrors('id')}"
+                                  th:errors="*{id}">Id Error</span>
+                        </div>
+                        <div th:class="${#fields.hasErrors('payDiducTypes')} ? 'form-group has-error' :'form-group col-sm-12'">
+                            <label class="col-sm-3 control-label " for="inputpayDiducTypes">Type</label>
+                            <div class="col-sm-1 "><b>:</b></div>
+
+                            <div class="col-sm-8 ">
+                                <select type="text" id="inputpayDiducTypes" th:field="*{payDiducTypes}" class="form-control" required="required">
+                                    <option value="">Select</option>
+                                    <option th:each="t :${payDiducTypes}" th:text="${t.name}" th:value="${t.id}"
+                                            th:attr="data-billTrnsType=${t.billTrnsType},
+                                            data-indc=${t.diductionIndicator.val},
+                                            data-indcName=${t.diductionIndicator}" ></option>
+                                </select>
+                                <p th:errors="*{payDiducTypes}" class="help-block"></p>
+                                <script th:inline="javascript">
+                                    document.getElementById('ipvMsg').style.display="none";
+
+                                    $("#inputpayDiducTypes").change(function () {
+                                        var varBillTrnsType = ($(this.options[this.selectedIndex]).attr('data-billTrnsType'));
+                                        var lIndc = ($(this.options[this.selectedIndex]).attr('data-indc'));
+                                        var lIndcName = ($(this.options[this.selectedIndex]).attr('data-indcName'));
+                                        $('#locvalIndc').val(lIndc);
+                                        $('#locvalIndcName').val(lIndcName);
+                                        if (varBillTrnsType=='IPV')
+                                        {
+//                                    alert("All Diduction Amount will change on this diduction Amount!");
+                                            document.getElementById('ipvMsg').style.display="block";
+                                        }
+                                    });
+
+                                    $(document).ready(function(){
+                                        var varBillTrnsType = ($("#inputpayDiducTypes option:selected").attr('data-billTrnsType'));
+                                        var lIndc = ($("#inputpayDiducTypes option:selected").attr('data-indc'));
+                                        var lIndcName = ($("#inputpayDiducTypes option:selected").attr('data-indcName'));
+//                                        alert(lIndcName );
+                                        $('#locvalIndc').val(lIndc);
+                                        $('#locvalIndcName').val(lIndcName);
+                                    })
+                                </script>
+                                <input type="hidden" id="locvalIndc"/>
+                                <input type="hidden" id="locvalIndcName"/>
+                            </div>
+
+                        </div>
+                        <div th:class="${#fields.hasErrors('amount')} ? 'form-group has-error' :'form-group col-sm-12'">
+                            <label class="col-sm-3 control-label " for="inputamount">Amount</label>
+                            <div class="col-sm-1 "><b>:</b></div>
+
+                            <div class="col-sm-8 ">
+                                <input type="text" id="inputamount" th:field="*{amount}" class="form-control" required="required"/>
+                                <input type="hidden" class="form-control" id="inputPayAmount" th:field="${diductions.billsPayHeader.payAmount}" />
+                                <!--<input type="hidden" class="form-control" id="inputtotalDiducAmount" th:field="${totalDiducAmount}" />-->
+
+                                <p th:errors="*{amount}" class="help-block"></p>
+                            </div>
+                            <script th:inline="javascript">
+                                //
+                                document.getElementById('diducErr').style.display="none";
+                                document.getElementById('inputamount').oninput=function (){
+                                    var ltotAmount = [[${totalDiducAmount}]];//document.getElementById('inputPayAmount').value;
+                                    var ltotGrnAmount = [[${totalGrnAmount}]];//document.getElementById('inputPayAmount').value;
+                                    if (ltotAmount=='null')
+                                    {
+                                        ltotAmount=0;
+                                    }
+                                    var lIndc = document.getElementById('locvalIndc').value;
+                                    var lIndcName = document.getElementById('locvalIndcName').value;
+                                    var lPayAmount = document.getElementById('inputPayAmount').value;
+                                    var curAmt=document.getElementById('inputamount').value;
+                                    var lBalance =0;
+                                    if (lIndcName=='DECREASE')
+                                    {
+//                                        lBalance = lPayAmount-ltotAmount-curAmt;
+                                        lBalance = ltotGrnAmount-ltotAmount-curAmt;
+                                        if (lBalance<=0)
+                                        {
+                                            document.getElementById('diducErr').style.display="block";
+                                            document.getElementById('diducSave').disabled=true;
+
+                                        }else
+                                        {
+                                            document.getElementById('diducErr').style.display="none";
+                                            document.getElementById('diducSave').disabled=false;
+
+                                        }
+                                    }
+//                                    var lBalance = lPayAmount-ltotAmount-curAmt;
+
+//                            alert(lBalance);
+
+                                };
+                            </script>
+                        </div>
+
+                        <div class="form-group">
+
+                            <input type="hidden" class="form-control" id="inputcolumncreatedBy" placeholder="columncreatedBy"
+                                   th:field="*{column.createdBy}" name="columncreatedBy"/>
+                            <input type="hidden" class="form-control" id="inputcolumnDate" placeholder="columnDate"
+                                   th:field="*{column.creationDate}" name="columnDate"/>
+                            <span class="help-block" th:if="${#fields.hasErrors('column.creationDate')}"
+                                  th:errors="*{column.creationDate}">User Name Error</span>
+
+                        </div>
+
+
+                        <div class="text-right Padding10px">
+
+                            <div class="btn-group" role="group" aria-label="...">
+
+                                <a th:href="@{/BillPay/billPay/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+*{billsPayHeader.id}"
+                                   class="btn btn-success">Back</a>
+
+                            </div>
+
+                            <button id="diducSave" type="submit" class="btn btn-primary">Save</button>
+                        </div>
+
+
+
+                    </form>
+
+                    <div class="form-group col-sm-12 marginbtm10px">
+
+                        <table class="table table-bordered table-hover table-striped ">
+
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Line Id</th>
+
+                                <th>Code</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+
+                            </tr>
+                            </thead>
+                            <div th:if="!${#lists.isEmpty(billsPayDiducs)}">
+                                <tr th:each="l : ${billsPayDiducs}">
+
+                                    <td th:text="*{l.id}"></td>
+                                    <td th:text="*{l.billsPayLines==null ? '' : l.billsPayLines.id}"></td>
+                                    <td th:text="*{l.payDiducTypes.code}"></td>
+                                    <td th:text="*{l.payDiducTypes.billTrnsType}"></td>
+                                    <td class="diducAmt" th:text="*{l.amount}"></td>
+                                    <td>
+                                        <div th:if="*{l.glHeader ==null}">
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <a th:href="@{/BillPay/diduction/U/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${l.billsPayLines.id}+'/'+${l.id}"
+                                               class="btn btn-success"><span
+                                                    class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+
+                                        </div>
+
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <a th:href="@{/BillPay/deleteDiduction/E/}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${l.billsPayLines.id}+'/'+${l.id}"
+                                               class="btn btn-danger "><span
+                                                    class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+
+                                        </div>
+                                        </div>
+
+                                        <!--<div class="btn-group" role="group" aria-label="...">-->
+                                        <!--<a th:href="@{'/poReceive/rcvLine/U/'}+${pageId}+'/'+${temltId}+'/'+${invOrgId}+'/'+${l.poRcvHeader.id}+'/'+${l.id}"-->
+                                        <!--class="btn btn-success"><span-->
+                                        <!--class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>-->
+
+                                        <!--</div>-->
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td colspan="4" >Total</td>
+                                    <td class="total-diducAmt"></td>
+                                    <td colspan="1"></td>
+                                </tr>
+                                <script>
+                                    $(document).ready(function () {
+                                        var sumd = 0;
+                                        $('tr').find('.diducAmt').each(function () {
+                                            var combatd = $(this).text();
+                                            if (!isNaN(combatd) && combatd.length !== 0) {
+                                                sumd += parseFloat(combatd);
+
+                                            }
+                                        });
+//alert(sum);
+                                        $('.total-diducAmt').html(sumd);
+                                    });
+                                </script>
+
+                            </div>
+                            <div th:if="${#lists.isEmpty(billsPayLinesList)}">
+                                <tr>
+                                    <td>No Data exists!</td>
+                                </tr>
+                            </div>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Payment & GRN Informations</div>
+                <!--<div class="form-group col-sm-5 " style="padding-left: 0; color: #172D44;font-weight: bold ">Payment Informations</div>-->
+                <div class="panel-body">
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                    <tr   ><th th:colspan="8" style="color:#333333" >Payment</th></tr>
+                    <tr>
+                        <th>Pay. Type</th>
+                        <th>Number</th>
+                        <th>Currency</th>
+                        <th>Bank</th>
+                        <th>Ref. Type</th>
+                        <th>Ref. Number</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <td th:text="${billsPayLinesList[0].billsPayHeader.glCategories.categoriesCode}"></td>
+                    <td th:text="${billsPayLinesList[0].billsPayHeader.payNumber}"></td>
+                    <td th:text="${billsPayLinesList[0].billsPayHeader.currency.code}"></td>
+                    <td th:text="${billsPayLinesList[0].billsPayHeader.bankLine.name}"></td>
+                    <td th:text="${billsPayLinesList[0].billsPayHeader.paymentMode}"></td>
+                    <td th:text="${billsPayLinesList[0].billsPayHeader.refNumber}"></td>
+                    <td th:text="${billsPayLinesList[0].billsPayHeader.date}"></td>
+                    <td th:text="${billsPayLinesList[0].billsPayHeader.payAmount}"></td>
+                    </tbody>
+                    </table>
+                    <table class="table table-bordered table-hover table-striped">
+                        <!--<div class="panel-heading">Line Informations</div>-->
+                        <!--<div class="form-group col-sm-5 " style="padding-left: 0; color: #172D44;font-weight: bold ">Line Informations</div>-->
+                    <thead>
+                    <tr   ><th th:colspan="9" style="color:#333333">GRN Line Informations</th></tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ref Line Id</th>
+                        <th>Number</th>
+                        <th>Supplier</th>
+                        <th>Item</th>
+                        <th>Uom</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Amount</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <div th:if="!${#lists.isEmpty(billsPayLinesList)}">
+                        <tr th:each="l  : ${billsPayLinesList}">
+                            <!--<div th:if="${billType!=T(com.aye.web.model.Bill.BillType).MNUL}">-->
+                            <!--<div th:if="${billType!=T(com.aye.web.model.Bill.BillType).MNUL or  (billType==T(com.aye.web.model.Bill.BillType).PRE_PAY and billPayHeader.prePayFrom==T(com.aye.web.model.Bill.BillsPayHeader.PrePayFrom).LINE) }">-->
+                            <div th:if="${indcate==1}">
+                                <td th:text="${l.id}"></td>
+                                <td th:text="${l.poRcvLines.id}"></td>
+                                <div th:if="${(l.poRcvLines != null)}">
+                                    <td th:text="${l.poRcvLines.poRcvHeader.rcvNumber}"></td>
+                                </div>
+                                <div th:if="${(l.poRcvLines == null)}">
+                                    <td th:text="${l.poHeader.poNumber}"></td>
+                                </div>
+                                <td th:text="${l.supplierLine.name}"></td>
+                                <td th:text="${l.masterItem.itemCode}"></td>
+                                <td th:text="${l.rcvPrimUomCode}"></td>
+                                <td style="text-align: end" th:text="${l.primaryQty}"></td>
+                                <td th:text="${l.unitPrice}"></td>
+                                <td class="lineAmt" th:text="${l.amount}"></td>
+
+                            </div>
+                            <!--<div th:if="${billType==T(com.aye.web.model.Bill.BillType).MNUL}">-->
+                            <!--<div th:if="${billType!=T(com.aye.web.model.Bill.BillType).MNUL and (billType==T(com.aye.web.model.Bill.BillType).PRE_PAY and billPayHeader.prePayFrom==T(com.aye.web.model.Bill.BillsPayHeader.PrePayFrom).HEADER) }">-->
+                            <div th:if="${indcate==2}">
+                                <td th:text="${l.id}"></td>
+                                <td th:text="${l.id}"></td>
+                                <td th:text="${l.poHeader.poNumber}"></td>
+                                <td th:text="*{l.supplierLine.name}"></td>
+                                <td ></td>
+
+                                <td ></td>
+                                <td ></td>
+                                <td ></td>
+                                <td class="lineAmt" th:text="*{l.amount}"></td>
+                            </div>
+                            <!--<div th:if="${billType==T(com.aye.web.model.Bill.BillType).MNUL}">-->
+                            <div th:if="${indcate==3}">
+                                <td th:text="${l.id}"></td>
+                                <td th:text="${l.id}"></td>
+                                <td th:text="*{l.glHeader.documentNumber}"></td>
+                                <td th:text="*{l.supplierLine.name}"></td>
+                                <td th:text="*{l.glLines.description}"></td>
+                                <td ></td>
+                                <td ></td>
+                                <td ></td>
+                                <td class="lineAmt" th:text="*{l.amount}"></td>
+                            </div>
+                        </tr>
+
+                        <tr>
+                            <td colspan="7" >Total</td>
+                            <td class="total-lineAmt"></td>
+                        </tr>
+
+                    </div>
+                    <div th:if="${#lists.isEmpty(billsPayLinesList)}">
+                        <tr>
+                            <td>No Data exists!</td>
+                        </tr>
+                    </div>
+
+                    </tbody>
+
+                </table>
+                    <script>
+                        $(document).ready(function () {
+                            var sum = 0;
+                            $('tr').find('.lineAmt').each(function () {
+                                var combat = $(this).text();
+                                if (!isNaN(combat) && combat.length !== 0) {
+                                    sum += parseFloat(combat);
+
+                                }
+                            });
+//alert(sum);
+                            $('.total-lineAmt').html(sum);
+                        });
+                    </script>
+
+                </div>
+            </div>
+
+    </div>
+</div>
+</div>
+</body>
+</html>

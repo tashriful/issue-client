@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="codeCombination" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5822a5de-25af-4469-9567-e85cd1a07366">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="p_org_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT account_type,
+         account_sub_type,
+         acc_group,
+         sub_group,
+         cccode,
+         cc_desc, org.name org_name,
+org.address org_address,CC.FS_GROUP1,CC.FS_GROUP2,CC.FS_GROUP3,CC.FS_GROUP4
+    FROM code_combination_v cc,organization_hierarchy org
+    where org.GL_STRUCTURE_ID=CC.KEY_SEGMENT_HEADER_ID
+    and org.ID=$P{p_org_id}
+ORDER BY acc_group,
+         sub_group,
+         cccode]]>
+	</queryString>
+	<field name="ACCOUNT_TYPE" class="java.lang.String"/>
+	<field name="ACCOUNT_SUB_TYPE" class="java.lang.String"/>
+	<field name="ACC_GROUP" class="java.lang.String"/>
+	<field name="SUB_GROUP" class="java.lang.String"/>
+	<field name="CCCODE" class="java.lang.String"/>
+	<field name="CC_DESC" class="java.lang.String"/>
+	<field name="ORG_NAME" class="java.lang.String"/>
+	<field name="ORG_ADDRESS" class="java.lang.String"/>
+	<field name="FS_GROUP1" class="java.lang.String"/>
+	<field name="FS_GROUP2" class="java.lang.String"/>
+	<field name="FS_GROUP3" class="java.lang.String"/>
+	<field name="FS_GROUP4" class="java.lang.String"/>
+	<group name="ACC_GROUP">
+		<groupExpression><![CDATA[$F{ACC_GROUP}]]></groupExpression>
+		<groupHeader>
+			<band height="15">
+				<textField>
+					<reportElement x="0" y="0" width="300" height="15" uuid="ca2bfcb7-299d-41ac-bc99-3b45d433f89a"/>
+					<textElement>
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ACC_GROUP}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="SUB_GROUP">
+		<groupExpression><![CDATA[$F{SUB_GROUP}]]></groupExpression>
+		<groupHeader>
+			<band height="15">
+				<textField>
+					<reportElement x="11" y="0" width="300" height="15" uuid="b7bdeccd-e77f-46b1-9a11-3ed3cb7e8240"/>
+					<textElement>
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{SUB_GROUP}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="31" uuid="1eb8b900-6415-453a-aeea-de0a62c85cb3"/>
+				<textElement textAlignment="Center">
+					<font size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="31" width="555" height="21" uuid="ed17bc42-f9ee-4e5b-ae03-84317e07a561"/>
+				<textElement textAlignment="Center">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="52" width="555" height="20" uuid="cae52a89-95d8-44e5-a949-2bab4fd17388"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Chart of Accounts]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement x="31" y="0" width="155" height="15" uuid="fc9d6f57-2e2f-4699-984f-de7ab23bcfca"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CCCODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="186" y="0" width="261" height="15" uuid="4c1a8328-97a5-4a1b-be8b-8dc5e71bc5bd"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CC_DESC}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="447" y="0" width="108" height="15" uuid="c71b570c-eec2-455b-9ed0-ca04f6bd88b4"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ACCOUNT_TYPE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

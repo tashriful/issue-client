@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+      layout:decorator="fragments/layout">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <!--<script src="@{//code.jquery.com/jquery-1.12.2.min.js}"></script>-->
+    <!--<script th:src="@{/js/json-path-picker.js}"></script>-->
+    <!--<script src="jquery.beautify-json.js"></script>-->
+    <!--<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>-->
+
+    <!--<link th:href="@{/css/json-path-picker.css}" rel="stylesheet"/>-->
+    <link th:href="@{/css/easyAutocomplete/easy-autocomplete.min.css}" rel="stylesheet"/>
+
+
+    <script th:src="@{/js/easyAutocomplete/autocompleteInv.js}"></script>
+    <script th:src="@{/js/easyAutocomplete/jquery.easy-autocomplete.min.js}"></script>
+    <script th:src="@{/js/validation.js}"></script>
+<script th:inline="javascript">
+
+</script>
+
+</head>
+<body >
+
+
+
+
+<div class="modal modal-addGrn fade in" th:id="modal-addGrn"   data-th-fragment="addBillLine-modal">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span></button>
+                <h5 class="modal-title" style="border-bottom: 1px solid">Search For Add New Line</h5>
+                <form th:action="@{'/BillPay/billEntry/'+${mode}+'/'+${pageId}+'/'+${temltId}+'/'+${invOrgId} }"
+                      th:object="${billPaySearch}" th:method="post">
+                <div class="modal-body" th:id="modalId">
+                    <div id="RcvNumberBlock" >
+                    <div class="form-group col-sm-12">
+                        <label class="col-sm-3 control-label " for="inputrcvNumber">Receive Number</label>
+                        <div class="col-sm-1 ">
+                            <b>:</b>
+                        </div>
+                        <div class="col-sm-8 ">
+                            <input class="form-control" type="text" id="inputrcvNumber"
+                                   th:field="*{rcvNumber}" name="rcvNumber" />
+                            <input class="form-control" type="hidden" id="inputpoRcvHeader"
+                                   th:field="*{poRcvHeader}" name="poRcvHeader" />
+                            <input class="form-control" type="hidden" id="inputrcvTrnsType"
+                                   th:field="*{rcvTrnsType}" name="rcvTrnsType" />
+                        </div>
+
+                        <script th:inline="javascript">
+//                            alert([[${billPaySearch.glHeaderSearch}]])
+                            billPaySearchObj = [[${billPaySearch}]];
+//                            billPaySearchObj["glHeaderSearch"]=null;
+                            $(document).ready(function(){
+                                var varBillType = [[${billPaySearch.billType}]];
+//                                alert(varBillType);
+//                                if (varBillType=='PRE_PAY')
+//                                {
+//                                    document.getElementById('RcvNumberBlock').style.display="none";
+//                                }else if (varBillType!='PRE_PAY')
+//                                {
+//                                    document.getElementById('RcvNumberBlock').style.display="block";
+//                                }
+
+                                if (varBillType=='PRE_PAY')
+                                {
+                                    document.getElementById('RcvNumberBlock').style.display="none";
+                                    document.getElementById('inputpoRcvHeader').value="";
+                                    document.getElementById('inputrcvNumber').value="";
+                                    document.getElementById('glHeaderBlock').style.display="none";
+                                    document.getElementById('inputglHeader').value="";
+                                    document.getElementById('inputglHeaderDocumentSerch').value="";
+                                    document.getElementById('poNumberBlock').style.display="block";
+                                }else if (varBillType=='GRN')
+                                {
+                                    document.getElementById('RcvNumberBlock').style.display="block";
+                                    document.getElementById('glHeaderBlock').style.display="block";
+                                    document.getElementById('poNumberBlock').style.display="block";
+                                }else if (varBillType=='MNUL')
+                                {
+                                    document.getElementById('poNumberBlock').style.display="none";
+                                    document.getElementById('RcvNumberBlock').style.display="none";
+                                    document.getElementById('glHeaderBlock').style.display="block";
+                                    document.getElementById('inputpoRcvHeader').value="";
+                                    document.getElementById('inputrcvNumber').value="";
+                                    document.getElementById('inputpoNumber').value="";
+
+                                    document.getElementById('inputpoHeaderIdal').value="";
+                                }
+
+
+
+                            });
+
+                            function SearchBillPayRcvAddLineObj(objparms) {
+
+                                var objparmV = objparms;
+                                $('#inputpoRcvHeader').val(objparmV.id).trigger("change");
+                                billPaySearchObj["rcvNumber"]=objparmV.rcvNumber;
+                                billPaySearchObj["poRcvHeader"]=objparmV.id;
+                            };
+
+                            document.getElementById('inputrcvNumber').oninput = function () {
+                                if (document.getElementById('inputrcvNumber').value.length==0)
+                                {
+                                    document.getElementById('inputpoRcvHeader').value='';
+                                }
+
+
+                                myFunctionBillPayRcv();
+                            };
+                            function myFunctionBillPayRcv() {
+                                var innerVar = document.getElementById('inputrcvNumber').value;
+                                var locRcvTrnsType =document.getElementById('inputrcvTrnsType').value;
+                                if (innerVar.length > 1) {
+
+
+                                    var displayfieldfrom = [['#inputrcvNumber']];
+                                    var varLocOrg = document.getElementById('inputorgHierarchy').value;
+                                    var  locInvOrg=document.getElementById('inputinvOrg').value;
+
+                                    var indcRcv = 'billPayRcvaddLine';
+                                    var rcvNumUrl ;
+                                    rcvNumUrl ="/AYE/ACRC/SearchRcvNumberByType/"+varLocOrg+'/'+locInvOrg+'/'+locRcvTrnsType;
+                                    var temp = 'rcvTrnsType';
+                                    autocomwithobject(rcvNumUrl, 'rcvNumber', displayfieldfrom, null, temp ,indcRcv);
+                                    document.getElementById('inputrcvNumber').focus();
+                                }
+                            }
+                        </script>
+                    </div>
+                    <div class="form-group col-sm-12">
+                        <label class="col-sm-3 control-label " for="inputrcvStartDate">Receive Date</label>
+                        <div class="col-sm-1 ">
+                            <b>:</b>
+                        </div>
+
+                        <div class="col-sm-4  ">
+                            <input class="form-control" type="date" value="01-01-2019" id="inputrcvStartDate"
+                                   th:field="*{{rcvStartDate}}"
+                                   name="rcvStartDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('rcvStartDate')}"
+                                      th:errors="*{rcvStartDate}">Date Error</span>
+                        </div>
+
+                        <div class="col-sm-4  ">
+                            <input class="form-control" type="date" value="01-01-2019" id="inputrcvEndDate"
+                                   th:field="*{{rcvEndDate}}"
+                                   name="rcvEndDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('rcvEndDate')}"
+                                      th:errors="*{rcvEndDate}">Date Error</span>
+                        </div>
+
+                    </div>
+                    </div>
+                    <div id="poNumberBlock" class="form-group col-sm-12">
+                        <label class="col-sm-3 control-label " for="inputpoNumber">Po Number</label>
+                        <div class="col-sm-1 ">
+                            <b>:</b>
+                        </div>
+                        <div class="col-sm-8 ">
+                            <input class="form-control" type="text" id="inputpoNumber"
+                                   th:field="*{poNumber}" name="poNumber" />
+                            <input type="hidden" th:field="*{orgHierarchy}"  id="inputorgHierarchy" />
+                            <input type="hidden" th:field="*{poHeader}" id="inputpoHeaderIdal" name="poHeader"/>
+                            <input type="hidden" th:field="*{invOrg}" id="inputinvOrg" />
+
+                            <script th:inline="javascript">
+
+                                function SearchBillPayPoAddLineObj(objparms) {
+
+                                    var objparmV = objparms;
+                                    $('#inputpoHeaderIdal').val(objparmV.id).trigger("change");
+                                    billPaySearchObj["poNumber"]=objparmV.poNumber;
+                                    billPaySearchObj["poHeader"]=objparmV.id;
+                                };
+
+
+                                document.getElementById('inputpoNumber').oninput = function () {
+                                    var poNum = document.getElementById('inputpoNumber').value;
+                                    if (poNum.length==0)
+                                    {
+                                        document.getElementById('inputpoHeaderIdal').value='';
+                                    }
+                                    if (poNum.length > 1) {
+
+                                        var  lInvOrg=document.getElementById('inputinvOrg').value;
+                                        var  lOrg=document.getElementById('inputorgHierarchy').value;
+                                        var poUrl = '/AYE/ACRC/SearchOrgPoNum/' +lOrg+ '/' +  lInvOrg +'/'+poNum;
+
+                                        autocomwithobject(poUrl, 'poNumber', '#inputpoNumber', null, 'poDate', 'poNumberBillPayAddLine');
+                                        document.getElementById('inputpoNumber').focus();
+                                    }
+                                }
+
+                            </script>
+                                <span class="help-block" th:if="${#fields.hasErrors('poNumber')}"
+                                      th:errors="*{poNumber}">Name Error</span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group col-sm-12">
+                        <label class="col-sm-3 control-label " for="inputpoStartDate">Po Date</label>
+                        <div class="col-sm-1 ">
+                            <b>:</b>
+                        </div>
+
+                        <div class="col-sm-4  ">
+                            <input class="form-control" type="date" value="01-01-2019" id="inputpoStartDate"
+                                   th:field="*{{poStartDate}}"
+                                   name="fromDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('poStartDate')}"
+                                      th:errors="*{poStartDate}">Date Error</span>
+                        </div>
+
+                        <div class="col-sm-4  ">
+                            <input class="form-control" type="date" value="01-01-2019" id="inputpoEndDate"
+                                   th:field="*{{poEndDate}}"
+                                   name="poToDate"/>
+                                <span class="help-block" th:if="${#fields.hasErrors('poEndDate')}"
+                                      th:errors="*{poEndDate}">Date Error</span>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group col-sm-12">
+                        <label class="col-sm-3 control-label " for="inputsupplierLineBm">Supplier Name</label>
+                        <div class="col-sm-1 ">
+                            <b>:</b>
+                        </div>
+                        <div class="col-sm-8 ">
+                            <input class="form-control" type="hidden" id="inputsupplierLineBm"
+                                   th:field="*{supplierLine}" name="supplierLine" />
+                            <input class="form-control" type="text" id="inputsupplierLineNameBm"
+                                   th:field="*{supplierName}" name="supplierName" />
+
+                            <script th:inline="javascript">
+
+                                function SearchBillPaySupAddLineObj(objparms) {
+//                                            alert('x');
+                                    var objparmV = objparms;
+                                    $('#inputsupplierLineBm').val(objparmV.id).trigger("change");
+                                    billPaySearchObj["supplierLine"]=objparmV.id;
+                                    billPaySearchObj["name"]=objparmV.id;
+                                    // $('#inputsupplierAddress').val(objparmV.siteAddress).trigger("change");
+                                };
+                                document.getElementById('inputsupplierLineNameBm').oninput = function () {
+
+                                    myFunctionSBm();
+                                };
+                                function myFunctionSBm() {
+                                    var innerVar = document.getElementById('inputsupplierLineNameBm').value;
+                                    if (innerVar.length > 2) {
+//                                           alert('xX');
+                                        var displayfieldfrom = [['#inputsupplierLineNameBm']];
+
+                                        getBillPaySupInf(innerVar, displayfieldfrom, 'billPaySupAddLine');
+//                                        document.getElementById('fromLocator').focus();
+                                        document.getElementById('inputsupplierLineNameBm').focus();
+                                    }
+                                }
+
+                            </script>
+                            <!--<input type="hidden" th:field="*{orgHierarchy}" name="orgHierarchy" id="inputorgHierarchy" />-->
+                                <span class="help-block" th:if="${#fields.hasErrors('supplierLine')}"
+                                      th:errors="*{supplierLine}">Name Error</span>
+                        </div>
+                        </div>
+                    <div id="glHeaderBlock" >
+                    <div class="form-group col-sm-12">
+                        <label class="col-sm-3 control-label " for="inputglHeaderMod">GL Document</label>
+                        <div class="col-sm-1 ">
+                            <b>:</b>
+                        </div>
+                        <div class="col-sm-8 ">
+                            <input class="form-control" type="hidden" id="inputglHeaderMod"
+                                   th:field="*{glHeaderSearch}" name="glHeaderSearch" />
+                            <input class="form-control" type="text" id="inputglHeaderDocumentSerch"
+                                   th:field="*{glHeaderSearchDoc}" name="glHeaderSearchDoc" />
+
+                            <script th:inline="javascript">
+
+                                function SearchBilPayAddApInv(objparms) {
+//                                            alert('x');
+                                    var objparmV = objparms;
+
+                                    $('#inputglHeaderMod').val(objparmV.glHeaderId).trigger("change");
+                                    billPaySearchObj["glHeader"]=objparmV.glHeaderId;
+
+//                                    alert(objparmV.id);
+                                    //                                    billPaySearchObj["name"]=objparmV.id;
+                                    // $('#inputsupplierAddress').val(objparmV.siteAddress).trigger("change");
+                                };
+                                document.getElementById('inputglHeaderDocumentSerch').oninput = function () {
+                                    myFunctionModGl();
+                                };
+                                function myFunctionModGl() {
+                                    var innerVar = document.getElementById('inputglHeaderDocumentSerch').value;
+                                    if (innerVar.length > 2) {
+//                                           alert('xX');
+                                        var displayfieldfrom = [['#inputglHeaderDocumentSerch']];
+
+                                        getBillPayAddApDocument(innerVar, displayfieldfrom, 'billPayApAddDocument');
+//                                        document.getElementById('fromLocator').focus();
+                                        document.getElementById('inputglHeaderDocumentSerch').focus();
+                                    }
+                                }
+
+                            </script>
+
+                            <!--<input type="hidden" th:field="*{orgHierarchy}" name="orgHierarchy" id="inputorgHierarchy" />-->
+                                <span class="help-block" th:if="${#fields.hasErrors('glHeaderSearch')}"
+                                      th:errors="*{glHeaderSearch}">Name Error</span>
+                        </div>
+                    </div>
+                    </div>
+
+
+                        <div class="btn_padd" align="right">
+                            <a class="btn btn-success"
+                               th:id="btnIdS"  th:text="Search" th:title="HIT" rel="tooltip" >
+                            </a>
+                            <script th:inline="javascript">
+
+
+                                document.getElementById('btnIdS').onclick =
+                                function () {
+                                    if (chkAddNewLineEmpty(1)!=false)
+                                    {
+                                        getContent(1);
+
+                                    }
+                                        };
+
+                                function getContent(btnId) {
+                                    billPaySearchObj["invOrg"]=[[${billPaySearch.invOrg.id}]];
+                                    billPaySearchObj["orgHierarchy"]=[[${billPaySearch.orgHierarchy.id}]];
+                                    billPaySearchObj["poStartDate"]=[[${billPaySearch.poStartDate}]];
+                                    billPaySearchObj["poEndDate"]=[[${billPaySearch.poEndDate}]];
+                                    billPaySearchObj["rcvStartDate"]=[[${billPaySearch.rcvStartDate}]];
+                                    billPaySearchObj["rcvEndDate"]=[[${billPaySearch.rcvEndDate}]];
+                                    billPaySearchObj["billType"]=[[${billPaySearch.billType}]];
+                                    var pNum = btnId;
+                                    var mod = "E";
+                                    var pId = [[${pageId}]];
+                                    var tId = [[${temltId}]];
+                                    var InvOrgId = [[${billPaySearch.invOrg.id}]];
+
+                                    var obj = billPaySearchObj;
+                                    //{mode}/{pageId}/{temltId}/{invOrgId}
+                                    l_urlVal = '/AYE/BillPay/SearchLineAdd/' + mod + '/' + pId + '/' + tId + '/' + InvOrgId;
+                                    var l_url = window.location.origin + l_urlVal;
+//                                    alert(obj.invOrg.address);
+                                    $('#replace_div').load(l_url,obj);
+                                    billPaySearchObj=[[${billPaySearch}]];
+                                } ;
+
+
+                            </script>
+
+                        </div>
+                        <div id="replace_div">
+                        </div>
+
+                    </div>
+
+
+            </form>
+            </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invMoveOrder" language="groovy" pageWidth="720" pageHeight="595" orientation="Landscape" columnWidth="680" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="com.aye.ayeireportlibrery.ConvertToWordLocal" uuid="44173ffe-6c85-4b25-9950-dcb47489a459">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="p_invOrg" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[68]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pFdate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pTdate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select ITM.ITEM_CODE ITEM,H.FROM_SUBINV Issue_subinventory,CC.CC_DESC Issue_account,CC.SEGMENT4 Prod_line_cocde, CC.SEGMENT4_DESC PROD_LINE ,
+ORG.NAME ORG_NAME,
+ORG.ADDRESS ORG_ADDRESS,
+INF.ADDRESS INV_ORG_ADDRESS,INF.CODE inv_CODE,
+H.TRNS_DATE Transaction_date,D.PRIMARY_QTY Qty,D.PRIMARY_UOM_CODE UOM, 0 as cost
+, (select get_item_cost ($P{pTdate},
+                                          itm.item_id,
+                                          itm.inv_org_id) as c from dual) as COSTS
+ from
+INV_TRNS_DETAILS d,
+INV_TRNS_HEADER h,
+CODE_COMBINATION_V cc,
+INV_INFORMATIONS inf,
+inv_item_m itm,
+ORGANIZATION_HIERARCHY ORG
+where h.id=D.TRNS_HEADER_ID
+and H.TO_ACCOUNT_ID=CC.ID
+and H.INV_ORG_ID=inf.id
+and d.inv_org_id=itm.inv_org_id
+and D.ITEM_ID=ITM.ITEM_ID
+and TRNS_TYPE_ID=2
+and INF.OU_ID = ORG.ID
+and trunc(H.TRNS_DATE) between $P{pFdate} and $P{pTdate}
+and INF.ID= $P{p_invOrg}
+and exists (select 1 from inv_material_trns mtt where mtt.inv_org_id=h.inv_org_id and d.id= MTT.INVTRNS_DETAIL_ID)
+order by H.TRNS_DATE]]>
+	</queryString>
+	<field name="ITEM" class="java.lang.String"/>
+	<field name="ISSUE_SUBINVENTORY" class="java.lang.String"/>
+	<field name="ISSUE_ACCOUNT" class="java.lang.String"/>
+	<field name="PROD_LINE_COCDE" class="java.lang.String"/>
+	<field name="PROD_LINE" class="java.lang.String"/>
+	<field name="ORG_NAME" class="java.lang.String"/>
+	<field name="ORG_ADDRESS" class="java.lang.String"/>
+	<field name="INV_ORG_ADDRESS" class="java.lang.String"/>
+	<field name="INV_CODE" class="java.lang.String"/>
+	<field name="TRANSACTION_DATE" class="java.sql.Timestamp"/>
+	<field name="QTY" class="java.math.BigDecimal"/>
+	<field name="UOM" class="java.lang.String"/>
+	<field name="COST" class="java.math.BigDecimal"/>
+	<field name="COSTS" class="java.math.BigDecimal"/>
+	<variable name="curDate" class="java.lang.String">
+		<variableExpression><![CDATA[$P{REPORT_SCRIPTLET}.getCurrentDate()]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="106" splitType="Stretch">
+			<staticText>
+				<reportElement style="table_CH" positionType="Float" x="0" y="86" width="133" height="20" uuid="3554bd6c-30c7-4775-beb4-ad8345ba9745"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Item]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_CH" positionType="Float" x="133" y="86" width="80" height="20" uuid="9db8e064-c362-4f6d-af1e-bf38456b5884"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Sub. Inv]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_CH" positionType="Float" x="213" y="86" width="98" height="20" uuid="71ea495a-a3d2-4082-a032-ce03f8b15d4b"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Issue Account]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_CH" positionType="Float" x="311" y="86" width="41" height="20" uuid="22056225-ae2e-4505-ac2f-901ffb11f3ec"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Prod. Line Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_CH" positionType="Float" x="352" y="86" width="61" height="20" uuid="f3d2ac15-c7b8-4754-bd0d-bea07116bbf8"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Prod. Line]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_CH" positionType="Float" x="413" y="86" width="71" height="20" uuid="f40e9366-ca99-4dde-a838-ab315c4c08d4"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_CH" positionType="Float" x="484" y="86" width="61" height="20" uuid="23ecebdc-02a4-4fe3-b408-7be27a73aff7"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_CH" positionType="Float" x="545" y="86" width="61" height="20" uuid="2e0ee817-17c3-4c37-be85-9848c9263774"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[UOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_CH" positionType="Float" x="606" y="86" width="61" height="20" uuid="1b0e81bb-5435-4120-8add-1130102213ef"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[COST]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="0" width="680" height="35" uuid="642e73c2-588b-4503-a9b4-32c09e832cb0"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORG_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="35" width="680" height="20" uuid="bbf432ab-694b-4ccb-aae7-fe01aa44a1a2"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Move Order Detail Report -" +$F{INV_CODE}+" From : "+new SimpleDateFormat("dd/MMM/yyyy").format($P{pFdate}) +" To : "+new SimpleDateFormat("dd/MMM/yyyy").format($P{pTdate})]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement style="table_TD" x="0" y="0" width="133" height="20" uuid="9ec96919-822f-4431-aec1-c13803ca8288"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ITEM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" x="133" y="0" width="80" height="20" uuid="70935ff2-966d-4435-9566-873f7cf3a53b"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ISSUE_SUBINVENTORY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" x="213" y="0" width="98" height="20" uuid="2bcebf5b-a425-4189-8c88-efff10f58eb4"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ISSUE_ACCOUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" x="311" y="0" width="41" height="20" uuid="69d4dfba-647b-4f83-96c6-bd420f4b0a54"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PROD_LINE_COCDE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" x="352" y="0" width="61" height="20" uuid="8fc83cc0-53fd-4104-9cc3-a29a8cf7f846"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PROD_LINE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" x="484" y="0" width="61" height="20" uuid="9f491793-1f52-4532-8e7b-931a8ccf3b46"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" x="545" y="0" width="61" height="20" uuid="71935ecd-8989-4a8c-84af-636115b86a1f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{UOM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" x="606" y="0" width="61" height="20" uuid="7d13d9b6-aef8-4cdf-9a21-8ccfc9686e1b"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COSTS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy">
+				<reportElement style="table_TD" x="413" y="0" width="71" height="20" uuid="afe7687d-70c5-4767-bd94-94f9fdea4807"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TRANSACTION_DATE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<lastPageFooter>
+		<band height="21">
+			<textField>
+				<reportElement x="0" y="0" width="680" height="20" forecolor="#999999" uuid="5ba7b7b8-b20f-4b0d-a558-bb04e0f9f136"/>
+				<textFieldExpression><![CDATA["Green Board Fibar Mils Ltd. Print Date: "+$V{curDate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+</jasperReport>
