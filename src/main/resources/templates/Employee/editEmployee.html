@@ -2,7 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="fragments/layout">
+      data-layout-decorate="~{fragments/layout}">
 <head>
 
   <meta charset="utf-8">
@@ -121,7 +121,8 @@
             </div>
 
             <div class="col-sm-12">
-              <button type="submit" value="submit" class="btn btn-primary">Submit</button>
+              <button type="submit" value="submit" class="btn btn-success">Submit</button>
+              <a th:href="@{/employee/}" class="btn btn-primary">Back</a>
             </div>
 
           </form>

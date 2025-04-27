@@ -7,7 +7,7 @@ welcome:
 
 server:
   servlet:
-    context-path: /AYE
+    context-path: /ISSUE-TRACKER
 #    session:
 #      cookie:
 #        name: issueSessionId
@@ -17,11 +17,15 @@ server:
 #        secure: true
 #      tracking-modes: cookie
 
-  port: 9090
+  port: 9095
 
 #security.basic.enabled: false
 name: dev
 spring:
+  web:
+    resources:
+      add-mappings: true
+
   main:
     allow-bean-definition-overriding: true
   thymeleaf:
@@ -38,6 +42,7 @@ spring:
     encoding: UTF-8 # Message bundles encoding.
     fallback-to-system-locale: true # Set whether to fall back to the system Locale if no files for a specific Locale have been found.
 myapp:
-  base-url: http://172.20.1.225:8081/AYEIssue
+  base-url: http://192.168.0.133:9090/AYEIssue
+#  base-url: http://172.20.1.225:9091/AYEIssue
   jwt:
-    secret: issue
+    secret: 9pThdQ0V6s1g9Ut2/TQbbB5CymCl7VZXA9l0VYosoyc=

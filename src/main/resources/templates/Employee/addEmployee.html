@@ -2,7 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="fragments/layout">
+      data-layout-decorate="~{fragments/layout}">
 <head>
 
     <meta charset="utf-8">
@@ -13,9 +13,7 @@
 
     <title>Employee</title>
 
-    <script th:src="@{/webjars/jquery/2.2.4/jquery.min.js}"></script>
     <!-- Bootstrap -->
-    <script th:src="@{/webjars/bootstrap/3.4.1/js/bootstrap.min.js}"></script>
     <script th:src="@{/js/jqueryAutoComplete/jquery-1.11.2.min.js}"></script>
     <script th:src="@{/js/jqueryAutoComplete/jquery.easy-autocomplete.min.js}"></script>
     <script th:src="@{/js/jqueryAutoComplete/autocompleteEmployee.js}"></script>
@@ -119,7 +117,8 @@
                         </div>
 
                         <div class="col-sm-12">
-                            <button type="submit" value="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" value="submit" class="btn btn-success">Submit</button>
+                            <a th:href="@{/employee/}" class="btn btn-primary">New</a>
                         </div>
 
                     </form>

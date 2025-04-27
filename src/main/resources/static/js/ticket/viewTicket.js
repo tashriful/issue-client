@@ -5,7 +5,7 @@ $(document).ready(function () {
         var l_url = window.location.origin;
         console.log(l_url);
         $.ajax({
-            url: '/AYE/ticket/downloadImage/'+ id,
+            url: '/ISSUE-TRACKER/ticket/downloadImage/'+ id,
             type: "GET",
             success : function (data, status, xhr) {
                 if(data.length > 0){

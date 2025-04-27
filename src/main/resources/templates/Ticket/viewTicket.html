@@ -2,7 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="fragments/layout">
+      data-layout-decorate="~{fragments/layout}">
 <head>
 
     <meta charset="utf-8">
@@ -13,11 +13,7 @@
 
     <title>Ticket</title>
 
-    <script th:src="@{/webjars/jquery/2.2.4/jquery.min.js}"></script>
     <!-- Bootstrap -->
-    <script th:src="@{/webjars/bootstrap/3.4.1/js/bootstrap.min.js}"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script th:src="@{/js/jqueryAutoComplete/jquery-1.11.2.min.js}"></script>
     <script th:src="@{/js/jqueryAutoComplete/jquery.easy-autocomplete.min.js}"></script>
     <script th:src="@{/js/jqueryAutoComplete/autocompleteEmployee.js}"></script>
     <script th:src="@{/js/ticket/viewTicket.js}"></script>
@@ -141,8 +137,8 @@
 
                         <div th:if="${ticket.fileId != null}" id="attachment" class="col-sm-6">
                             <div class="form-group required">
-                                <label for="file">Attachment Name:</label><br>
-                                <button type="button" id="inputImageId" class="btn btn-primary">View Image</button>
+                                <label for="inputImageId">Attachment Name:</label><br>
+                                <button type="button" id="inputImageId" class="btn btn-success">View Image</button>
                                 <span style="font-weight: bold; margin-left: 2%; color: dimgrey; font-size: 14px;"
                                       th:text="*{filename}"></span>
                                 <span hidden id="fileId" th:text="*{fileId}"></span>
@@ -156,6 +152,9 @@
                                 <label for="file">Attachment Name:</label><br>
                                 <span>No Image</span>
                             </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <a th:href="@{/ticket/}" class="btn btn-primary">Back</a>
                         </div>
 
 

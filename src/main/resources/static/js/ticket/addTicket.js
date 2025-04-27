@@ -6,9 +6,8 @@ $(document).ready(function () {
         // console.log(departmentId);
 
         var l_url = window.location.origin;
-        console.log(l_url);
         $.ajax({
-            url: '/AYE/employee/department/' + departmentId,
+            url: '/ISSUE-TRACKER/employee/department/' + departmentId,
             type: "GET",
             success: function (data) {
                 $('#employeeList').empty();

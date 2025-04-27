@@ -2,7 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="fragments/layout">
+      data-layout-decorate="~{fragments/layout}">
 <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
 <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">-->
 <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>-->
@@ -68,7 +68,8 @@
               </div>
             </div>
             <div class="col-sm-12">
-              <button type="submit" value="submit" class="btn btn-primary">Submit</button>
+              <button type="submit" value="submit" class="btn btn-success">Submit</button>
+              <a th:href="@{/user/}" class="btn btn-primary">Back</a>
             </div>
           </form>
 
@@ -88,7 +89,7 @@
                 <td th:text="${u.name}"></td>
                 <td th:text="${u.username}"></td>
                 <td>
-                  <a th:href="@{'/user/edit/' + ${u.id}}"><i class="fa fa-edit"></i>Edit</a>
+                  <a th:href="@{'/user/edit/' + ${u.id}}"><i class="fa fa-edit "></i>Edit</a>
                   || <a th:href="@{'/user/delete/' + ${u.id}}"><i class="fa fa-remove"></i>Remove</a>
                 </td>
               </tr>
